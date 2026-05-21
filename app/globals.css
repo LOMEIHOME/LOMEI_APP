@@ -1,0 +1,86 @@
+@import "tailwindcss";
+
+/* ============================================
+   LOMEI HOME — Variables de la paleta
+   Fuente de verdad: CLAUDE.md §2
+   ============================================ */
+
+:root {
+  --color-cream:     #F5F0E8;
+  --color-linen:     #EDE6D6;
+  --color-sand:      #D4C4A0;
+  --color-warm-gray: #B5A898;
+  --color-oak:       #A0845C;
+  --color-camel:     #8B6340;
+  --color-dark:      #2A2118;
+  --color-white:     #FAFAF7;
+}
+
+@theme inline {
+  --color-cream:     #F5F0E8;
+  --color-linen:     #EDE6D6;
+  --color-sand:      #D4C4A0;
+  --color-warm-gray: #B5A898;
+  --color-oak:       #A0845C;
+  --color-camel:     #8B6340;
+  --color-dark:      #2A2118;
+  --color-white:     #FAFAF7;
+
+  --font-serif: 'Cormorant Garamond', serif;
+  --font-sans:  'Jost', sans-serif;
+}
+
+/* ============================================
+   Estilos globales
+   ============================================ */
+
+body {
+  background-color: var(--color-cream);
+  color: var(--color-dark);
+  font-family: var(--font-sans);
+  font-weight: 300;
+  letter-spacing: 0.01em;
+}
+
+/* Títulos en serif */
+h1, h2, h3, h4 {
+  font-family: var(--font-serif);
+  font-weight: 300;
+  letter-spacing: 0.08em;
+}
+
+/* Textura de fondo sutil (grain/papel) */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.03;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  z-index: 9999;
+}
+
+/* Animaciones sutiles por defecto */
+* {
+  transition-timing-function: ease;
+}
+
+/* Selección de texto */
+::selection {
+  background-color: var(--color-sand);
+  color: var(--color-dark);
+}
+
+/* Scrollbar personalizada */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-cream);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-sand);
+  border-radius: 3px;
+}

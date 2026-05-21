@@ -1,0 +1,3 @@
+// Funciones utilitarias
+
+export {};
