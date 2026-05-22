@@ -35,7 +35,7 @@ const FEATURED_PROJECTS = [
 
 export default function ProjectsGrid() {
   return (
-    <section className="max-w-7xl mx-auto px-6 py-24 md:py-32">
+    <section className="max-w-[85rem] mx-auto px-6 md:px-10 lg:px-16 py-24 md:py-32">
       <div className="flex flex-col md:flex-row md:items-end justify-between mb-12">
         <div>
           <FadeIn>
