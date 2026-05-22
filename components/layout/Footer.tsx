@@ -11,7 +11,7 @@ const FOOTER_LINKS = [
 export default function Footer() {
   return (
     <footer className="bg-[var(--color-dark)] text-[var(--color-linen)] mt-auto">
-      <div className="max-w-7xl mx-auto px-6 py-16">
+      <div className="max-w-[85rem] mx-auto px-6 md:px-10 lg:px-16 py-16">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
           {/* Logo y tagline */}
           <div>

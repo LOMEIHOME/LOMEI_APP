@@ -22,7 +22,7 @@ const SERVICES = [
 export default function ServicesStrip() {
   return (
     <section className="bg-[var(--color-dark)] py-24 md:py-32">
-      <div className="max-w-7xl mx-auto px-6">
+      <div className="max-w-[85rem] mx-auto px-6 md:px-10 lg:px-16">
         <FadeIn>
           <SectionTag className="!text-[var(--color-warm-gray)]">
             Nuestros servicios

@@ -34,7 +34,7 @@ const PREVIEW_PRODUCTS = [
 export default function CatalogPreview() {
   return (
     <section className="bg-[var(--color-linen)] py-24 md:py-32">
-      <div className="max-w-7xl mx-auto px-6">
+      <div className="max-w-[85rem] mx-auto px-6 md:px-10 lg:px-16">
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-12">
           <div>
             <FadeIn>

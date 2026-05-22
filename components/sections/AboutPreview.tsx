@@ -4,10 +4,10 @@ import FadeIn from "./FadeIn";
 
 export default function AboutPreview() {
   return (
-    <section className="max-w-7xl mx-auto px-6 py-24 md:py-32">
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-16 items-center">
-        {/* Texto — 5 columnas */}
-        <div className="md:col-span-5">
+    <section className="max-w-[85rem] mx-auto px-6 md:px-10 lg:px-16 py-24 md:py-32">
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 items-center">
+        {/* Texto — 6 columnas */}
+        <div className="md:col-span-6">
           <FadeIn>
             <SectionTag>Sobre el estudio</SectionTag>
           </FadeIn>
@@ -17,7 +17,7 @@ export default function AboutPreview() {
             </h2>
           </FadeIn>
           <FadeIn delay={0.2}>
-            <p className="mt-6 text-sm leading-relaxed text-[var(--color-warm-gray)]">
+            <p className="mt-6 text-base leading-relaxed text-[var(--color-dark)]/70 text-justify">
               En LOMEI Home creemos que un espacio no solo se construye: se diseña
               para vivirse. Acompañamos a las personas en el descubrimiento de su
               esencia estética y funcional, traduciendo sus historias en entornos
@@ -25,7 +25,7 @@ export default function AboutPreview() {
             </p>
           </FadeIn>
           <FadeIn delay={0.3}>
-            <p className="mt-4 text-sm leading-relaxed text-[var(--color-warm-gray)]">
+            <p className="mt-4 text-base leading-relaxed text-[var(--color-dark)]/70 text-justify">
               Creamos propuestas donde la arquitectura y el interiorismo dialogan
               desde el origen del proyecto, generando espacios que reflejen
               fielmente la personalidad, estilo de vida y aspiraciones de cada
@@ -33,31 +33,25 @@ export default function AboutPreview() {
             </p>
           </FadeIn>
           <FadeIn delay={0.4}>
-            <div className="mt-10 flex gap-12">
+            <div className="mt-10 flex gap-16">
               <div>
-                <p className="font-serif text-3xl text-[var(--color-oak)]">2+</p>
-                <p className="text-[10px] tracking-[0.2em] uppercase text-[var(--color-warm-gray)] mt-1">
-                  Años
-                </p>
+                <p className="font-serif text-[28px] leading-none text-[var(--color-oak)]">2+</p>
+                <p className="text-[10px] tracking-[0.2em] uppercase text-[var(--color-warm-gray)] mt-1">Años</p>
               </div>
               <div>
-                <p className="font-serif text-3xl text-[var(--color-oak)]">10+</p>
-                <p className="text-[10px] tracking-[0.2em] uppercase text-[var(--color-warm-gray)] mt-1">
-                  Proyectos
-                </p>
+                <p className="font-serif text-[28px] leading-none text-[var(--color-oak)]">10+</p>
+                <p className="text-[10px] tracking-[0.2em] uppercase text-[var(--color-warm-gray)] mt-1">Proyectos</p>
               </div>
               <div>
-                <p className="font-serif text-3xl text-[var(--color-oak)]">QRO</p>
-                <p className="text-[10px] tracking-[0.2em] uppercase text-[var(--color-warm-gray)] mt-1">
-                  Querétaro
-                </p>
+                <p className="font-serif text-[28px] leading-none text-[var(--color-oak)]">QRO</p>
+                <p className="text-[10px] tracking-[0.2em] uppercase text-[var(--color-warm-gray)] mt-1">Querétaro</p>
               </div>
             </div>
           </FadeIn>
         </div>
 
-        {/* Imagen — 7 columnas */}
-        <div className="md:col-span-7">
+        {/* Imagen — 6 columnas */}
+        <div className="md:col-span-6">
           <FadeIn direction="right" delay={0.2}>
             <div className="relative aspect-[4/5] overflow-hidden rounded-sm">
               <Image
