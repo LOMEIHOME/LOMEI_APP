@@ -31,7 +31,7 @@ export default async function ProyectosPage() {
           </FadeIn>
           <FadeIn delay={0.2}>
             <p className="mt-4 text-sm text-[var(--color-warm-gray)] max-w-lg">
-              Cada proyecto es una historia de transformación. Explorá nuestro
+              Cada proyecto es una historia de transformación. Explora nuestro
               portafolio de espacios diseñados para vivirse.
             </p>
           </FadeIn>
