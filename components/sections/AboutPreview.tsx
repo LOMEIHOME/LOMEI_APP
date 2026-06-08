@@ -4,7 +4,8 @@ import FadeIn from "./FadeIn";
 
 export default function AboutPreview() {
   return (
-    <section className="max-w-[85rem] mx-auto px-6 md:px-10 lg:px-16 py-24 md:py-32">
+    <section className="bg-[var(--color-linen)] py-24 md:py-32">
+      <div className="max-w-[85rem] mx-auto px-6 md:px-10 lg:px-16">
       <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 items-center">
         {/* Texto — 6 columnas */}
         <div className="md:col-span-6">
@@ -55,8 +56,8 @@ export default function AboutPreview() {
           <FadeIn direction="right" delay={0.2}>
             <div className="relative aspect-[4/5] overflow-hidden rounded-sm">
               <Image
-                src="/images/showroom/sala-recibidor.png"
-                alt="Sala de recibidor LOMEI Home"
+                src="/images/proyectos/cocina-alturia-zibata/01.jpg"
+                alt="Cocina Alturia Zibatá — LOMEI Home"
                 fill
                 className="object-cover"
                 sizes="(max-width: 768px) 100vw, 58vw"
@@ -64,6 +65,7 @@ export default function AboutPreview() {
             </div>
           </FadeIn>
         </div>
+      </div>
       </div>
     </section>
   );

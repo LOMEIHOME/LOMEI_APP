@@ -7,6 +7,7 @@ import SectionTag from "@/components/ui/SectionTag";
 import Button from "@/components/ui/Button";
 import Badge from "@/components/ui/Badge";
 import FadeIn from "@/components/sections/FadeIn";
+import AddToCartButton from "@/components/ui/AddToCartButton";
 import {
   getAllProductos,
   getAllProductoSlugs,
@@ -150,6 +151,13 @@ export default async function ProductoDetallePage({
 
               <FadeIn delay={0.35}>
                 <div className="mt-10 flex flex-col gap-3">
+                  <AddToCartButton
+                    slug={producto.slug}
+                    name={producto.name}
+                    price={producto.price}
+                    image={producto.images[0]}
+                    variant="full"
+                  />
                   <a
                     href={`https://wa.me/527711009084?text=${encodeURIComponent(
                       `Hola, me interesa el producto: ${producto.name}`
@@ -157,7 +165,7 @@ export default async function ProductoDetallePage({
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    <Button variant="primary" className="w-full">
+                    <Button variant="secondary" className="w-full">
                       Solicitar información
                     </Button>
                   </a>

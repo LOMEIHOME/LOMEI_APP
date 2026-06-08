@@ -49,12 +49,12 @@ font-family: 'Cormorant Garamond', serif;
 font-weight: 300 o 400 (nunca bold en títulos grandes);
 letter-spacing: 0.05em a 0.15em según tamaño;
 
-/* Cuerpo y UI — sans-serif fina */
-font-family: 'Jost', sans-serif;
+/* Cuerpo y UI — sans-serif geométrica */
+font-family: 'Montserrat', sans-serif;
 font-weight: 300 (cuerpo) / 400 (UI) / 500 (énfasis);
 letter-spacing: 0.08em a 0.2em en textos pequeños uppercase;
 
-/* Nunca usar: Inter, Roboto, Arial, system-ui */
+/* Nunca usar: Inter, Roboto, Jost, Arial, system-ui */
 ```
 
 ### Estilo visual — reglas de diseño
@@ -164,7 +164,7 @@ LOMEI HOME
 - 3 columnas en desktop, 2 en tablet, 1 en móvil
 - Card: foto + categoría (uppercase pequeño) + nombre + precio
 - Badge "Nuevo" o "Disponible" cuando aplique
-- Hover: botón "+" para agregar (Fase 2) o "Ver detalle"
+- Hover: botón "+" para agregar (Fase 2 — Tienda) o "Ver detalle"
 
 **Detalle de producto (/catalogo/[slug])**
 - Galería de fotos (principal + miniaturas)
@@ -195,7 +195,7 @@ LOMEI HOME
 
 ---
 
-### Página 5: Servicios (/servicios) — Fase 2
+### Página 5: Servicios (/servicios) — Fase 1 (pendiente)
 
 - Diseño residencial
 - Diseño comercial
@@ -205,7 +205,7 @@ LOMEI HOME
 
 ---
 
-### Página 6: Contacto (/contacto) — Fase 2
+### Página 6: Contacto (/contacto) — Fase 1 (pendiente)
 
 - Formulario: nombre, email, teléfono, tipo de proyecto, mensaje
 - Botón de agendar cita
@@ -224,20 +224,20 @@ LOMEI HOME
 ```
 Framework:    Next.js 14 (App Router)
 Estilos:      Tailwind CSS + CSS Variables para la paleta
-Tipografía:   Google Fonts — Cormorant Garamond + Jost
+Tipografía:   Google Fonts — Cormorant Garamond + Montserrat
 Imágenes:     Next/Image con Cloudinary para optimización
 Animaciones:  Framer Motion (sutiles, nunca llamativas)
 CMS:          Sanity.io (gestión de proyectos y productos)
 Deploy:       Vercel
 ```
 
-### Backend (Fase 2)
+### Backend (Fase 3 — Operaciones / Fase 2 — Tienda)
 ```
 Runtime:      Node.js con Express
 Base de datos: PostgreSQL vía Supabase
-Auth:         Clerk
-Pagos:        Stripe
-Emails:       Resend
+Auth:         Clerk (Fase 2)
+Pagos:        Stripe (Fase 2)
+Emails:       Resend (Fase 2)
 Deploy:       Railway
 ```
 
@@ -249,7 +249,7 @@ NEXT_PUBLIC_SANITY_DATASET=production
 NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=
 NEXT_PUBLIC_SITE_URL=https://lomeihome.mx
 
-# Fase 2
+# Fase 3 (Operaciones) + Fase 2 (Tienda)
 NEXT_PUBLIC_SUPABASE_URL=
 NEXT_PUBLIC_SUPABASE_ANON_KEY=
 STRIPE_SECRET_KEY=
@@ -274,32 +274,59 @@ lomei-home-app/
 │   │   ├── page.tsx            ← Catálogo de productos
 │   │   └── [slug]/
 │   │       └── page.tsx        ← Detalle de producto
-│   └── nosotros/
-│       └── page.tsx            ← Página nosotros
+│   ├── nosotros/
+│   │   └── page.tsx            ← Página nosotros
+│   ├── servicios/
+│   │   └── page.tsx            ← PENDIENTE (esqueleto)
+│   └── contacto/
+│       └── page.tsx            ← PENDIENTE (esqueleto)
 ├── components/
 │   ├── layout/
-│   │   ├── Navbar.tsx
-│   │   └── Footer.tsx
+│   │   ├── Navbar.tsx          ← Logo real (dark/white según scroll)
+│   │   └── Footer.tsx          ← Logo blanco real
 │   ├── ui/
 │   │   ├── Button.tsx
 │   │   ├── Badge.tsx
+│   │   ├── FadeIn.tsx
 │   │   └── SectionTag.tsx
 │   └── sections/
-│       ├── Hero.tsx
+│       ├── Hero.tsx            ← Logo + render Paseo de Claustros
+│       ├── AboutPreview.tsx
 │       ├── ServicesStrip.tsx
 │       ├── ProjectsGrid.tsx
 │       └── CatalogPreview.tsx
 ├── lib/
 │   ├── sanity.ts               ← Cliente de Sanity
-│   └── utils.ts
+│   └── data/
+│       ├── proyectos.ts        ← 16 proyectos reales
+│       └── productos.ts        ← 10 productos (imágenes pendientes de actualizar)
 ├── public/
-│   ├── fonts/
 │   └── images/
-│       └── logo/               ← Logo en SVG y PNG
-├── styles/
-│   └── fonts.css
+│       ├── logos/              ← Logos oficiales LOMEI
+│       │   ├── logo-dark.png   ← Logo completo fondo claro
+│       │   ├── logo-white.png  ← Logo completo fondo oscuro
+│       │   ├── icon-dark.png   ← Monograma "L" oscuro
+│       │   ├── icon-white.png  ← Monograma "L" blanco
+│       │   └── logo-redes.png  ← Logo para redes sociales
+│       ├── proyectos/          ← 16 carpetas con renders reales
+│       │   ├── paseo-de-claustros/   (10 renders)
+│       │   ├── sophia-distrito/      (5 renders)
+│       │   ├── atria-distrito/       (10 renders)
+│       │   ├── oficina-ave-fenix/    (6 renders)
+│       │   ├── cocina-alturia-zibata/ (5 renders)
+│       │   ├── ceja-de-bravo/        (5 renders)
+│       │   ├── puerta-coyoacan/      (4 renders)
+│       │   ├── roof-mirador-campanario/ (4 renders)
+│       │   ├── terraza-campo-real/   (5 renders)
+│       │   ├── recamara-bebe-villas/ (4 renders)
+│       │   ├── canadas-del-lago/     (3 renders)
+│       │   ├── valle-de-las-flores/  (5 renders)
+│       │   ├── casa-gema/            (2 renders)
+│       │   ├── teresitas/            (2 renders)
+│       │   ├── vestidor-pachuquilla/ (3 renders)
+│       │   └── san-juan-del-rio/     (3 renders)
+│       └── showroom/           ← Imágenes originales del showroom (legacy)
 ├── CLAUDE.md                   ← Este archivo
-├── tailwind.config.ts
 ├── next.config.ts
 └── package.json
 ```
@@ -321,37 +348,59 @@ lomei-home-app/
 
 ## 7. Fases del proyecto
 
-### Fase 1 — Vitrina (activa ahora)
+### Fase 1 — Vitrina (activa — entrega 30 junio 2026)
 Objetivo: sitio público funcional con identidad de LOMEI HOME
 
-- [ ] Setup inicial Next.js + Tailwind + fuentes
-- [ ] Componentes base: Navbar, Footer, Button, SectionTag
-- [ ] Página de Inicio completa
-- [ ] Página de Proyectos (grid + detalle)
-- [ ] Página de Catálogo (grid + detalle)
-- [ ] Página Nosotros
-- [ ] Integración con Sanity CMS
-- [ ] Deploy en Vercel
-- [ ] Dominio lomeihome.mx
+- [x] Setup inicial Next.js 16 + Tailwind CSS 4 + fuentes
+- [x] Componentes base: Navbar, Footer, Button, Badge, SectionTag, FadeIn
+- [x] Página de Inicio completa (Hero, About, Services, Projects, Catalog)
+- [x] Página de Proyectos (grid con filtros + 16 proyectos reales)
+- [x] Página de Catálogo (grid con filtros + detalle)
+- [x] Página Nosotros completa
+- [x] Integración con Sanity CMS (schemas + queries + studio)
+- [x] Logo oficial integrado (Navbar, Footer, Hero)
+- [x] 16 proyectos reales con ~80 renders en /images/proyectos/
+- [ ] **Página de Servicios** (esqueleto → completa, fecha: 9 junio)
+- [ ] **Página de Contacto** (esqueleto → formulario funcional, fecha: 9 junio)
+- [ ] Actualizar imágenes de productos (`lib/data/productos.ts` usa paths viejos)
+- [ ] Actualizar imágenes en Nosotros (`app/nosotros/page.tsx` tiene 4 paths viejos)
+- [ ] Carga de contenido real en Sanity CMS
+- [ ] Deploy en Vercel + dominio lomeihome.mx
 
-### Fase 2 — Tienda en línea
+### Fase 3 — Operaciones (entrega 15 julio 2026, con 2do desarrollador)
+- [ ] Base de datos (Supabase PostgreSQL)
+- [ ] Panel de control de inventario
+- [ ] Dashboard de reportes de ventas
+- [ ] Sistema de alertas de stock bajo
+
+### Fase 2 — Tienda en línea (posterior, $7,500 MXN)
 - [ ] Carrito de compras
 - [ ] Checkout con Stripe
-- [ ] Generación de tickets/órdenes
-- [ ] Emails de confirmación
-- [ ] Panel de admin básico
-
-### Fase 3 — Operaciones
-- [ ] Control de inventario
-- [ ] Reportes de ventas
-- [ ] Alertas de stock bajo
+- [ ] Cuentas de clientes (Clerk)
+- [ ] Notificaciones por correo (Resend)
 
 ---
 
-## 8. Reglas que Claude NUNCA debe romper en este proyecto
+## 8. Cotización (26 mayo 2026)
+
+| Concepto | Precio |
+|---|---|
+| Fase 1 — Sitio Vitrina | $9,000 MXN |
+| Fase 3 — Operaciones | $5,400 MXN |
+| Desarrollador extra | $1,500 MXN |
+| **Total** | **$15,900 MXN** |
+| Fotografía opcional (50 prod) | $3,500 ($70/foto) |
+| Fotografía opcional (100 prod) | $5,000 ($50/foto) |
+
+Pagos: 40% al aprobar · 30% al publicar Fase 1 · 30% al entregar Fase 3
+Mantenimiento: Básico $400 · Recomendado $700 · Premium $1,000 (mensual, aparte)
+
+---
+
+## 9. Reglas que Claude NUNCA debe romper en este proyecto
 
 1. **La paleta es fija** — no agregar colores fuera de los definidos en §2
-2. **Tipografía solo Cormorant Garamond + Jost** — nunca Inter, Roboto ni system fonts
+2. **Tipografía solo Cormorant Garamond + Montserrat** — nunca Inter, Roboto, Jost ni system fonts
 3. **Estilo minimalista elegante** — si algo se ve "genérico de AI", rediseñar
 4. **El logo no se modifica** — solo se coloca, nunca se rediseña
 5. **Textos en español** — todo el contenido al usuario en español
@@ -363,4 +412,4 @@ Objetivo: sitio público funcional con identidad de LOMEI HOME
 
 ---
 
-*Última actualización: Mayo 2026 — Arq. Ana Lorena Vargas Mejía / LOMEI HOME*
+*Última actualización: 27 mayo 2026 — Luis Fonseca / LOMEI HOME*

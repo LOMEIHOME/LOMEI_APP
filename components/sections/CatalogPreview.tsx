@@ -9,25 +9,25 @@ const PREVIEW_PRODUCTS = [
     slug: "mesa-centro-encino",
     name: "Mesa de Centro Encino",
     category: "Muebles",
-    image: "/images/showroom/render-sketch-1.png",
+    image: "/images/proyectos/ceja-de-bravo/02.jpg",
   },
   {
     slug: "cojin-lino-natural",
     name: "Cojín Lino Natural",
     category: "Cojines & Textiles",
-    image: "/images/showroom/sala-detalle.png",
+    image: "/images/proyectos/recamara-bebe-villas/01.jpg",
   },
   {
     slug: "lampara-arco",
     name: "Lámpara Arco",
     category: "Iluminación",
-    image: "/images/showroom/showroom-led.png",
+    image: "/images/proyectos/roof-mirador-campanario/01.jpg",
   },
   {
     slug: "tapete-artesanal",
     name: "Tapete Artesanal",
     category: "Alfombras",
-    image: "/images/showroom/sala-recibidor.png",
+    image: "/images/proyectos/valle-de-las-flores/01.jpg",
   },
 ];
 

@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import Badge from "@/components/ui/Badge";
+import AddToCartButton from "@/components/ui/AddToCartButton";
 import type { Producto } from "@/lib/data/productos";
 import { formatPrice } from "@/lib/data/productos";
 
@@ -74,10 +75,18 @@ export default function CatalogoFilterGrid({ productos, categories }: Props) {
                     </div>
                   )}
                   {/* Hover overlay */}
-                  <div className="absolute inset-0 bg-[var(--color-dark)]/0 group-hover:bg-[var(--color-dark)]/20 transition-all duration-500 flex items-center justify-center">
+                  <div className="absolute inset-0 bg-[var(--color-dark)]/0 group-hover:bg-[var(--color-dark)]/20 transition-all duration-500 flex items-end justify-between p-3">
                     <span className="px-5 py-2.5 text-[10px] tracking-[0.2em] uppercase bg-[var(--color-white)] text-[var(--color-dark)] rounded-sm opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-500">
                       Ver detalle
                     </span>
+                    <div className="opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-500 delay-75">
+                      <AddToCartButton
+                        slug={p.slug}
+                        name={p.name}
+                        price={p.price}
+                        image={p.images[0]}
+                      />
+                    </div>
                   </div>
                 </div>
 

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { Cormorant_Garamond, Jost } from "next/font/google";
+import { Cormorant_Garamond, Montserrat } from "next/font/google";
+import { CartProvider } from "@/lib/cart";
 import "./globals.css";
 
 const cormorant = Cormorant_Garamond({
@@ -9,7 +10,7 @@ const cormorant = Cormorant_Garamond({
   display: "swap",
 });
 
-const jost = Jost({
+const montserrat = Montserrat({
   variable: "--font-sans",
   subsets: ["latin"],
   weight: ["300", "400", "500"],
@@ -30,9 +31,11 @@ export default function RootLayout({
   return (
     <html
       lang="es"
-      className={`${cormorant.variable} ${jost.variable} h-full antialiased`}
+      className={`${cormorant.variable} ${montserrat.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        <CartProvider>{children}</CartProvider>
+      </body>
     </html>
   );
 }

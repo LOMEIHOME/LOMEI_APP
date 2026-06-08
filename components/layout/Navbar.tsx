@@ -1,7 +1,9 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useState, useEffect } from "react";
+import CartIcon from "@/components/ui/CartIcon";
 
 const NAV_LINKS = [
   { href: "/", label: "Inicio" },
@@ -12,12 +14,12 @@ const NAV_LINKS = [
   { href: "/contacto", label: "Contacto" },
 ];
 
-export default function Navbar() {
+export default function Navbar({ forceScrolled = false }: { forceScrolled?: boolean }) {
   const [isOpen, setIsOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
+  const [scrolled, setScrolled] = useState(forceScrolled);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 50);
+    const onScroll = () => setScrolled(forceScrolled || window.scrollY > 50);
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
@@ -32,14 +34,15 @@ export default function Navbar() {
     >
       <div className="max-w-[85rem] mx-auto px-6 md:px-10 lg:px-16 py-5 flex items-center justify-between">
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-3">
-          <span
-            className={`font-serif text-xl tracking-[0.15em] transition-colors duration-500 ${
-              scrolled ? "text-[var(--color-dark)]" : "text-[var(--color-white)]"
-            }`}
-          >
-            LOMEI HOME
-          </span>
+        <Link href="/" className="relative h-8 w-40 block">
+          <Image
+            src={scrolled ? "/images/logos/logo-dark.png" : "/images/logos/logo-white.png"}
+            alt="LOMEI HOME"
+            fill
+            className="object-contain object-left transition-opacity duration-500"
+            sizes="160px"
+            priority
+          />
         </Link>
 
         {/* Links — desktop */}
@@ -59,6 +62,16 @@ export default function Navbar() {
             </li>
           ))}
         </ul>
+
+        {/* Carrito + Hamburger */}
+        <div className="flex items-center gap-4">
+          <CartIcon
+            className={
+              scrolled
+                ? "text-[var(--color-warm-gray)] hover:text-[var(--color-dark)]"
+                : "text-[var(--color-white)]/70 hover:text-[var(--color-white)]"
+            }
+          />
 
         {/* Hamburger — mobile */}
         <button
@@ -81,6 +94,7 @@ export default function Navbar() {
             />
           ))}
         </button>
+        </div>
       </div>
 
       {/* Mobile menu */}
