@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 
 const FOOTER_LINKS = [
   { href: "/proyectos", label: "Proyectos" },
@@ -15,12 +16,15 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
           {/* Logo y tagline */}
           <div>
-            <p className="font-serif text-xl tracking-[0.15em] text-[var(--color-white)]">
-              LOMEI HOME
-            </p>
-            <p className="mt-1 text-[10px] tracking-[0.25em] uppercase text-[var(--color-warm-gray)]">
-              Arquitectura e Interiorismo
-            </p>
+            <div className="relative h-8 w-44">
+              <Image
+                src="/images/logos/logo-white.png"
+                alt="LOMEI HOME"
+                fill
+                className="object-contain object-left"
+                sizes="176px"
+              />
+            </div>
             <p className="mt-4 text-sm text-[var(--color-warm-gray)] font-light italic font-serif">
               &ldquo;Espacios diseñados para vivirse&rdquo;
             </p>

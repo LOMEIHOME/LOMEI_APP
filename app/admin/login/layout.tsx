@@ -1,0 +1,8 @@
+// Login tiene su propio layout sin el AdminShell
+export default function LoginLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return <>{children}</>;
+}

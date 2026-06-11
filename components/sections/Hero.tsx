@@ -1,17 +1,64 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import Button from "@/components/ui/Button";
 
 export default function Hero() {
+  const [showSplash, setShowSplash] = useState(true);
+
+  useEffect(() => {
+    const seen = sessionStorage.getItem("lomei-splash-seen");
+    if (seen) {
+      setShowSplash(false);
+      return;
+    }
+
+    const timer = setTimeout(() => {
+      setShowSplash(false);
+      sessionStorage.setItem("lomei-splash-seen", "true");
+    }, 2500);
+
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
     <section className="relative h-screen flex items-center justify-center overflow-hidden">
+      {/* Splash / Portada */}
+      <AnimatePresence>
+        {showSplash && (
+          <motion.div
+            key="splash"
+            initial={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
+            className="absolute inset-0 z-30 flex items-center justify-center bg-[var(--color-cream)]"
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.8, delay: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
+              className="relative h-16 md:h-20 lg:h-24 w-72 md:w-96 lg:w-[28rem]"
+            >
+              <Image
+                src="/images/logos/logo-dark.png"
+                alt="LOMEI HOME — Arquitectura e Interiorismo"
+                fill
+                className="object-contain"
+                sizes="(max-width: 768px) 288px, (max-width: 1024px) 384px, 448px"
+                priority
+              />
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Imagen de fondo */}
       <Image
-        src="/images/showroom/showroom-main.png"
-        alt="Showroom LOMEI Home"
+        src="/images/proyectos/paseo-de-claustros/01.jpg"
+        alt="Paseo de Claustros — LOMEI Home"
         fill
         className="object-cover"
         priority
@@ -23,36 +70,34 @@ export default function Hero() {
 
       {/* Contenido */}
       <div className="relative z-10 text-center px-6">
-        <motion.h1
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
+          animate={{ opacity: showSplash ? 0 : 1, y: showSplash ? 20 : 0 }}
           transition={{ duration: 0.8, delay: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
-          className="font-serif text-5xl md:text-7xl lg:text-8xl tracking-[0.15em] text-[var(--color-white)]"
+          className="relative h-16 md:h-20 lg:h-24 w-72 md:w-96 lg:w-[28rem] mx-auto"
         >
-          LOMEI HOME
-        </motion.h1>
-
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.6, delay: 0.6 }}
-          className="mt-3 text-[10px] md:text-xs tracking-[0.3em] uppercase text-[var(--color-sand)]"
-        >
-          Arquitectura e Interiorismo
-        </motion.p>
+          <Image
+            src="/images/logos/logo-white.png"
+            alt="LOMEI HOME — Arquitectura e Interiorismo"
+            fill
+            className="object-contain"
+            sizes="(max-width: 768px) 288px, (max-width: 1024px) 384px, 448px"
+            priority
+          />
+        </motion.div>
 
         <motion.p
           initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
+          animate={{ opacity: showSplash ? 0 : 1, y: showSplash ? 10 : 0 }}
           transition={{ duration: 0.6, delay: 0.9 }}
           className="mt-8 font-serif text-lg md:text-2xl text-[var(--color-white)]/90 italic tracking-wide"
         >
-          Espacios diseñados para vivirse
+          Un espacio no solo se construye, se diseña para vivirse
         </motion.p>
 
         <motion.div
           initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
+          animate={{ opacity: showSplash ? 0 : 1, y: showSplash ? 10 : 0 }}
           transition={{ duration: 0.6, delay: 1.2 }}
           className="mt-10"
         >
@@ -70,7 +115,7 @@ export default function Hero() {
       {/* Scroll indicator */}
       <motion.div
         initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
+        animate={{ opacity: showSplash ? 0 : 1 }}
         transition={{ duration: 0.6, delay: 1.6 }}
         className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
       >
