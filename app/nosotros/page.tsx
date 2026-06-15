@@ -4,6 +4,12 @@ import Footer from "@/components/layout/Footer";
 import SectionTag from "@/components/ui/SectionTag";
 import FadeIn from "@/components/sections/FadeIn";
 
+/* ============================================================
+   Nosotros — propuesta completa
+   Contraste del cuerpo (15px dark/75), cita en camel con
+   hairline (eco del About de la home), proceso como línea de
+   tiempo y materiales como chips delineados.
+   ============================================================ */
 const PROCESO = [
   {
     num: "01",
@@ -13,12 +19,12 @@ const PROCESO = [
   {
     num: "02",
     title: "Concepto",
-    desc: "Desarrollamos un moodboard, paleta de materiales y propuesta conceptual que traduce tus ideas en un lenguaje visual.",
+    desc: "Moodboard, paleta de materiales y propuesta conceptual que traduce tus ideas en un lenguaje visual.",
   },
   {
     num: "03",
     title: "Desarrollo",
-    desc: "Creamos planos, renders 3D y especificaciones técnicas para visualizar cada detalle antes de construir.",
+    desc: "Planos, renders 3D y especificaciones técnicas para visualizar cada detalle antes de construir.",
   },
   {
     num: "04",
@@ -38,17 +44,27 @@ const SHOWROOM_SPACES = [
     desc: "Espacio para asesorías con clientes y presentación de proyectos en renders y planos.",
   },
   {
-    title: "Mueble Repisero",
+    title: "Mueble repisero",
     desc: "Exhibición de muestras de distintos acabados: telas, piedras naturales, placas y accesorios.",
   },
   {
-    title: "Coffee Station",
+    title: "Coffee station",
     desc: "Área de bebidas para ofrecer una experiencia cálida durante la visita al showroom.",
   },
   {
-    title: "Set Recibidor",
+    title: "Set recibidor",
     desc: "Un espacio que muestra cómo creamos cotidianamente un ambiente acogedor de hogar.",
   },
+];
+
+const MATERIALES = [
+  "Encino natural",
+  "Silestone",
+  "Nanocal",
+  "Porcelánico tipo concreto",
+  "Tapicería neutra",
+  "Vinil camel",
+  "LED indirecta",
 ];
 
 export default function NosotrosPage() {
@@ -66,11 +82,11 @@ export default function NosotrosPage() {
           priority
           sizes="100vw"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-dark)]/60 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-dark)]/65 to-transparent" />
         <div className="absolute bottom-0 left-0 right-0 p-6 md:p-16">
           <div className="max-w-7xl mx-auto">
             <FadeIn>
-              <SectionTag className="!text-[var(--color-sand)]">
+              <SectionTag className="!text-[11px] !text-[var(--color-sand)]">
                 Nosotros
               </SectionTag>
             </FadeIn>
@@ -80,7 +96,7 @@ export default function NosotrosPage() {
               </h1>
             </FadeIn>
             <FadeIn delay={0.2}>
-              <p className="mt-2 text-sm text-[var(--color-white)]/70">
+              <p className="mt-2 text-sm tracking-[0.08em] text-[var(--color-white)]/85">
                 Arquitectura e Interiorismo · Querétaro, México
               </p>
             </FadeIn>
@@ -106,22 +122,27 @@ export default function NosotrosPage() {
           </div>
           <div className="md:col-span-7">
             <FadeIn>
-              <SectionTag>Historia</SectionTag>
+              <SectionTag className="!text-[11px] !text-[var(--color-oak)]">
+                Historia
+              </SectionTag>
             </FadeIn>
             <FadeIn delay={0.1}>
-              <h2 className="mt-4 font-serif text-3xl md:text-4xl tracking-wider text-[var(--color-dark)] leading-tight">
+              <h2 className="mt-4 font-serif text-3xl md:text-4xl lg:text-[2.75rem] tracking-wider text-[var(--color-dark)] leading-tight">
                 Arq. Ana Lorena Vargas Mejía
               </h2>
+              <p className="mt-2 text-[11px] tracking-[0.2em] uppercase text-[var(--color-oak)]">
+                Fundadora · LV Arquitectura e Interiorismo
+              </p>
             </FadeIn>
             <FadeIn delay={0.2}>
-              <p className="mt-6 text-sm leading-relaxed text-[var(--color-warm-gray)]">
+              <p className="mt-7 text-[15px] leading-relaxed text-[var(--color-dark)]/75">
                 LV Arquitectura e Interiorismo nace en el 2023 con la intención
                 de transformar espacios en hogares con identidad, dando vida al
                 proyecto de LOMEI Home.
               </p>
             </FadeIn>
             <FadeIn delay={0.25}>
-              <p className="mt-4 text-sm leading-relaxed text-[var(--color-warm-gray)]">
+              <p className="mt-4 text-[15px] leading-relaxed text-[var(--color-dark)]/75">
                 Nuestra misión es diseñar y desarrollar proyectos residenciales y
                 comerciales de manera integral, desde su arquitectura hasta el
                 interior que se habita. Creamos propuestas donde la arquitectura y
@@ -130,16 +151,9 @@ export default function NosotrosPage() {
                 aspiraciones de cada cliente.
               </p>
             </FadeIn>
-            <FadeIn delay={0.3}>
-              <p className="mt-4 text-sm leading-relaxed text-[var(--color-warm-gray)]">
-                Acompañamos a las personas en el descubrimiento de su esencia
-                estética y funcional, traduciendo sus historias en entornos que
-                transmiten bienestar, armonía y sentido de pertenencia.
-              </p>
-            </FadeIn>
             <FadeIn delay={0.35}>
-              <blockquote className="mt-8 pl-6 border-l-2 border-[var(--color-oak)]">
-                <p className="font-serif text-lg italic text-[var(--color-oak)] tracking-wide">
+              <blockquote className="mt-8 pl-6 border-l border-[var(--color-sand)]">
+                <p className="font-serif text-xl md:text-2xl italic leading-snug text-[var(--color-camel)] tracking-wide">
                   &ldquo;Un espacio no solo se construye: se diseña para
                   vivirse.&rdquo;
                 </p>
@@ -153,23 +167,25 @@ export default function NosotrosPage() {
       <section className="bg-[var(--color-linen)] py-24 md:py-32">
         <div className="max-w-7xl mx-auto px-6">
           <FadeIn>
-            <SectionTag>El showroom</SectionTag>
+            <SectionTag className="!text-[11px] !text-[var(--color-oak)]">
+              El showroom
+            </SectionTag>
           </FadeIn>
           <FadeIn delay={0.1}>
-            <h2 className="mt-4 font-serif text-3xl md:text-4xl tracking-wider text-[var(--color-dark)]">
+            <h2 className="mt-4 font-serif text-3xl md:text-4xl lg:text-[2.625rem] tracking-wider text-[var(--color-dark)]">
               Nuestro espacio
             </h2>
           </FadeIn>
           <FadeIn delay={0.15}>
-            <p className="mt-4 text-sm text-[var(--color-warm-gray)] max-w-2xl">
-              El showroom de LOMEI Home es un espacio diseñado para que nuestros
-              clientes experimenten los materiales, acabados y la estética del
-              estudio en persona. Aquí, cada rincón cuenta una historia.
+            <p className="mt-4 text-[15px] leading-relaxed text-[var(--color-dark)]/72 max-w-2xl">
+              Un espacio diseñado para que nuestros clientes experimenten los
+              materiales, acabados y la estética del estudio en persona. Aquí,
+              cada rincón cuenta una historia.
             </p>
           </FadeIn>
 
           {/* Renders del showroom */}
-          <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-5">
             <FadeIn>
               <div className="relative aspect-[16/10] overflow-hidden rounded-sm">
                 <Image
@@ -198,11 +214,11 @@ export default function NosotrosPage() {
           <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
             {SHOWROOM_SPACES.map((s, i) => (
               <FadeIn key={s.title} delay={0.1 * i}>
-                <div className="border-t border-[var(--color-sand)]/50 pt-5">
-                  <h3 className="font-serif text-lg tracking-wider text-[var(--color-dark)]">
+                <div className="border-t border-[var(--color-sand)]/60 pt-5">
+                  <h3 className="font-serif text-xl tracking-[0.05em] text-[var(--color-dark)]">
                     {s.title}
                   </h3>
-                  <p className="mt-2 text-xs leading-relaxed text-[var(--color-warm-gray)]">
+                  <p className="mt-2.5 text-[13px] leading-relaxed text-[var(--color-dark)]/68">
                     {s.desc}
                   </p>
                 </div>
@@ -212,21 +228,15 @@ export default function NosotrosPage() {
 
           {/* Materiales */}
           <FadeIn delay={0.2}>
-            <div className="mt-12 bg-[var(--color-cream)] rounded-sm p-8">
-              <SectionTag>Materiales del showroom</SectionTag>
-              <div className="mt-4 flex flex-wrap gap-3">
-                {[
-                  "Encino natural",
-                  "Silestone",
-                  "Nanocal",
-                  "Porcelánico tipo concreto",
-                  "Tapicería neutra",
-                  "Vinil camel",
-                  "LED indirecta",
-                ].map((m) => (
+            <div className="mt-12 border-t border-[var(--color-sand)]/60 pt-7 flex flex-col md:flex-row md:items-baseline gap-4 md:gap-6">
+              <span className="text-[11px] tracking-[0.22em] uppercase text-[var(--color-oak)] whitespace-nowrap">
+                Materiales
+              </span>
+              <div className="flex flex-wrap gap-2.5">
+                {MATERIALES.map((m) => (
                   <span
                     key={m}
-                    className="px-4 py-2 text-[10px] tracking-[0.15em] uppercase bg-[var(--color-linen)] text-[var(--color-oak)] rounded-sm"
+                    className="px-3.5 py-2 text-[11px] tracking-[0.14em] uppercase border border-[var(--color-sand)]/90 text-[var(--color-camel)] rounded-sm"
                   >
                     {m}
                   </span>
@@ -237,32 +247,38 @@ export default function NosotrosPage() {
         </div>
       </section>
 
-      {/* Proceso de trabajo */}
+      {/* Proceso de trabajo — línea de tiempo */}
       <section className="max-w-7xl mx-auto px-6 py-24 md:py-32">
         <FadeIn>
-          <SectionTag>Cómo trabajamos</SectionTag>
+          <SectionTag className="!text-[11px] !text-[var(--color-oak)]">
+            Cómo trabajamos
+          </SectionTag>
         </FadeIn>
         <FadeIn delay={0.1}>
-          <h2 className="mt-4 font-serif text-3xl md:text-4xl tracking-wider text-[var(--color-dark)]">
+          <h2 className="mt-4 font-serif text-3xl md:text-4xl lg:text-[2.625rem] tracking-wider text-[var(--color-dark)]">
             Nuestro proceso
           </h2>
         </FadeIn>
 
-        <div className="mt-12 grid grid-cols-1 md:grid-cols-5 gap-8">
+        <div className="mt-14 grid grid-cols-1 md:grid-cols-5 gap-x-10 gap-y-10">
           {PROCESO.map((step, i) => (
             <FadeIn key={step.num} delay={0.1 * i}>
-              <div className="relative">
-                {/* Línea conectora (desktop) */}
-                {i < PROCESO.length - 1 && (
-                  <div className="hidden md:block absolute top-5 left-full w-full h-[0.5px] bg-[var(--color-sand)]/50" />
-                )}
-                <p className="font-serif text-3xl text-[var(--color-sand)]">
+              <div className="relative border-t border-[var(--color-sand)]/60 pt-6">
+                {/* Punto en la línea de tiempo */}
+                <span
+                  className={`absolute -top-1 left-0 w-[7px] h-[7px] rounded-full ${
+                    i === 0
+                      ? "bg-[var(--color-camel)]"
+                      : "bg-[var(--color-sand)]"
+                  }`}
+                />
+                <p className="font-serif font-light text-4xl leading-none text-[var(--color-oak)]/55">
                   {step.num}
                 </p>
-                <h3 className="mt-3 font-serif text-lg tracking-wider text-[var(--color-dark)]">
+                <h3 className="mt-3.5 font-serif text-[1.3125rem] tracking-[0.06em] text-[var(--color-dark)]">
                   {step.title}
                 </h3>
-                <p className="mt-2 text-xs leading-relaxed text-[var(--color-warm-gray)]">
+                <p className="mt-2.5 text-[13px] leading-relaxed text-[var(--color-dark)]/68">
                   {step.desc}
                 </p>
               </div>

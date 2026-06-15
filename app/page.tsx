@@ -1,5 +1,6 @@
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
+import SplashScreen from "@/components/sections/SplashScreen";
 import Hero from "@/components/sections/Hero";
 import AboutPreview from "@/components/sections/AboutPreview";
 import ServicesStrip from "@/components/sections/ServicesStrip";
@@ -9,6 +10,7 @@ import CatalogPreview from "@/components/sections/CatalogPreview";
 export default function HomePage() {
   return (
     <>
+      <SplashScreen />
       <Navbar />
       <Hero />
       <AboutPreview />
