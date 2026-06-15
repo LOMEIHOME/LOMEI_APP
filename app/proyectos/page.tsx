@@ -19,10 +19,12 @@ export default async function ProyectosPage() {
       <Navbar />
 
       {/* Header */}
-      <section className="bg-[var(--color-linen)] pt-32 pb-16 px-6">
-        <div className="max-w-7xl mx-auto">
+      <section className="bg-[var(--color-linen)] pt-32 pb-16 px-6 md:px-10 lg:px-16">
+        <div>
           <FadeIn>
-            <SectionTag>Portafolio</SectionTag>
+            <SectionTag className="!text-[11px] !text-[var(--color-oak)]">
+              Portafolio
+            </SectionTag>
           </FadeIn>
           <FadeIn delay={0.1}>
             <h1 className="mt-4 font-serif text-4xl md:text-6xl tracking-wider text-[var(--color-dark)]">
@@ -30,7 +32,7 @@ export default async function ProyectosPage() {
             </h1>
           </FadeIn>
           <FadeIn delay={0.2}>
-            <p className="mt-4 text-sm text-[var(--color-warm-gray)] max-w-lg">
+            <p className="mt-4 text-[15px] leading-relaxed text-[var(--color-dark)]/70 max-w-lg">
               Cada proyecto es una historia de transformación. Explora nuestro
               portafolio de espacios diseñados para vivirse.
             </p>
@@ -38,8 +40,8 @@ export default async function ProyectosPage() {
         </div>
       </section>
 
-      {/* Grid con filtros */}
-      <section className="max-w-7xl mx-auto px-6 py-16">
+      {/* Grid con filtros — ancho completo */}
+      <section className="px-6 md:px-10 lg:px-16 py-14 md:py-16">
         <ProyectosFilterGrid
           proyectos={proyectos}
           categories={categories}
