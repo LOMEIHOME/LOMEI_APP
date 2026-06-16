@@ -44,17 +44,17 @@ export default function Navbar({ forceScrolled = false }: { forceScrolled?: bool
           Lomei Home
         </Link>
 
-        {/* Centro — monograma "L" */}
+        {/* Centro — monograma "L" (realzado para la composición asimétrica) */}
         <Link
           href="/"
-          className="absolute left-1/2 -translate-x-1/2 h-8 md:h-10 aspect-[3/4] block"
+          className="absolute left-1/2 -translate-x-1/2 h-10 md:h-12 aspect-[3/4] block"
         >
           <Image
             src={scrolled ? "/images/logos/icon-dark.png" : "/images/logos/icon-white.png"}
             alt="LOMEI HOME"
             fill
             className="object-contain transition-opacity duration-500"
-            sizes="40px"
+            sizes="48px"
             priority
           />
         </Link>
