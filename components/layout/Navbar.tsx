@@ -32,22 +32,22 @@ export default function Navbar({ forceScrolled = false }: { forceScrolled?: bool
       }`}
     >
       <div className="px-4 md:px-10 lg:px-12 py-4 flex items-center justify-between">
-        {/* Izquierda — nombre en texto */}
+        {/* Izquierda — wordmark */}
         <Link
           href="/"
           className={`text-[13px] md:text-[14px] tracking-[0.25em] uppercase font-normal transition-colors duration-500 ${
-            scrolled
-              ? "text-[var(--color-dark)]"
-              : "text-[var(--color-white)]"
+            scrolled ? "text-[var(--color-dark)]" : "text-[var(--color-white)]"
           }`}
         >
           Lomei Home
         </Link>
 
-        {/* Centro — monograma "L" (realzado para la composición asimétrica) */}
+        {/* Centro — monograma "L"
+            FIX pantalla dividida: solo se muestra en lg+ (≥1024px), donde hay
+            espacio real. Por debajo de lg queda oculto y NO choca con los links. */}
         <Link
           href="/"
-          className="absolute left-1/2 -translate-x-1/2 h-10 md:h-12 aspect-[3/4] block"
+          className="hidden lg:block absolute left-1/2 -translate-x-1/2 h-12 aspect-[3/4]"
         >
           <Image
             src={scrolled ? "/images/logos/icon-dark.png" : "/images/logos/icon-white.png"}
@@ -59,8 +59,8 @@ export default function Navbar({ forceScrolled = false }: { forceScrolled?: bool
           />
         </Link>
 
-        {/* Derecha — links desktop */}
-        <ul className="hidden md:flex items-center gap-8">
+        {/* Derecha — links desktop. gap más ajustado en md, amplio en lg */}
+        <ul className="hidden md:flex items-center gap-5 lg:gap-8">
           {NAV_LINKS.map((link) => {
             const active = pathname === link.href;
             return (
@@ -84,7 +84,7 @@ export default function Navbar({ forceScrolled = false }: { forceScrolled?: bool
           })}
         </ul>
 
-        {/* Hamburger — mobile */}
+        {/* Hamburger — mobile/tablet (< md) */}
         <button
           onClick={() => setIsOpen(!isOpen)}
           className="md:hidden flex flex-col gap-1.5"
@@ -95,13 +95,9 @@ export default function Navbar({ forceScrolled = false }: { forceScrolled?: bool
               key={line}
               className={`block w-6 h-[1.5px] transition-all duration-400 ${
                 scrolled ? "bg-[var(--color-dark)]" : "bg-[var(--color-white)]"
-              } ${
-                isOpen && line === 0 ? "rotate-45 translate-y-[3.5px]" : ""
-              } ${
+              } ${isOpen && line === 0 ? "rotate-45 translate-y-[3.5px]" : ""} ${
                 isOpen && line === 1 ? "opacity-0" : ""
-              } ${
-                isOpen && line === 2 ? "-rotate-45 -translate-y-[3.5px]" : ""
-              }`}
+              } ${isOpen && line === 2 ? "-rotate-45 -translate-y-[3.5px]" : ""}`}
             />
           ))}
         </button>

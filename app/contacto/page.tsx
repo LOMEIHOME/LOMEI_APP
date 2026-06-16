@@ -119,6 +119,34 @@ export default function ContactoPage() {
         </div>
       </section>
 
+      {/* Mapa */}
+      <section className="px-6 pb-14 md:pb-20">
+        <div className="max-w-7xl mx-auto">
+          <FadeIn>
+            <div className="relative w-full aspect-[16/7] md:aspect-[16/5] rounded-sm overflow-hidden">
+              <iframe
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d500!2d-100.4407433!3d20.6918795!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x85d3579df9997761%3A0xdf95ccd8ee8dd63!2sPLAZA%20SANTA%20KLARA!5e0!3m2!1ses!2smx!4v1"
+                width="100%"
+                height="100%"
+                style={{ border: 0 }}
+                allowFullScreen
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                className="absolute inset-0 w-full h-full"
+              />
+            </div>
+            <a
+              href="https://maps.app.goo.gl/6bmwrHxR4wjyNE8S8"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-block mt-4 text-[11px] tracking-[0.2em] uppercase text-[var(--color-camel)] border-b border-[var(--color-camel)]/40 pb-1 hover:border-[var(--color-camel)] transition-colors duration-400"
+            >
+              Ver en Google Maps →
+            </a>
+          </FadeIn>
+        </div>
+      </section>
+
       <Footer />
     </>
   );
