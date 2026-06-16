@@ -52,7 +52,7 @@ export default function SplashScreen() {
         >
           {/* Foto de fondo — showroom */}
           <Image
-            src="/images/showroom/showroom-main.png"
+            src="/images/showroom/interior-01.jpg"
             alt="Showroom LOMEI Home"
             fill
             className="object-cover"
@@ -60,11 +60,11 @@ export default function SplashScreen() {
             sizes="100vw"
           />
 
-          {/* Overlay */}
-          <div className="absolute inset-0 bg-[var(--color-dark)]/55" />
+          {/* Overlay — más oscuro para resaltar el logo */}
+          <div className="absolute inset-0 bg-[var(--color-dark)]/85" />
 
-          {/* Logo + botón */}
-          <div className="relative z-10 flex flex-col items-center gap-12">
+          {/* Logo + botón centrados verticalmente */}
+          <div className="relative z-10 flex flex-col items-center justify-center h-full gap-12">
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -72,7 +72,7 @@ export default function SplashScreen() {
               className="relative w-80 md:w-[28rem] lg:w-[34rem] aspect-[862/342]"
             >
               <Image
-                src="/images/logos/logo-white.png"
+                src="/images/logos/logo-white-v2.png"
                 alt="LOMEI HOME — Arquitectura e Interiorismo"
                 fill
                 className="object-contain [filter:drop-shadow(0_2px_24px_rgba(0,0,0,0.35))]"

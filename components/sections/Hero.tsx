@@ -6,9 +6,9 @@ import Link from "next/link";
 
 /* ============================================================
    Hero — v5 · Composición asimétrica (Opción 3)
-   Sin logo central. Eyebrow + frase ancladas abajo a la
-   izquierda, CTA como link subrayado con flecha.
-   Overlay en degradado de esquina que protege el bloque de texto.
+   Escala de frase: COMPACTA (Opción A) → 25 / 34 / 40px.
+   Sin logo central. Eyebrow + frase abajo a la izquierda,
+   CTA como link subrayado con flecha.
    Misma identidad: paleta, fuentes e imagen sin cambios.
    ============================================================ */
 export default function Hero() {
@@ -16,8 +16,8 @@ export default function Hero() {
     <section className="relative h-screen overflow-hidden">
       {/* Imagen de fondo */}
       <Image
-        src="/images/proyectos/paseo-de-claustros/01.jpg"
-        alt="Paseo de Claustros — LOMEI Home"
+        src="/images/proyectos/hero-home.png"
+        alt="Diseño de interiores — LOMEI Home"
         fill
         className="object-cover"
         priority
@@ -43,12 +43,12 @@ export default function Hero() {
           Arquitectura e Interiorismo · Querétaro
         </motion.span>
 
-        {/* Frase — alineada a la izquierda, escala editorial */}
+        {/* Frase — COMPACTA: 25px móvil · 34px md · 40px lg */}
         <motion.p
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.3 }}
-          className="mt-5 max-w-full md:max-w-[58%] text-left font-serif text-[2rem] md:text-5xl lg:text-[3.625rem] font-normal italic leading-[1.28] tracking-[0.015em] text-[var(--color-white)]/[0.97] [text-shadow:0_2px_28px_rgba(0,0,0,0.38)]"
+          className="mt-5 max-w-full md:max-w-[58%] text-left font-serif text-[1.5625rem] md:text-[2.125rem] lg:text-[2.5rem] font-normal italic leading-[1.3] tracking-[0.015em] text-[var(--color-white)]/[0.97] [text-shadow:0_2px_28px_rgba(0,0,0,0.38)]"
         >
           &ldquo;Un espacio no solo se construye, se diseña para vivirse&rdquo;
         </motion.p>
@@ -58,7 +58,7 @@ export default function Hero() {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.55 }}
-          className="mt-11"
+          className="mt-10"
         >
           <Link
             href="/proyectos"
@@ -72,7 +72,7 @@ export default function Hero() {
         </motion.div>
       </div>
 
-      {/* Scroll indicator — abajo a la derecha (ya no choca con el texto) */}
+      {/* Scroll indicator — abajo a la derecha */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
