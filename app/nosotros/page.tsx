@@ -73,7 +73,7 @@ export default function NosotrosPage() {
       <Navbar />
 
       {/* Hero */}
-      <section className="relative h-[60vh] md:h-[70vh]">
+      <section className="relative h-[50vh] md:h-[60vh] lg:h-[70vh]">
         <Image
           src="/images/showroom/fachada.png"
           alt="Fachada Showroom LOMEI Home"
@@ -91,7 +91,7 @@ export default function NosotrosPage() {
               </SectionTag>
             </FadeIn>
             <FadeIn delay={0.1}>
-              <h1 className="mt-3 font-serif text-4xl md:text-6xl tracking-wider text-[var(--color-white)]">
+              <h1 className="mt-3 font-serif text-3xl md:text-4xl lg:text-6xl tracking-wider text-[var(--color-white)]">
                 LOMEI Home
               </h1>
             </FadeIn>
@@ -105,8 +105,8 @@ export default function NosotrosPage() {
       </section>
 
       {/* Historia del estudio */}
-      <section className="max-w-7xl mx-auto px-6 py-24 md:py-32">
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-12 md:gap-16 items-center">
+      <section className="max-w-7xl mx-auto px-6 py-16 md:py-24 lg:py-32">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-16 items-center">
           <div className="md:col-span-5">
             <FadeIn>
               <div className="relative aspect-[3/4] overflow-hidden rounded-sm">
@@ -127,7 +127,7 @@ export default function NosotrosPage() {
               </SectionTag>
             </FadeIn>
             <FadeIn delay={0.1}>
-              <h2 className="mt-4 font-serif text-3xl md:text-4xl lg:text-[2.75rem] tracking-wider text-[var(--color-dark)] leading-tight">
+              <h2 className="mt-4 font-serif text-2xl md:text-3xl lg:text-[2.75rem] tracking-wider text-[var(--color-dark)] leading-tight">
                 Arq. Ana Lorena Vargas Mejía
               </h2>
               <p className="mt-2 text-[11px] tracking-[0.2em] uppercase text-[var(--color-oak)]">
@@ -153,7 +153,7 @@ export default function NosotrosPage() {
             </FadeIn>
             <FadeIn delay={0.35}>
               <blockquote className="mt-8 pl-6 border-l border-[var(--color-sand)]">
-                <p className="font-serif text-xl md:text-2xl italic leading-snug text-[var(--color-camel)] tracking-wide">
+                <p className="font-serif text-base md:text-xl lg:text-2xl italic leading-snug text-[var(--color-camel)] tracking-wide">
                   &ldquo;Un espacio no solo se construye: se diseña para
                   vivirse.&rdquo;
                 </p>
@@ -164,7 +164,7 @@ export default function NosotrosPage() {
       </section>
 
       {/* El Showroom */}
-      <section className="bg-[var(--color-linen)] py-24 md:py-32">
+      <section className="bg-[var(--color-linen)] py-16 md:py-24 lg:py-32">
         <div className="max-w-7xl mx-auto px-6">
           <FadeIn>
             <SectionTag className="!text-[11px] !text-[var(--color-oak)]">
@@ -172,7 +172,7 @@ export default function NosotrosPage() {
             </SectionTag>
           </FadeIn>
           <FadeIn delay={0.1}>
-            <h2 className="mt-4 font-serif text-3xl md:text-4xl lg:text-[2.625rem] tracking-wider text-[var(--color-dark)]">
+            <h2 className="mt-4 font-serif text-2xl md:text-3xl lg:text-[2.625rem] tracking-wider text-[var(--color-dark)]">
               Nuestro espacio
             </h2>
           </FadeIn>
@@ -211,7 +211,7 @@ export default function NosotrosPage() {
           </div>
 
           {/* Espacios */}
-          <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="mt-10 md:mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
             {SHOWROOM_SPACES.map((s, i) => (
               <FadeIn key={s.title} delay={0.1 * i}>
                 <div className="border-t border-[var(--color-sand)]/60 pt-5">
@@ -248,19 +248,19 @@ export default function NosotrosPage() {
       </section>
 
       {/* Proceso de trabajo — línea de tiempo */}
-      <section className="max-w-7xl mx-auto px-6 py-24 md:py-32">
+      <section className="max-w-7xl mx-auto px-6 py-16 md:py-24 lg:py-32">
         <FadeIn>
           <SectionTag className="!text-[11px] !text-[var(--color-oak)]">
             Cómo trabajamos
           </SectionTag>
         </FadeIn>
         <FadeIn delay={0.1}>
-          <h2 className="mt-4 font-serif text-3xl md:text-4xl lg:text-[2.625rem] tracking-wider text-[var(--color-dark)]">
+          <h2 className="mt-4 font-serif text-2xl md:text-3xl lg:text-[2.625rem] tracking-wider text-[var(--color-dark)]">
             Nuestro proceso
           </h2>
         </FadeIn>
 
-        <div className="mt-14 grid grid-cols-1 md:grid-cols-5 gap-x-10 gap-y-10">
+        <div className="mt-10 md:mt-14 grid grid-cols-1 md:grid-cols-5 gap-x-10 gap-y-6 md:gap-y-10">
           {PROCESO.map((step, i) => (
             <FadeIn key={step.num} delay={0.1 * i}>
               <div className="relative border-t border-[var(--color-sand)]/60 pt-6">
@@ -272,7 +272,7 @@ export default function NosotrosPage() {
                       : "bg-[var(--color-sand)]"
                   }`}
                 />
-                <p className="font-serif font-light text-4xl leading-none text-[var(--color-oak)]/55">
+                <p className="font-serif font-light text-2xl md:text-4xl leading-none text-[var(--color-oak)]/55">
                   {step.num}
                 </p>
                 <h3 className="mt-3.5 font-serif text-[1.3125rem] tracking-[0.06em] text-[var(--color-dark)]">

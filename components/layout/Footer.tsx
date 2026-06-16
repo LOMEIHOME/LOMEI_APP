@@ -18,10 +18,10 @@ const FOOTER_LINKS = [
 export default function Footer() {
   return (
     <footer className="bg-[var(--color-dark)] text-[var(--color-linen)] mt-auto">
-      <div className="max-w-[85rem] mx-auto px-6 md:px-10 lg:px-16 pt-20 pb-0">
+      <div className="max-w-[85rem] mx-auto px-6 md:px-10 lg:px-16 pt-14 md:pt-20 pb-0">
         {/* CTA */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 pb-12 border-b border-[var(--color-warm-gray)]/25">
-          <h2 className="font-serif font-light italic text-3xl md:text-[2.5rem] tracking-[0.04em] leading-tight text-[var(--color-white)]">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 md:gap-8 pb-10 md:pb-12 border-b border-[var(--color-warm-gray)]/25">
+          <h2 className="font-serif font-light italic text-2xl md:text-3xl lg:text-[2.5rem] tracking-[0.04em] leading-tight text-[var(--color-white)]">
             ¿Tienes un proyecto
             <br />
             en mente?
@@ -34,7 +34,7 @@ export default function Footer() {
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-[1.4fr_1fr_1fr] gap-12 mt-14">
+        <div className="grid grid-cols-1 md:grid-cols-[1.4fr_1fr_1fr] gap-8 md:gap-12 mt-10 md:mt-14">
           {/* Logo y tagline */}
           <div>
             <div className="relative h-14 aspect-[862/342]">
@@ -75,7 +75,7 @@ export default function Footer() {
             <p className="text-[11px] tracking-[0.25em] uppercase text-[var(--color-sand)]/80 mb-4">
               Contacto
             </p>
-            <ul className="flex flex-col gap-2.5 text-[14.5px] font-light text-[var(--color-linen)]">
+            <ul className="flex flex-col gap-3 text-base md:text-[14.5px] font-light text-[var(--color-linen)]">
               <li>
                 <a
                   href="https://instagram.com/lvinteriorismo"

@@ -42,7 +42,7 @@ const PREVIEW_PRODUCTS = [
 
 export default function CatalogPreview() {
   return (
-    <section className="bg-[var(--color-linen)] py-24 md:py-32">
+    <section className="bg-[var(--color-linen)] py-16 md:py-24 lg:py-32">
       <div className="max-w-[85rem] mx-auto px-6 md:px-10 lg:px-16">
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-4">
           <div>
@@ -52,7 +52,7 @@ export default function CatalogPreview() {
               </SectionTag>
             </FadeIn>
             <FadeIn delay={0.1}>
-              <h2 className="mt-4 font-serif text-3xl md:text-4xl lg:text-5xl tracking-wider text-[var(--color-dark)]">
+              <h2 className="mt-4 font-serif text-2xl md:text-3xl lg:text-5xl tracking-wider text-[var(--color-dark)]">
                 Explora el catálogo
               </h2>
             </FadeIn>
@@ -80,11 +80,11 @@ export default function CatalogPreview() {
                     sizes="(max-width: 768px) 50vw, 25vw"
                   />
                 </div>
-                <div className="px-4 md:px-5 pt-4 flex flex-col gap-1">
-                  <p className="text-[10px] tracking-[0.2em] uppercase text-[var(--color-oak)]">
+                <div className="px-3 md:px-5 pt-3 md:pt-4 flex flex-col gap-1">
+                  <p className="text-[10px] md:text-[10px] tracking-[0.2em] uppercase text-[var(--color-oak)]">
                     {p.category}
                   </p>
-                  <p className="font-serif text-lg md:text-[1.1875rem] tracking-[0.03em] text-[var(--color-dark)]">
+                  <p className="font-serif text-base md:text-lg lg:text-[1.1875rem] tracking-[0.03em] text-[var(--color-dark)]">
                     {p.name}
                   </p>
                   <div className="flex items-baseline justify-between mt-1.5">

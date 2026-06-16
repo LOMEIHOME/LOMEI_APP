@@ -1,10 +1,125 @@
+import Navbar from "@/components/layout/Navbar";
+import Footer from "@/components/layout/Footer";
+import SectionTag from "@/components/ui/SectionTag";
+import FadeIn from "@/components/sections/FadeIn";
+
 export default function ContactoPage() {
   return (
-    <main className="min-h-screen p-8">
-      <h1 className="text-4xl font-serif tracking-wider">Contacto</h1>
-      <p className="mt-4 text-[var(--color-warm-gray)]">
-        Agenda una cita o envíanos un mensaje.
-      </p>
-    </main>
+    <>
+      <Navbar forceScrolled />
+
+      <section className="bg-[var(--color-linen)] pt-24 md:pt-32 pb-12 md:pb-16 px-6">
+        <div className="max-w-7xl mx-auto">
+          <FadeIn>
+            <SectionTag className="!text-[11px] !text-[var(--color-oak)]">
+              Contacto
+            </SectionTag>
+          </FadeIn>
+          <FadeIn delay={0.1}>
+            <h1 className="mt-4 font-serif text-3xl md:text-4xl lg:text-6xl tracking-wider text-[var(--color-dark)]">
+              Hablemos
+            </h1>
+          </FadeIn>
+          <FadeIn delay={0.2}>
+            <p className="mt-4 text-[15px] leading-relaxed text-[var(--color-dark)]/70 max-w-lg">
+              Agenda una cita o envíanos un mensaje. Nos encantará conocer tu
+              proyecto.
+            </p>
+          </FadeIn>
+        </div>
+      </section>
+
+      <section className="max-w-7xl mx-auto px-6 py-14 md:py-20">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16">
+          {/* Info de contacto */}
+          <FadeIn>
+            <div className="flex flex-col gap-8">
+              <div>
+                <p className="text-[11px] tracking-[0.25em] uppercase text-[var(--color-oak)] mb-3">
+                  Email
+                </p>
+                <a
+                  href="mailto:contacto@lomeihome.com"
+                  className="text-base md:text-lg text-[var(--color-dark)] hover:text-[var(--color-camel)] transition-colors duration-400"
+                >
+                  contacto@lomeihome.com
+                </a>
+              </div>
+              <div>
+                <p className="text-[11px] tracking-[0.25em] uppercase text-[var(--color-oak)] mb-3">
+                  Teléfono
+                </p>
+                <a
+                  href="tel:+524424874466"
+                  className="text-base md:text-lg text-[var(--color-dark)] hover:text-[var(--color-camel)] transition-colors duration-400"
+                >
+                  442 487 4466
+                </a>
+              </div>
+              <div>
+                <p className="text-[11px] tracking-[0.25em] uppercase text-[var(--color-oak)] mb-3">
+                  Instagram
+                </p>
+                <a
+                  href="https://instagram.com/lvinteriorismo"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-base md:text-lg text-[var(--color-dark)] hover:text-[var(--color-camel)] transition-colors duration-400"
+                >
+                  @lvinteriorismo
+                </a>
+              </div>
+              <div>
+                <p className="text-[11px] tracking-[0.25em] uppercase text-[var(--color-oak)] mb-3">
+                  Ubicación
+                </p>
+                <p className="text-base md:text-lg text-[var(--color-dark)]">
+                  Querétaro, México
+                </p>
+              </div>
+            </div>
+          </FadeIn>
+
+          {/* Placeholder para formulario */}
+          <FadeIn delay={0.15}>
+            <div className="bg-[var(--color-linen)] rounded-sm p-6 md:p-10">
+              <h2 className="font-serif text-xl md:text-2xl tracking-wider text-[var(--color-dark)] mb-6">
+                Envíanos un mensaje
+              </h2>
+              <form className="flex flex-col gap-4">
+                <input
+                  type="text"
+                  placeholder="Nombre"
+                  className="w-full px-4 py-3 bg-[var(--color-white)] border border-[var(--color-sand)]/50 rounded-sm text-sm text-[var(--color-dark)] placeholder:text-[var(--color-warm-gray)] focus:outline-none focus:border-[var(--color-camel)]/60 transition-colors"
+                />
+                <input
+                  type="email"
+                  placeholder="Email"
+                  className="w-full px-4 py-3 bg-[var(--color-white)] border border-[var(--color-sand)]/50 rounded-sm text-sm text-[var(--color-dark)] placeholder:text-[var(--color-warm-gray)] focus:outline-none focus:border-[var(--color-camel)]/60 transition-colors"
+                />
+                <input
+                  type="tel"
+                  placeholder="Teléfono"
+                  className="w-full px-4 py-3 bg-[var(--color-white)] border border-[var(--color-sand)]/50 rounded-sm text-sm text-[var(--color-dark)] placeholder:text-[var(--color-warm-gray)] focus:outline-none focus:border-[var(--color-camel)]/60 transition-colors"
+                />
+                <textarea
+                  placeholder="Cuéntanos sobre tu proyecto"
+                  rows={4}
+                  className="w-full px-4 py-3 bg-[var(--color-white)] border border-[var(--color-sand)]/50 rounded-sm text-sm text-[var(--color-dark)] placeholder:text-[var(--color-warm-gray)] focus:outline-none focus:border-[var(--color-camel)]/60 transition-colors resize-none"
+                />
+                <button
+                  type="submit"
+                  className="w-full py-3.5 bg-[var(--color-dark)] text-[var(--color-white)] text-[11px] tracking-[0.2em] uppercase rounded-sm hover:bg-[var(--color-camel)] transition-colors duration-300 cursor-pointer mt-2"
+                >
+                  Enviar mensaje
+                </button>
+              </form>
+            </div>
+          </FadeIn>
+        </div>
+      </section>
+
+      <Footer />
+    </>
   );
 }
