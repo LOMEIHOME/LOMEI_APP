@@ -43,8 +43,8 @@ const FEATURED_PROJECTS = [
 
 export default function ProjectsGrid() {
   return (
-    <section className="px-6 md:px-10 lg:px-16 py-24 md:py-32">
-      <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-4">
+    <section className="px-6 md:px-10 lg:px-16 py-16 md:py-24 lg:py-32">
+      <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 md:mb-12 gap-4">
         <div>
           <FadeIn>
             <SectionTag className="!text-[11px] !text-[var(--color-oak)]">
@@ -52,7 +52,7 @@ export default function ProjectsGrid() {
             </SectionTag>
           </FadeIn>
           <FadeIn delay={0.1}>
-            <h2 className="mt-4 font-serif text-3xl md:text-4xl lg:text-5xl tracking-wider text-[var(--color-dark)]">
+            <h2 className="mt-4 font-serif text-2xl md:text-3xl lg:text-5xl tracking-wider text-[var(--color-dark)]">
               Proyectos destacados
             </h2>
           </FadeIn>
@@ -81,12 +81,12 @@ export default function ProjectsGrid() {
                   sizes={p.span ? "(max-width: 768px) 100vw, 66vw" : "(max-width: 768px) 100vw, 33vw"}
                 />
                 {/* Degradado permanente — caption siempre visible */}
-                <div className="absolute inset-0 bg-gradient-to-t from-[rgba(42,33,24,0.72)] via-[rgba(42,33,24,0.18)] via-45% to-transparent flex items-end p-6 md:p-7">
+                <div className="absolute inset-0 bg-gradient-to-t from-[rgba(42,33,24,0.72)] via-[rgba(42,33,24,0.18)] via-45% to-transparent flex items-end p-4 md:p-6 lg:p-7">
                   <div className="flex flex-col gap-1">
-                    <p className="text-[10.5px] tracking-[0.2em] uppercase text-[var(--color-sand)]">
+                    <p className="text-[10px] md:text-[10.5px] tracking-[0.2em] uppercase text-[var(--color-sand)]">
                       {p.num} · {p.category}
                     </p>
-                    <p className="font-serif text-xl md:text-[1.625rem] tracking-wider text-[var(--color-white)]">
+                    <p className="font-serif text-lg md:text-[1.625rem] tracking-wider text-[var(--color-white)]">
                       {p.title}
                     </p>
                   </div>

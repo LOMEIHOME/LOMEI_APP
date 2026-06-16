@@ -19,7 +19,7 @@ export default async function ProyectosPage() {
       <Navbar />
 
       {/* Header */}
-      <section className="bg-[var(--color-linen)] pt-32 pb-16 px-6 md:px-10 lg:px-16">
+      <section className="bg-[var(--color-linen)] pt-24 md:pt-32 pb-12 md:pb-16 px-6 md:px-10 lg:px-16">
         <div>
           <FadeIn>
             <SectionTag className="!text-[11px] !text-[var(--color-oak)]">
@@ -27,7 +27,7 @@ export default async function ProyectosPage() {
             </SectionTag>
           </FadeIn>
           <FadeIn delay={0.1}>
-            <h1 className="mt-4 font-serif text-4xl md:text-6xl tracking-wider text-[var(--color-dark)]">
+            <h1 className="mt-4 font-serif text-3xl md:text-4xl lg:text-6xl tracking-wider text-[var(--color-dark)]">
               Proyectos
             </h1>
           </FadeIn>

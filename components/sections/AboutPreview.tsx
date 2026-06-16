@@ -16,7 +16,7 @@ const STATS = [
 
 export default function AboutPreview() {
   return (
-    <section className="bg-[var(--color-linen)] py-24 md:py-32">
+    <section className="bg-[var(--color-linen)] py-16 md:py-24 lg:py-32">
       <div className="max-w-[85rem] mx-auto px-6 md:px-10 lg:px-16">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-16 items-center">
           {/* Texto — 5 columnas */}
@@ -27,7 +27,7 @@ export default function AboutPreview() {
               </SectionTag>
             </FadeIn>
             <FadeIn delay={0.1}>
-              <h2 className="mt-4 font-serif text-3xl md:text-4xl lg:text-[3.25rem] tracking-wider text-[var(--color-dark)] leading-tight">
+              <h2 className="mt-4 font-serif text-2xl md:text-3xl lg:text-[3.25rem] tracking-wider text-[var(--color-dark)] leading-tight">
                 Diseño con alma propia
               </h2>
             </FadeIn>
@@ -41,26 +41,26 @@ export default function AboutPreview() {
               </p>
             </FadeIn>
             <FadeIn delay={0.3}>
-              <p className="mt-7 pl-6 border-l border-[var(--color-sand)] font-serif italic text-xl md:text-2xl leading-snug text-[var(--color-camel)]">
+              <p className="mt-7 pl-4 md:pl-6 border-l border-[var(--color-sand)] font-serif italic text-base md:text-xl lg:text-2xl leading-snug text-[var(--color-camel)]">
                 «Te acompañamos en cada proceso y te invitamos a conocer
                 nuestro showroom.»
               </p>
             </FadeIn>
             <FadeIn delay={0.4}>
-              <div className="mt-11 flex">
+              <div className="mt-8 md:mt-11 flex">
                 {STATS.map(([n, l], i) => (
                   <div
                     key={l}
-                    className={`pr-8 lg:pr-12 ${
+                    className={`pr-4 md:pr-8 lg:pr-12 ${
                       i > 0
-                        ? "pl-8 lg:pl-12 border-l border-[var(--color-sand)]/60"
+                        ? "pl-4 md:pl-8 lg:pl-12 border-l border-[var(--color-sand)]/60"
                         : ""
                     }`}
                   >
-                    <p className="font-serif font-light text-[2.375rem] leading-none text-[var(--color-oak)]">
+                    <p className="font-serif font-light text-2xl md:text-[2.375rem] leading-none text-[var(--color-oak)]">
                       {n}
                     </p>
-                    <p className="text-[11px] tracking-[0.18em] uppercase text-[var(--color-camel)] mt-2">
+                    <p className="text-[10px] md:text-[11px] tracking-[0.18em] uppercase text-[var(--color-camel)] mt-2">
                       {l}
                     </p>
                   </div>

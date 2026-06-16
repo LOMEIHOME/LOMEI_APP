@@ -36,7 +36,7 @@ export default function Hero() {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2 }}
-          className="font-serif text-2xl md:text-[2rem] lg:text-[2.5rem] font-normal text-[var(--color-white)]/[0.97] italic tracking-wide [text-shadow:0_2px_28px_rgba(0,0,0,0.4)] max-w-3xl mx-auto"
+          className="font-serif text-xl md:text-[2rem] lg:text-[2.5rem] font-normal text-[var(--color-white)]/[0.97] italic tracking-wide [text-shadow:0_2px_28px_rgba(0,0,0,0.4)] max-w-3xl mx-auto"
         >
           &ldquo;Un espacio no solo se construye,
           <br />
@@ -47,7 +47,7 @@ export default function Hero() {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.6 }}
-          className="mt-12"
+          className="mt-8 md:mt-12"
         >
           <Link href="/proyectos">
             <Button

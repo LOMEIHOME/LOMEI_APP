@@ -84,16 +84,16 @@ export default function CatalogoFilterGrid({ productos, categories }: Props) {
                   </div>
 
                   {/* Info */}
-                  <div className="px-3.5 md:px-5 pt-4">
+                  <div className="px-3 md:px-5 pt-3 md:pt-4">
                     <div className="flex items-baseline justify-between gap-2">
                       <p className="text-[10px] tracking-[0.2em] uppercase text-[var(--color-oak)]">
                         {p.category}
                       </p>
-                      <span className="hidden md:inline text-[10px] tracking-[0.14em] uppercase text-[var(--color-camel)] border-b border-[var(--color-camel)]/40 pb-0.5 group-hover:border-[var(--color-camel)] transition-colors duration-400 whitespace-nowrap">
+                      <span className="text-[10px] tracking-[0.14em] uppercase text-[var(--color-camel)] border-b border-[var(--color-camel)]/40 pb-0.5 group-hover:border-[var(--color-camel)] transition-colors duration-400 whitespace-nowrap">
                         Ver detalle
                       </span>
                     </div>
-                    <p className="mt-1.5 font-serif text-lg md:text-xl leading-snug tracking-[0.03em] text-[var(--color-dark)]">
+                    <p className="mt-1.5 font-serif text-base md:text-lg lg:text-xl leading-snug tracking-[0.03em] text-[var(--color-dark)]">
                       {p.name}
                     </p>
                     <p className="mt-1.5 font-serif italic text-base md:text-lg text-[var(--color-oak)]">

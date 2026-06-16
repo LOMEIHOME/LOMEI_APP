@@ -86,7 +86,7 @@ export default function SplashScreen() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.8 }}
               onClick={handleEnter}
-              className="px-10 py-3.5 border border-[var(--color-white)]/60 text-[var(--color-white)] text-[12px] tracking-[0.25em] uppercase bg-[var(--color-dark)]/10 backdrop-blur-[2px] hover:bg-[var(--color-white)]/10 transition-colors duration-400 cursor-pointer rounded-sm"
+              className="px-10 py-4 min-h-[44px] border border-[var(--color-white)]/60 text-[var(--color-white)] text-[13px] md:text-[12px] tracking-[0.25em] uppercase bg-[var(--color-dark)]/10 backdrop-blur-[2px] hover:bg-[var(--color-white)]/10 transition-colors duration-400 cursor-pointer rounded-sm"
             >
               Inicio
             </motion.button>

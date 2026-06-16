@@ -31,7 +31,7 @@ export default function Navbar({ forceScrolled = false }: { forceScrolled?: bool
           : "bg-gradient-to-b from-[var(--color-dark)]/55 to-transparent"
       }`}
     >
-      <div className="px-6 md:px-10 lg:px-12 py-4 flex items-center justify-between">
+      <div className="px-4 md:px-10 lg:px-12 py-4 flex items-center justify-between">
         {/* Izquierda — nombre en texto */}
         <Link
           href="/"
