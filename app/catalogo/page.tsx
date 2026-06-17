@@ -41,7 +41,7 @@ export default async function CatalogoPage() {
       </section>
 
       {/* Grid */}
-      <section className="max-w-7xl mx-auto px-6 py-14 md:py-16">
+      <section className="max-w-7xl mx-auto px-4 md:px-6 py-14 md:py-16 overflow-hidden">
         <CatalogoFilterGrid
           productos={productos}
           categories={categories}
