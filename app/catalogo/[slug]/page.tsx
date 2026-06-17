@@ -66,7 +66,7 @@ export default async function ProductoDetallePage({
               {producto.images.length > 1 && (
                 <div className="mt-4 grid grid-cols-4 gap-3">
                   {producto.images.map((img, i) => (
-                    <FadeIn key={img} delay={0.05 * i}>
+                    <FadeIn key={i} delay={0.05 * i}>
                       <div className="relative aspect-square overflow-hidden rounded-sm bg-[var(--color-linen)]">
                         <Image
                           src={img}
