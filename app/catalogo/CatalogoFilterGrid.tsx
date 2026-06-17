@@ -56,7 +56,7 @@ export default function CatalogoFilterGrid({ productos, categories }: Props) {
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -10 }}
           transition={{ duration: 0.4 }}
-          className="grid grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6"
+          className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 md:gap-6"
         >
           {filtered.map((p, i) => (
             <motion.div
@@ -65,7 +65,7 @@ export default function CatalogoFilterGrid({ productos, categories }: Props) {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: i * 0.07 }}
             >
-              <div className="group bg-[var(--color-white)] pb-4 md:pb-5 h-full flex flex-col">
+              <div className="group bg-[var(--color-white)] pb-3 md:pb-5 h-full flex flex-col overflow-hidden">
                 <Link href={`/catalogo/${p.slug}`} className="block">
                   {/* Imagen */}
                   <div className="relative aspect-[10/11] overflow-hidden">
@@ -84,14 +84,16 @@ export default function CatalogoFilterGrid({ productos, categories }: Props) {
                   </div>
 
                   {/* Info */}
-                  <div className="px-3 md:px-5 pt-3 md:pt-4">
-                    <p className="text-[9px] md:text-[10px] tracking-[0.2em] uppercase text-[var(--color-oak)]">
-                      {p.category}
-                    </p>
-                    <p className="mt-1 font-serif text-[13px] md:text-lg lg:text-xl leading-snug tracking-[0.03em] text-[var(--color-dark)] line-clamp-2">
-                      {p.name}
-                    </p>
-                    <p className="mt-1 font-serif italic text-sm md:text-lg text-[var(--color-oak)]">
+                  <div className="px-2 md:px-5 pt-2 md:pt-4 h-[5.5rem] md:h-[7rem] flex flex-col justify-between">
+                    <div>
+                      <p className="text-[9px] md:text-[10px] tracking-[0.2em] uppercase text-[var(--color-oak)]">
+                        {p.category}
+                      </p>
+                      <p className="mt-1 font-serif text-[13px] md:text-lg lg:text-xl leading-snug tracking-[0.03em] text-[var(--color-dark)] line-clamp-2">
+                        {p.name}
+                      </p>
+                    </div>
+                    <p className="font-serif italic text-sm md:text-lg text-[var(--color-oak)]">
                       {formatPrice(p.price)}
                     </p>
                   </div>

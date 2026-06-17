@@ -19,7 +19,7 @@ export default function FilterTabs({
   counts,
 }: FilterTabsProps) {
   return (
-    <div className="flex gap-6 md:gap-8 border-b border-[var(--color-sand)]/55 overflow-x-auto">
+    <div className="flex gap-4 md:gap-8 border-b border-[var(--color-sand)]/55 overflow-x-auto max-w-full">
       {categories.map((cat) => (
         <button
           key={cat}
