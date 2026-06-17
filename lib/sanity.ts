@@ -24,6 +24,8 @@ import {
 
 // ─── Adaptadores Sanity → tipos locales ──────────────
 
+const PLACEHOLDER_IMG = "/images/placeholder-producto.svg";
+
 function adaptProyecto(p: SanityProyecto): Proyecto {
   return {
     slug: p.slug.current,
@@ -41,6 +43,7 @@ function adaptProyecto(p: SanityProyecto): Proyecto {
 }
 
 function adaptProducto(p: SanityProducto): Producto {
+  const images = p.images?.map((img) => urlFor(img).width(1200).url()) || [];
   return {
     slug: p.slug.current,
     name: p.name,
@@ -50,7 +53,7 @@ function adaptProducto(p: SanityProducto): Producto {
     dimensions: p.dimensions || "",
     materials: p.materials || [],
     finishes: p.finishes || [],
-    images: p.images?.map((img) => urlFor(img).width(1200).url()) || [],
+    images: images.length > 0 ? images : [PLACEHOLDER_IMG],
     badge: (p.badge as Producto["badge"]) || undefined,
   };
 }
