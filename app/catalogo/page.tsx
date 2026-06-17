@@ -19,7 +19,7 @@ export default async function CatalogoPage() {
       <Navbar forceScrolled />
 
       {/* Header */}
-      <section className="bg-[var(--color-linen)] pt-24 md:pt-32 pb-12 md:pb-16 px-6">
+      <section className="bg-[var(--color-linen)] pt-20 md:pt-32 pb-8 md:pb-16 px-4 md:px-6">
         <div className="max-w-7xl mx-auto">
           <FadeIn>
             <SectionTag className="!text-[11px] !text-[var(--color-oak)]">
@@ -41,7 +41,7 @@ export default async function CatalogoPage() {
       </section>
 
       {/* Grid */}
-      <section className="max-w-7xl mx-auto px-4 md:px-6 py-14 md:py-16 overflow-hidden">
+      <section className="max-w-7xl mx-auto px-3 md:px-6 py-8 md:py-16 overflow-hidden">
         <CatalogoFilterGrid
           productos={productos}
           categories={categories}
