@@ -4,17 +4,25 @@
  */
 
 import { readFileSync } from "fs";
+import { config } from "dotenv";
 import { createClient } from "@sanity/client";
 import * as XLSX from "xlsx";
+
+// Cargar variables de entorno desde .env.local
+config({ path: ".env.local" });
 
 // ─── Configuración ───────────────────────────────────
 const EXCEL_PATH = "C:/Users/LuisA/Downloads/Lista_accesorios.xlsx";
 
+if (!process.env.SANITY_API_TOKEN) {
+  console.error("❌ Falta SANITY_API_TOKEN en .env.local");
+  process.exit(1);
+}
+
 const sanity = createClient({
-  projectId: "pc8b3z15",
-  dataset: "production",
-  token:
-    "skgc7UCT2vSh9agQ0BrNjAMAN85NlTS8BKiMYEYyPAZdkP5jN8ndqUXCuHSHxNFZj7xw0SkqTFqOd8PwBz2q9YjWqCqNBpJUrXQSHt7RO76ytRIeIXZBAmris7KmBsJqmLCgdFZiYrsobdI5UPGrDybhH4Wwm719aeix9KL4jn1cHo0owDhy",
+  projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || "pc8b3z15",
+  dataset: process.env.NEXT_PUBLIC_SANITY_DATASET || "production",
+  token: process.env.SANITY_API_TOKEN,
   apiVersion: "2024-01-01",
   useCdn: false,
 });
