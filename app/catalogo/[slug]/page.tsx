@@ -7,7 +7,6 @@ import SectionTag from "@/components/ui/SectionTag";
 import Button from "@/components/ui/Button";
 import Badge from "@/components/ui/Badge";
 import FadeIn from "@/components/sections/FadeIn";
-import AddToCartButton from "@/components/ui/AddToCartButton";
 import {
   getAllProductos,
   getAllProductoSlugs,
@@ -39,11 +38,11 @@ export default async function ProductoDetallePage({
 
   return (
     <>
-      <Navbar />
+      <Navbar forceScrolled />
 
-      <section className="pt-28 pb-16 md:pb-24">
+      <section className="pt-24 md:pt-28 pb-12 md:pb-24">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-16">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-16">
             {/* Galería — 7 cols */}
             <div className="md:col-span-7">
               <FadeIn>
@@ -92,13 +91,13 @@ export default async function ProductoDetallePage({
               </FadeIn>
 
               <FadeIn delay={0.1}>
-                <h1 className="mt-3 font-serif text-3xl md:text-4xl tracking-wider text-[var(--color-dark)]">
+                <h1 className="mt-3 font-serif text-2xl md:text-3xl lg:text-4xl tracking-wider text-[var(--color-dark)]">
                   {producto.name}
                 </h1>
               </FadeIn>
 
               <FadeIn delay={0.15}>
-                <p className="mt-3 font-serif text-2xl text-[var(--color-oak)]">
+                <p className="mt-3 font-serif text-xl md:text-2xl text-[var(--color-oak)]">
                   {formatPrice(producto.price)}
                 </p>
               </FadeIn>
@@ -150,16 +149,9 @@ export default async function ProductoDetallePage({
               </FadeIn>
 
               <FadeIn delay={0.35}>
-                <div className="mt-10 flex flex-col gap-3">
-                  <AddToCartButton
-                    slug={producto.slug}
-                    name={producto.name}
-                    price={producto.price}
-                    image={producto.images[0]}
-                    variant="full"
-                  />
+                <div className="mt-8 md:mt-10 flex flex-col gap-3">
                   <a
-                    href={`https://wa.me/527711009084?text=${encodeURIComponent(
+                    href={`https://wa.me/524424874466?text=${encodeURIComponent(
                       `Hola, me interesa el producto: ${producto.name}`
                     )}`}
                     target="_blank"

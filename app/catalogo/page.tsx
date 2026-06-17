@@ -16,7 +16,7 @@ export default async function CatalogoPage() {
 
   return (
     <>
-      <Navbar />
+      <Navbar forceScrolled />
 
       {/* Header */}
       <section className="bg-[var(--color-linen)] pt-24 md:pt-32 pb-12 md:pb-16 px-6">
