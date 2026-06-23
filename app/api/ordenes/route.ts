@@ -164,6 +164,16 @@ export async function GET(request: NextRequest) {
     query = query.eq("estado", estado);
   }
 
+  const search = searchParams.get("search");
+  if (search) {
+    const num = parseInt(search);
+    if (!isNaN(num)) {
+      query = query.or(`numero.eq.${num},cliente_nombre.ilike.%${search}%`);
+    } else {
+      query = query.ilike("cliente_nombre", `%${search}%`);
+    }
+  }
+
   const { data, error, count } = await query;
 
   if (error) {

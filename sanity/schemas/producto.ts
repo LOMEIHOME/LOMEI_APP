@@ -31,6 +31,8 @@ export const producto = defineType({
           { title: "Iluminación", value: "Iluminación" },
           { title: "Alfombras", value: "Alfombras" },
           { title: "Acabados", value: "Acabados" },
+          { title: "Capelos", value: "Capelos" },
+          { title: "Relojes", value: "Relojes" },
         ],
       },
       validation: (rule) => rule.required(),
@@ -58,13 +60,7 @@ export const producto = defineType({
       type: "array",
       of: [{ type: "string" }],
     }),
-    defineField({
-      name: "finishes",
-      title: "Acabados disponibles",
-      type: "array",
-      of: [{ type: "string" }],
-    }),
-    defineField({
+defineField({
       name: "images",
       title: "Imágenes",
       type: "array",

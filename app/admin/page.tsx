@@ -1,8 +1,71 @@
-import StatsCard from "@/components/admin/StatsCard";
+"use client";
+
+import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
+import StatsCard from "@/components/admin/StatsCard";
+import StatusBadge, { getStockStatus } from "@/components/admin/StatusBadge";
+
+interface Kpis {
+  productos_activos: number;
+  stock_bajo: number;
+  ventas_mes: number;
+  ingresos_mes: number;
+}
+
+interface AlertaItem {
+  id: string;
+  producto_id: string;
+  cantidad: number;
+  stock_minimo: number;
+  productos: {
+    id: string;
+    nombre: string;
+    categoria: string;
+  };
+}
+
+const formatPrice = (n: number) =>
+  new Intl.NumberFormat("es-MX", { style: "currency", currency: "MXN", minimumFractionDigits: 0 }).format(n);
 
 export default function AdminDashboardPage() {
-  // TODO: Reemplazar con datos reales de Supabase
+  const [kpis, setKpis] = useState<Kpis>({
+    productos_activos: 0,
+    stock_bajo: 0,
+    ventas_mes: 0,
+    ingresos_mes: 0,
+  });
+  const [alertas, setAlertas] = useState<AlertaItem[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchData = useCallback(async () => {
+    setLoading(true);
+    try {
+      const [kpisRes, alertasRes] = await Promise.all([
+        fetch("/api/dashboard/kpis"),
+        fetch("/api/inventario?alerta=true"),
+      ]);
+      const kpisJson = await kpisRes.json();
+      const alertasJson = await alertasRes.json();
+      setKpis(kpisJson);
+      setAlertas(alertasJson.data || []);
+    } catch {
+      // silenciar errores de red
+    }
+    setLoading(false);
+  }, []);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
+
+  if (loading) {
+    return (
+      <div className="p-12 text-center text-sm text-[var(--color-warm-gray)]">
+        Cargando...
+      </div>
+    );
+  }
+
   return (
     <div className="max-w-6xl">
       {/* Header */}
@@ -17,10 +80,10 @@ export default function AdminDashboardPage() {
 
       {/* KPIs */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-        <StatsCard label="Productos" value="—" subtitle="En catálogo" />
-        <StatsCard label="Stock bajo" value="—" subtitle="Requieren atención" accent />
-        <StatsCard label="Ventas del mes" value="—" subtitle="Órdenes completadas" />
-        <StatsCard label="Ingresos" value="—" subtitle="Este mes" />
+        <StatsCard label="Productos" value={kpis.productos_activos} subtitle="En catálogo" />
+        <StatsCard label="Stock bajo" value={kpis.stock_bajo} subtitle="Requieren atención" accent />
+        <StatsCard label="Ventas del mes" value={kpis.ventas_mes} subtitle="Órdenes completadas" />
+        <StatsCard label="Ingresos" value={formatPrice(kpis.ingresos_mes)} subtitle="Este mes" />
       </div>
 
       {/* Alertas de stock bajo */}
@@ -36,9 +99,65 @@ export default function AdminDashboardPage() {
             Ver todas
           </Link>
         </div>
-        <p className="text-sm text-[var(--color-warm-gray)]">
-          Conecta Supabase para ver alertas en tiempo real.
-        </p>
+
+        {alertas.length > 0 ? (
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-[var(--color-sand)]/20">
+                  <th className="text-left px-4 py-3 text-[10px] tracking-[0.15em] uppercase text-[var(--color-warm-gray)] font-normal">
+                    Producto
+                  </th>
+                  <th className="text-left px-4 py-3 text-[10px] tracking-[0.15em] uppercase text-[var(--color-warm-gray)] font-normal hidden md:table-cell">
+                    Categoría
+                  </th>
+                  <th className="text-right px-4 py-3 text-[10px] tracking-[0.15em] uppercase text-[var(--color-warm-gray)] font-normal">
+                    Stock
+                  </th>
+                  <th className="text-center px-4 py-3 text-[10px] tracking-[0.15em] uppercase text-[var(--color-warm-gray)] font-normal">
+                    Estado
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {alertas.map((item) => {
+                  const status = getStockStatus(item.cantidad, item.stock_minimo);
+                  return (
+                    <tr
+                      key={item.id}
+                      className="border-b border-[var(--color-sand)]/10 hover:bg-[var(--color-linen)]/30 transition-colors"
+                    >
+                      <td className="px-4 py-3">
+                        <Link
+                          href={`/admin/inventario/${item.producto_id}`}
+                          className="text-[var(--color-dark)] hover:text-[var(--color-oak)] transition-colors font-medium"
+                        >
+                          {item.productos.nombre}
+                        </Link>
+                      </td>
+                      <td className="px-4 py-3 text-[var(--color-warm-gray)] hidden md:table-cell">
+                        {item.productos.categoria}
+                      </td>
+                      <td className="px-4 py-3 text-right font-medium text-[var(--color-dark)]">
+                        {item.cantidad}
+                        <span className="text-[var(--color-warm-gray)] text-xs ml-1">
+                          / mín {item.stock_minimo}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 text-center">
+                        <StatusBadge status={status} />
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <p className="text-sm text-[var(--color-warm-gray)]">
+            No hay productos con stock bajo
+          </p>
+        )}
       </div>
 
       {/* Acciones rápidas */}
