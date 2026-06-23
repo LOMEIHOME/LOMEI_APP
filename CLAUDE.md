@@ -14,7 +14,7 @@ Este archivo es el **contexto maestro** del proyecto. Claude debe leerlo al inic
 | Fundadora | Arq. Ana Lorena Vargas Mejía |
 | Año de fundación | 2023 |
 | Ubicación | Querétaro, México |
-| Instagram | @lvinteriorismo |
+| Instagram | @lomeihome |
 | Email | arqinteriorismolv@gmail.com |
 | Teléfono | 771 100 90 84 |
 

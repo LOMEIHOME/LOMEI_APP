@@ -10,7 +10,6 @@ import FadeIn from "./FadeIn";
    ============================================================ */
 const STATS = [
   ["5+", "Años de experiencia"],
-  ["15+", "Proyectos diseñados"],
   ["QRO", "Querétaro, MX"],
 ];
 
@@ -74,7 +73,7 @@ export default function AboutPreview() {
             <FadeIn direction="right" delay={0.2}>
               <div className="relative aspect-[4/3] overflow-hidden rounded-sm">
                 <Image
-                  src="/images/proyectos/ceja-de-bravo/01.jpg"
+                  src="/images/showroom/sobre-estudio.png"
                   alt="Moodboard de materiales — encino, mármol y textiles, LOMEI Home"
                   fill
                   className="object-cover"

@@ -7,6 +7,7 @@ import SectionTag from "@/components/ui/SectionTag";
 import Button from "@/components/ui/Button";
 import Badge from "@/components/ui/Badge";
 import FadeIn from "@/components/sections/FadeIn";
+import ProductGallery from "@/components/ui/ProductGallery";
 import {
   getAllProductos,
   getAllProductoSlugs,
@@ -45,41 +46,11 @@ export default async function ProductoDetallePage({
           <div className="grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-16">
             {/* Galería — 7 cols */}
             <div className="md:col-span-7">
-              <FadeIn>
-                <div className="relative aspect-[4/5] overflow-hidden rounded-sm bg-[var(--color-linen)]">
-                  <Image
-                    src={producto.images[0]}
-                    alt={producto.name}
-                    fill
-                    className="object-cover"
-                    priority
-                    sizes="(max-width: 768px) 100vw, 58vw"
-                  />
-                  {producto.badge && (
-                    <div className="absolute top-4 left-4">
-                      <Badge>{producto.badge}</Badge>
-                    </div>
-                  )}
-                </div>
-              </FadeIn>
-
-              {producto.images.length > 1 && (
-                <div className="mt-4 grid grid-cols-4 gap-3">
-                  {producto.images.map((img, i) => (
-                    <FadeIn key={i} delay={0.05 * i}>
-                      <div className="relative aspect-square overflow-hidden rounded-sm bg-[var(--color-linen)]">
-                        <Image
-                          src={img}
-                          alt={`${producto.name} — vista ${i + 1}`}
-                          fill
-                          className="object-cover"
-                          sizes="15vw"
-                        />
-                      </div>
-                    </FadeIn>
-                  ))}
-                </div>
-              )}
+              <ProductGallery
+                images={producto.images}
+                name={producto.name}
+                badge={producto.badge}
+              />
             </div>
 
             {/* Info — 5 cols */}
@@ -129,21 +100,6 @@ export default async function ProductoDetallePage({
                     <p className="mt-1 text-sm text-[var(--color-dark)]">
                       {producto.materials.join(", ")}
                     </p>
-                  </div>
-                  <div>
-                    <p className="text-[10px] tracking-[0.2em] uppercase text-[var(--color-warm-gray)]">
-                      Acabados disponibles
-                    </p>
-                    <div className="mt-2 flex flex-wrap gap-2">
-                      {producto.finishes.map((f) => (
-                        <span
-                          key={f}
-                          className="px-3 py-1 text-[10px] tracking-[0.15em] uppercase bg-[var(--color-linen)] text-[var(--color-oak)] rounded-sm"
-                        >
-                          {f}
-                        </span>
-                      ))}
-                    </div>
                   </div>
                 </div>
               </FadeIn>

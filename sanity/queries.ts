@@ -63,7 +63,6 @@ export interface SanityProducto {
   description: string;
   dimensions: string;
   materials: string[];
-  finishes: string[];
   images: SanityImage[];
   badge: string;
 }
@@ -72,7 +71,7 @@ export async function getProductos(): Promise<SanityProducto[]> {
   return getClient().fetch(
     `*[_type == "producto"] | order(name asc) {
       _id, name, slug, category, price,
-      description, dimensions, materials, finishes,
+      description, dimensions, materials,
       images, badge
     }`
   );
@@ -84,7 +83,7 @@ export async function getProductoBySlug(
   return getClient().fetch(
     `*[_type == "producto" && slug.current == $slug][0] {
       _id, name, slug, category, price,
-      description, dimensions, materials, finishes,
+      description, dimensions, materials,
       images, badge
     }`,
     { slug }

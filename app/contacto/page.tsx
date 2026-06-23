@@ -61,12 +61,12 @@ export default function ContactoPage() {
                   Instagram
                 </p>
                 <a
-                  href="https://instagram.com/lvinteriorismo"
+                  href="https://instagram.com/lomeihome"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-base md:text-lg text-[var(--color-dark)] hover:text-[var(--color-camel)] transition-colors duration-400"
                 >
-                  @lvinteriorismo
+                  @lomeihome
                 </a>
               </div>
               <div>

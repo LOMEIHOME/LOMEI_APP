@@ -64,9 +64,6 @@ export default function ServicesStrip() {
                 >
                   <ServiceIcon iconId={s.iconId} size="sm" className="md:!w-24 md:!h-24" />
                   <span className="flex flex-col items-center gap-1.5">
-                    <span className="text-[10px] tracking-[0.22em] text-[var(--color-warm-gray)]">
-                      {s.num}
-                    </span>
                     <span className="font-serif text-sm md:text-lg lg:text-[1.375rem] tracking-[0.05em] leading-snug text-[var(--color-dark)]">
                       {info.nombre}
                     </span>

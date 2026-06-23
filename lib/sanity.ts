@@ -52,7 +52,6 @@ function adaptProducto(p: SanityProducto): Producto {
     description: p.description || "",
     dimensions: p.dimensions || "",
     materials: p.materials || [],
-    finishes: p.finishes || [],
     images: images.length > 0 ? images : [PLACEHOLDER_IMG],
     badge: (p.badge as Producto["badge"]) || undefined,
   };

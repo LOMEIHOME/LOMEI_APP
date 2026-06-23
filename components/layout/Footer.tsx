@@ -78,12 +78,12 @@ export default function Footer() {
             <ul className="flex flex-col gap-3 text-base md:text-[14.5px] font-light text-[var(--color-linen)]">
               <li>
                 <a
-                  href="https://instagram.com/lvinteriorismo"
+                  href="https://instagram.com/lomeihome"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="hover:text-[var(--color-white)] transition-colors duration-400"
                 >
-                  @lvinteriorismo
+                  @lomeihome
                 </a>
               </li>
               <li>
