@@ -23,6 +23,13 @@ interface AlertaItem {
   };
 }
 
+interface TopProducto {
+  producto_id: string;
+  nombre: string;
+  categoria: string;
+  vendidos: number;
+}
+
 const formatPrice = (n: number) =>
   new Intl.NumberFormat("es-MX", {
     style: "currency",
@@ -84,19 +91,23 @@ export default function AdminDashboardPage() {
     ingresos_mes: 0,
   });
   const [alertas, setAlertas] = useState<AlertaItem[]>([]);
+  const [topProductos, setTopProductos] = useState<TopProducto[]>([]);
   const [loading, setLoading] = useState(true);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
     try {
-      const [kpisRes, alertasRes] = await Promise.all([
+      const [kpisRes, alertasRes, topRes] = await Promise.all([
         fetch("/api/dashboard/kpis"),
         fetch("/api/inventario?alerta=true"),
+        fetch("/api/dashboard/top-productos"),
       ]);
       const kpisJson = await kpisRes.json();
       const alertasJson = await alertasRes.json();
+      const topJson = await topRes.json();
       setKpis(kpisJson);
       setAlertas(alertasJson.data || []);
+      setTopProductos(topJson.data || []);
     } catch {
       // silenciar errores de red
     }
@@ -118,19 +129,19 @@ export default function AdminDashboardPage() {
   return (
     <div className="max-w-[960px]">
       {/* Header */}
-      <div className="mb-6 flex items-start justify-between">
+      <div className="mb-6 flex flex-col sm:flex-row sm:items-start justify-between gap-3">
         <div>
           <p className="text-[13px] text-[#9b968c] mb-1">
             {"\u{1F44B}"} Buen día
           </p>
-          <h1 className="text-[28px] font-bold text-[#37352f] leading-tight">
+          <h1 className="text-[24px] sm:text-[28px] font-bold text-[#37352f] leading-tight">
             Dashboard
           </h1>
-          <p className="mt-1 text-[14px] text-[#8b867c]">{getDateString()}</p>
+          <p className="mt-1 text-[13px] sm:text-[14px] text-[#8b867c]">{getDateString()}</p>
         </div>
         <Link
           href="/admin/inventario/nuevo"
-          className="flex items-center gap-1.5 bg-[#37352f] text-white text-[13px] font-medium rounded-lg px-4 py-2.5 hover:bg-[#2c2a26] transition-colors"
+          className="flex items-center justify-center gap-1.5 bg-[#37352f] text-white text-[13px] font-medium rounded-lg px-4 py-2.5 hover:bg-[#2c2a26] transition-colors shrink-0 w-full sm:w-auto"
         >
           <span className="text-[15px] leading-none">{"\uFF0B"}</span>
           Nuevo producto
@@ -185,11 +196,8 @@ export default function AdminDashboardPage() {
         </div>
       </div>
 
-      {/* Two-column layout */}
-      <div
-        className="grid gap-5"
-        style={{ gridTemplateColumns: "1.5fr 1fr" }}
-      >
+      {/* Two-column layout — stacks on mobile */}
+      <div className="grid grid-cols-1 md:grid-cols-[1.5fr_1fr] gap-5">
         {/* Left: Necesitan reposicion */}
         <div>
           <div className="flex items-center justify-between mb-3">
@@ -264,18 +272,55 @@ export default function AdminDashboardPage() {
           )}
         </div>
 
-        {/* Right: Actividad reciente */}
+        {/* Right: Top 5 más vendidos */}
         <div>
           <h2 className="text-[15px] font-bold text-[#37352f] mb-3">
-            {"\u{1F552}"} Actividad reciente
+            {"\u{1F3C6}"} Más vendidos
           </h2>
-          <div className="bg-[#f8f7f4] rounded-xl px-4 py-1">
-            <div className="py-4 text-center">
+          {topProductos.length > 0 ? (
+            <div className="flex flex-col gap-2">
+              {topProductos.map((item, i) => {
+                const emoji = getCategoryEmoji(item.categoria);
+                const medals = ["🥇", "🥈", "🥉"];
+                return (
+                  <Link
+                    key={item.producto_id}
+                    href={`/admin/inventario/${item.producto_id}`}
+                    className="flex items-center gap-3 p-3 rounded-xl border border-[#eeece7] bg-white hover:bg-[#fafaf8] transition-colors"
+                  >
+                    {/* Posición */}
+                    <div className="w-[38px] h-[38px] rounded-[9px] flex items-center justify-center text-[17px] shrink-0 bg-[#f3f1ec]">
+                      {i < 3 ? medals[i] : emoji}
+                    </div>
+
+                    {/* Nombre + categoría */}
+                    <div className="flex-1 min-w-0">
+                      <div className="text-[13.5px] font-medium text-[#37352f] truncate">
+                        {item.nombre}
+                      </div>
+                      <div className="text-[11.5px] text-[#9b968c]">
+                        {item.categoria}
+                      </div>
+                    </div>
+
+                    {/* Vendidos */}
+                    <div className="text-right shrink-0">
+                      <div className="text-[14px] font-semibold text-[#37352f]">
+                        {item.vendidos}
+                      </div>
+                      <div className="text-[11px] text-[#9b968c]">vendidos</div>
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="bg-[#f8f7f4] rounded-xl p-6 text-center">
               <p className="text-[13px] text-[#9b968c]">
-                Sin actividad reciente
+                Aún no hay ventas registradas
               </p>
             </div>
-          </div>
+          )}
         </div>
       </div>
     </div>
