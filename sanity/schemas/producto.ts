@@ -33,6 +33,7 @@ export const producto = defineType({
           { title: "Acabados", value: "Acabados" },
           { title: "Capelos", value: "Capelos" },
           { title: "Relojes", value: "Relojes" },
+          { title: "Florero", value: "Florero" },
         ],
       },
       validation: (rule) => rule.required(),

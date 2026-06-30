@@ -2,13 +2,13 @@ interface OrderStatusBadgeProps {
   estado: "pendiente" | "completada" | "cancelada";
 }
 
-const STYLES = {
-  pendiente: "bg-amber-50 text-amber-700 border-amber-200",
-  completada: "bg-green-50 text-green-700 border-green-200",
-  cancelada: "bg-red-50 text-red-700 border-red-200",
+const STYLES: Record<string, string> = {
+  completada: "bg-[#eaf3ec] text-[#16794a]",
+  pendiente: "bg-[#fbf3e0] text-[#b7791f]",
+  cancelada: "bg-[#f1efe9] text-[#8a857c]",
 };
 
-const LABELS = {
+const LABELS: Record<string, string> = {
   pendiente: "Pendiente",
   completada: "Completada",
   cancelada: "Cancelada",
@@ -17,7 +17,7 @@ const LABELS = {
 export default function OrderStatusBadge({ estado }: OrderStatusBadgeProps) {
   return (
     <span
-      className={`inline-flex items-center px-2 py-0.5 text-[10px] tracking-wider uppercase border rounded-sm ${STYLES[estado]}`}
+      className={`inline-flex items-center px-2.5 py-1 text-[11px] font-medium rounded-full ${STYLES[estado]}`}
     >
       {LABELS[estado]}
     </span>

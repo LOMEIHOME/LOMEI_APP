@@ -10,7 +10,7 @@ export async function POST(request: NextRequest) {
   const supabase = await createAdminClient();
   const body = await request.json();
 
-  const { cliente_nombre, cliente_email, cliente_tel, nota, items } = body;
+  const { cliente_nombre, cliente_email, cliente_tel, cliente_id, nota, items } = body;
 
   if (!cliente_nombre || !cliente_email || !items?.length) {
     return NextResponse.json(
@@ -38,6 +38,7 @@ export async function POST(request: NextRequest) {
       cliente_nombre,
       cliente_email,
       cliente_tel: cliente_tel || null,
+      cliente_id: cliente_id || null,
       estado: "completada",
       subtotal,
       descuento: 0,

@@ -2,8 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
-import StatsCard from "@/components/admin/StatsCard";
-import StatusBadge, { getStockStatus } from "@/components/admin/StatusBadge";
+import { useRouter } from "next/navigation";
 
 interface Kpis {
   productos_activos: number;
@@ -25,9 +24,59 @@ interface AlertaItem {
 }
 
 const formatPrice = (n: number) =>
-  new Intl.NumberFormat("es-MX", { style: "currency", currency: "MXN", minimumFractionDigits: 0 }).format(n);
+  new Intl.NumberFormat("es-MX", {
+    style: "currency",
+    currency: "MXN",
+    minimumFractionDigits: 0,
+  }).format(n);
+
+const CATEGORY_EMOJI: Record<string, string> = {
+  Muebles: "\u{1F6CB}\uFE0F",
+  "Cojines & Textiles": "\u{1F9F6}",
+  Adornos: "\u{1F3FA}",
+  "Iluminaci\u00f3n": "\u{1F4A1}",
+  Alfombras: "\u{1F9F5}",
+  Acabados: "\u{1FA9E}",
+  Jarrones: "\u{1F3FA}",
+  Capelos: "\u{1F514}",
+  Relojes: "\u231B",
+  Florero: "\u{1F338}",
+};
+
+function getCategoryEmoji(cat: string): string {
+  return CATEGORY_EMOJI[cat] || "\u{1F4E6}";
+}
+
+function getDateString(): string {
+  const now = new Date();
+  const days = [
+    "domingo",
+    "lunes",
+    "martes",
+    "mi\u00e9rcoles",
+    "jueves",
+    "viernes",
+    "s\u00e1bado",
+  ];
+  const months = [
+    "enero",
+    "febrero",
+    "marzo",
+    "abril",
+    "mayo",
+    "junio",
+    "julio",
+    "agosto",
+    "septiembre",
+    "octubre",
+    "noviembre",
+    "diciembre",
+  ];
+  return `Resumen de hoy, ${days[now.getDay()]} ${now.getDate()} de ${months[now.getMonth()]}.`;
+}
 
 export default function AdminDashboardPage() {
+  const router = useRouter();
   const [kpis, setKpis] = useState<Kpis>({
     productos_activos: 0,
     stock_bajo: 0,
@@ -60,152 +109,174 @@ export default function AdminDashboardPage() {
 
   if (loading) {
     return (
-      <div className="p-12 text-center text-sm text-[var(--color-warm-gray)]">
+      <div className="p-12 text-center text-[13px] text-[#9b968c]">
         Cargando...
       </div>
     );
   }
 
   return (
-    <div className="max-w-6xl">
+    <div className="max-w-[960px]">
       {/* Header */}
-      <div className="mb-8">
-        <h1 className="font-serif text-2xl md:text-3xl tracking-wider text-[var(--color-dark)]">
-          Dashboard
-        </h1>
-        <p className="mt-1 text-sm text-[var(--color-warm-gray)]">
-          Resumen general de operaciones
-        </p>
-      </div>
-
-      {/* KPIs */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-        <StatsCard label="Productos" value={kpis.productos_activos} subtitle="En catálogo" />
-        <StatsCard label="Stock bajo" value={kpis.stock_bajo} subtitle="Requieren atención" accent />
-        <StatsCard label="Ventas del mes" value={kpis.ventas_mes} subtitle="Órdenes completadas" />
-        <StatsCard label="Ingresos" value={formatPrice(kpis.ingresos_mes)} subtitle="Este mes" />
-      </div>
-
-      {/* Alertas de stock bajo */}
-      <div className="bg-white rounded-sm border border-[var(--color-sand)]/30 p-6 mb-6">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-sm font-medium tracking-wide text-[var(--color-dark)]">
-            Alertas de stock bajo
-          </h2>
-          <Link
-            href="/admin/alertas"
-            className="text-xs text-[var(--color-oak)] hover:text-[var(--color-camel)] transition-colors"
-          >
-            Ver todas
-          </Link>
-        </div>
-
-        {alertas.length > 0 ? (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-[var(--color-sand)]/20">
-                  <th className="text-left px-4 py-3 text-[10px] tracking-[0.15em] uppercase text-[var(--color-warm-gray)] font-normal">
-                    Producto
-                  </th>
-                  <th className="text-left px-4 py-3 text-[10px] tracking-[0.15em] uppercase text-[var(--color-warm-gray)] font-normal hidden md:table-cell">
-                    Categoría
-                  </th>
-                  <th className="text-right px-4 py-3 text-[10px] tracking-[0.15em] uppercase text-[var(--color-warm-gray)] font-normal">
-                    Stock
-                  </th>
-                  <th className="text-center px-4 py-3 text-[10px] tracking-[0.15em] uppercase text-[var(--color-warm-gray)] font-normal">
-                    Estado
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {alertas.map((item) => {
-                  const status = getStockStatus(item.cantidad, item.stock_minimo);
-                  return (
-                    <tr
-                      key={item.id}
-                      className="border-b border-[var(--color-sand)]/10 hover:bg-[var(--color-linen)]/30 transition-colors"
-                    >
-                      <td className="px-4 py-3">
-                        <Link
-                          href={`/admin/inventario/${item.producto_id}`}
-                          className="text-[var(--color-dark)] hover:text-[var(--color-oak)] transition-colors font-medium"
-                        >
-                          {item.productos.nombre}
-                        </Link>
-                      </td>
-                      <td className="px-4 py-3 text-[var(--color-warm-gray)] hidden md:table-cell">
-                        {item.productos.categoria}
-                      </td>
-                      <td className="px-4 py-3 text-right font-medium text-[var(--color-dark)]">
-                        {item.cantidad}
-                        <span className="text-[var(--color-warm-gray)] text-xs ml-1">
-                          / mín {item.stock_minimo}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3 text-center">
-                        <StatusBadge status={status} />
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        ) : (
-          <p className="text-sm text-[var(--color-warm-gray)]">
-            No hay productos con stock bajo
+      <div className="mb-6 flex items-start justify-between">
+        <div>
+          <p className="text-[13px] text-[#9b968c] mb-1">
+            {"\u{1F44B}"} Buen día
           </p>
-        )}
-      </div>
-
-      {/* Acciones rápidas */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <h1 className="text-[28px] font-bold text-[#37352f] leading-tight">
+            Dashboard
+          </h1>
+          <p className="mt-1 text-[14px] text-[#8b867c]">{getDateString()}</p>
+        </div>
         <Link
           href="/admin/inventario/nuevo"
-          className="flex items-center gap-3 p-4 bg-white rounded-sm border border-[var(--color-sand)]/30 hover:border-[var(--color-oak)]/40 transition-colors group"
+          className="flex items-center gap-1.5 bg-[#37352f] text-white text-[13px] font-medium rounded-lg px-4 py-2.5 hover:bg-[#2c2a26] transition-colors"
         >
-          <div className="w-9 h-9 rounded-sm bg-[var(--color-linen)] flex items-center justify-center text-[var(--color-oak)] group-hover:bg-[var(--color-oak)] group-hover:text-white transition-colors">
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-            </svg>
-          </div>
-          <div>
-            <p className="text-sm text-[var(--color-dark)]">Nuevo producto</p>
-            <p className="text-[10px] text-[var(--color-warm-gray)]">Agregar al inventario</p>
-          </div>
+          <span className="text-[15px] leading-none">{"\uFF0B"}</span>
+          Nuevo producto
         </Link>
+      </div>
 
-        <Link
-          href="/admin/ventas/nueva"
-          className="flex items-center gap-3 p-4 bg-white rounded-sm border border-[var(--color-sand)]/30 hover:border-[var(--color-oak)]/40 transition-colors group"
-        >
-          <div className="w-9 h-9 rounded-sm bg-[var(--color-linen)] flex items-center justify-center text-[var(--color-oak)] group-hover:bg-[var(--color-oak)] group-hover:text-white transition-colors">
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 0 1-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 0 0 3 15h-.75M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm3 0h.008v.008H18V10.5Zm-12 0h.008v.008H6V10.5Z" />
-            </svg>
+      {/* KPI Cards */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-7">
+        {/* Productos activos */}
+        <div className="bg-[#f8f7f4] rounded-xl p-[17px]">
+          <div className="text-[19px] mb-2.5">{"\u{1F4E6}"}</div>
+          <div className="text-[28px] font-bold text-[#37352f] leading-none">
+            {kpis.productos_activos}
           </div>
-          <div>
-            <p className="text-sm text-[var(--color-dark)]">Registrar venta</p>
-            <p className="text-[10px] text-[var(--color-warm-gray)]">Nueva orden manual</p>
+          <div className="text-[12.5px] text-[#8b867c] mt-1">
+            Productos activos
           </div>
-        </Link>
+        </div>
 
-        <Link
-          href="/admin/inventario"
-          className="flex items-center gap-3 p-4 bg-white rounded-sm border border-[var(--color-sand)]/30 hover:border-[var(--color-oak)]/40 transition-colors group"
+        {/* Stock bajo */}
+        <button
+          onClick={() => router.push("/admin/alertas")}
+          className="bg-[#fdf3ec] rounded-xl p-[17px] text-left cursor-pointer hover:bg-[#fceee4] transition-colors"
         >
-          <div className="w-9 h-9 rounded-sm bg-[var(--color-linen)] flex items-center justify-center text-[var(--color-oak)] group-hover:bg-[var(--color-oak)] group-hover:text-white transition-colors">
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
-            </svg>
+          <div className="text-[19px] mb-2.5">{"\u26A0\uFE0F"}</div>
+          <div className="text-[28px] font-bold text-[#c2410c] leading-none">
+            {kpis.stock_bajo}
           </div>
-          <div>
-            <p className="text-sm text-[var(--color-dark)]">Ver inventario</p>
-            <p className="text-[10px] text-[var(--color-warm-gray)]">Consultar stock actual</p>
+          <div className="text-[12.5px] text-[#b06a44] mt-1">Stock bajo</div>
+        </button>
+
+        {/* Ventas del mes */}
+        <div className="bg-[#f8f7f4] rounded-xl p-[17px]">
+          <div className="text-[19px] mb-2.5">{"\u{1F6CD}\uFE0F"}</div>
+          <div className="text-[28px] font-bold text-[#37352f] leading-none">
+            {kpis.ventas_mes}
           </div>
-        </Link>
+          <div className="text-[12.5px] text-[#8b867c] mt-1">
+            Ventas del mes
+          </div>
+        </div>
+
+        {/* Ingresos del mes */}
+        <div className="bg-[#f8f7f4] rounded-xl p-[17px]">
+          <div className="text-[19px] mb-2.5">{"\u{1F4C8}"}</div>
+          <div className="text-[28px] font-bold text-[#37352f] leading-none">
+            {formatPrice(kpis.ingresos_mes)}
+          </div>
+          <div className="text-[12.5px] text-[#8b867c] mt-1">
+            Ingresos del mes
+          </div>
+        </div>
+      </div>
+
+      {/* Two-column layout */}
+      <div
+        className="grid gap-5"
+        style={{ gridTemplateColumns: "1.5fr 1fr" }}
+      >
+        {/* Left: Necesitan reposicion */}
+        <div>
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="text-[15px] font-bold text-[#37352f]">
+              {"\u26A0\uFE0F"} Necesitan reposición
+            </h2>
+            <Link
+              href="/admin/alertas"
+              className="text-[12.5px] text-[#9b968c] hover:text-[#6b6760] transition-colors"
+            >
+              Ver todas
+            </Link>
+          </div>
+
+          {alertas.length > 0 ? (
+            <div className="flex flex-col gap-2">
+              {alertas.slice(0, 6).map((item) => {
+                const isCritical = item.cantidad === 0;
+                const emoji = getCategoryEmoji(item.productos.categoria);
+                return (
+                  <Link
+                    key={item.id}
+                    href={`/admin/inventario/${item.producto_id}`}
+                    className={`flex items-center gap-3 p-3 rounded-xl border transition-colors hover:shadow-sm ${
+                      isCritical
+                        ? "border-[#f0c9b4] bg-white hover:bg-[#fffcfa]"
+                        : "border-[#eeece7] bg-white hover:bg-[#fafaf8]"
+                    }`}
+                  >
+                    {/* Icon */}
+                    <div
+                      className={`w-[38px] h-[38px] rounded-[9px] flex items-center justify-center text-[17px] shrink-0 ${
+                        isCritical ? "bg-[#fdf3ec]" : "bg-[#f3f1ec]"
+                      }`}
+                    >
+                      {emoji}
+                    </div>
+
+                    {/* Name + category */}
+                    <div className="flex-1 min-w-0">
+                      <div className="text-[13.5px] font-medium text-[#37352f] truncate">
+                        {item.productos.nombre}
+                      </div>
+                      <div className="text-[11.5px] text-[#9b968c]">
+                        {item.productos.categoria}
+                      </div>
+                    </div>
+
+                    {/* Stock count */}
+                    <div className="text-right shrink-0">
+                      <div
+                        className={`text-[14px] font-semibold ${
+                          isCritical ? "text-[#c2410c]" : "text-[#d97706]"
+                        }`}
+                      >
+                        {item.cantidad}
+                      </div>
+                      <div className="text-[11px] text-[#9b968c]">
+                        mín {item.stock_minimo}
+                      </div>
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="bg-[#f8f7f4] rounded-xl p-6 text-center">
+              <p className="text-[13px] text-[#9b968c]">
+                No hay productos con stock bajo
+              </p>
+            </div>
+          )}
+        </div>
+
+        {/* Right: Actividad reciente */}
+        <div>
+          <h2 className="text-[15px] font-bold text-[#37352f] mb-3">
+            {"\u{1F552}"} Actividad reciente
+          </h2>
+          <div className="bg-[#f8f7f4] rounded-xl px-4 py-1">
+            <div className="py-4 text-center">
+              <p className="text-[13px] text-[#9b968c]">
+                Sin actividad reciente
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

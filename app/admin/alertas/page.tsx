@@ -1,8 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import Link from "next/link";
-import StatusBadge, { getStockStatus } from "@/components/admin/StatusBadge";
+import { getStockStatus } from "@/components/admin/StatusBadge";
 
 interface AlertaItem {
   id: string;
@@ -34,8 +33,50 @@ interface AlertaLog {
   enviado: boolean;
 }
 
+const STATUS_CONFIG: Record<string, { label: string; bg: string; color: string }> = {
+  low: { label: "Bajo", bg: "#fbf3e0", color: "#b7791f" },
+  ok: { label: "En stock", bg: "#e6f4ea", color: "#16794a" },
+  out: { label: "Agotado", bg: "#fde8e8", color: "#c0392b" },
+};
+
 const formatDate = (d: string) =>
   new Date(d).toLocaleDateString("es-MX", { day: "numeric", month: "short", year: "numeric" });
+
+/* ── Toggle switch component ──────────────────────────────── */
+function Toggle({ checked, onChange }: { checked: boolean; onChange: (v: boolean) => void }) {
+  return (
+    <button
+      type="button"
+      role="switch"
+      aria-checked={checked}
+      onClick={() => onChange(!checked)}
+      style={{
+        position: "relative",
+        width: 38,
+        height: 22,
+        borderRadius: 11,
+        backgroundColor: checked ? "#37352f" : "#d8d3c8",
+        border: "none",
+        cursor: "pointer",
+        transition: "background-color 0.2s",
+        flexShrink: 0,
+      }}
+    >
+      <span
+        style={{
+          position: "absolute",
+          top: 3,
+          left: checked ? 19 : 3,
+          width: 16,
+          height: 16,
+          borderRadius: "50%",
+          backgroundColor: "#fff",
+          transition: "left 0.2s",
+        }}
+      />
+    </button>
+  );
+}
 
 export default function AlertasPage() {
   const [alertas, setAlertas] = useState<AlertaItem[]>([]);
@@ -94,81 +135,156 @@ export default function AlertasPage() {
 
   if (loading) {
     return (
-      <div className="p-12 text-center text-sm text-[var(--color-warm-gray)]">
+      <div style={{ padding: 48, textAlign: "center", fontSize: 14, color: "#9b968c" }}>
         Cargando...
       </div>
     );
   }
 
+  /* ── Shared styles ──────────────────────────────────────── */
+  const thStyle: React.CSSProperties = {
+    textAlign: "left",
+    padding: "10px 16px",
+    fontSize: 11,
+    fontWeight: 600,
+    textTransform: "uppercase",
+    letterSpacing: "0.05em",
+    color: "#9b968c",
+  };
+
+  const inputStyle: React.CSSProperties = {
+    width: "100%",
+    padding: "8px 12px",
+    backgroundColor: "#f8f7f4",
+    border: "1px solid #eeece7",
+    borderRadius: 9,
+    fontSize: 13.5,
+    color: "#37352f",
+    outline: "none",
+  };
+
   return (
-    <div className="max-w-6xl">
-      {/* Header */}
-      <div className="mb-8">
-        <h1 className="font-serif text-2xl md:text-3xl tracking-wider text-[var(--color-dark)]">
-          Alertas
+    <div style={{ maxWidth: 1180, margin: "0 auto" }}>
+      {/* ── Header ────────────────────────────────────────── */}
+      <div style={{ marginBottom: 28 }}>
+        <h1 style={{ fontSize: 28, fontWeight: 700, color: "#37352f", lineHeight: 1.2 }}>
+          {"🔔 Alertas"}
         </h1>
-        <p className="mt-1 text-sm text-[var(--color-warm-gray)]">
-          Gestión de alertas y notificaciones de stock
+        <p style={{ fontSize: 14, color: "#8b867c", marginTop: 4 }}>
+          Gesti&oacute;n de alertas y notificaciones de stock
         </p>
       </div>
 
-      {/* Sección 1: Productos con stock bajo */}
-      <div className="bg-white rounded-sm border border-[var(--color-sand)]/30 overflow-hidden mb-6">
-        <div className="px-6 py-4 border-b border-[var(--color-sand)]/20">
-          <h2 className="text-sm font-medium tracking-wide text-[var(--color-dark)]">
+      {/* ── Low stock table ───────────────────────────────── */}
+      <div
+        style={{
+          border: "1px solid #eeece7",
+          borderRadius: 12,
+          overflow: "hidden",
+          marginBottom: 18,
+        }}
+      >
+        <div
+          style={{
+            padding: "12px 16px",
+            borderBottom: "1px solid #f1efe9",
+          }}
+        >
+          <span style={{ fontSize: 14, fontWeight: 700, color: "#37352f" }}>
             Productos con stock bajo
-          </h2>
+          </span>
         </div>
 
         {alertas.length > 0 ? (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
+          <div style={{ overflowX: "auto" }}>
+            <table style={{ width: "100%", borderCollapse: "collapse" }}>
               <thead>
-                <tr className="border-b border-[var(--color-sand)]/20">
-                  <th className="text-left px-4 py-3 text-[10px] tracking-[0.15em] uppercase text-[var(--color-warm-gray)] font-normal">
-                    Producto
-                  </th>
-                  <th className="text-left px-4 py-3 text-[10px] tracking-[0.15em] uppercase text-[var(--color-warm-gray)] font-normal hidden md:table-cell">
-                    Categoría
-                  </th>
-                  <th className="text-right px-4 py-3 text-[10px] tracking-[0.15em] uppercase text-[var(--color-warm-gray)] font-normal">
-                    Stock actual
-                  </th>
-                  <th className="text-right px-4 py-3 text-[10px] tracking-[0.15em] uppercase text-[var(--color-warm-gray)] font-normal hidden sm:table-cell">
-                    Stock mínimo
-                  </th>
-                  <th className="text-center px-4 py-3 text-[10px] tracking-[0.15em] uppercase text-[var(--color-warm-gray)] font-normal">
-                    Estado
-                  </th>
+                <tr style={{ backgroundColor: "#f8f7f4" }}>
+                  <th style={thStyle}>Producto</th>
+                  <th style={thStyle}>Categor&iacute;a</th>
+                  <th style={{ ...thStyle, textAlign: "right" }}>Actual</th>
+                  <th style={{ ...thStyle, textAlign: "right" }}>M&iacute;nimo</th>
+                  <th style={{ ...thStyle, textAlign: "center" }}>Estado</th>
                 </tr>
               </thead>
               <tbody>
                 {alertas.map((item) => {
                   const status = getStockStatus(item.cantidad, item.stock_minimo);
+                  const statusConf = STATUS_CONFIG[status] || STATUS_CONFIG.low;
+                  const stockColor =
+                    status === "out"
+                      ? "#c2410c"
+                      : status === "low"
+                      ? "#b7791f"
+                      : "#16794a";
+
                   return (
                     <tr
                       key={item.id}
-                      className="border-b border-[var(--color-sand)]/10 hover:bg-[var(--color-linen)]/30 transition-colors"
+                      style={{
+                        borderTop: "1px solid #f1efe9",
+                        cursor: "pointer",
+                        transition: "background-color 0.1s",
+                      }}
+                      onMouseEnter={(e) =>
+                        (e.currentTarget.style.backgroundColor = "#faf9f6")
+                      }
+                      onMouseLeave={(e) =>
+                        (e.currentTarget.style.backgroundColor = "transparent")
+                      }
+                      onClick={() =>
+                        (window.location.href = `/admin/inventario/${item.productos.id}`)
+                      }
                     >
-                      <td className="px-4 py-3">
-                        <Link
-                          href={`/admin/inventario/${item.productos.id}`}
-                          className="text-[var(--color-dark)] hover:text-[var(--color-oak)] transition-colors font-medium"
-                        >
-                          {item.productos.nombre}
-                        </Link>
+                      <td
+                        style={{
+                          padding: "10px 16px",
+                          fontSize: 14,
+                          fontWeight: 500,
+                          color: "#37352f",
+                        }}
+                      >
+                        {item.productos.nombre}
                       </td>
-                      <td className="px-4 py-3 text-[var(--color-warm-gray)] hidden md:table-cell">
+                      <td style={{ padding: "10px 16px", fontSize: 14, color: "#9b968c" }}>
                         {item.productos.categoria}
                       </td>
-                      <td className="px-4 py-3 text-right font-medium text-[var(--color-dark)]">
+                      <td
+                        style={{
+                          padding: "10px 16px",
+                          textAlign: "right",
+                          fontSize: 14,
+                          fontWeight: 600,
+                          color: stockColor,
+                        }}
+                      >
                         {item.cantidad}
                       </td>
-                      <td className="px-4 py-3 text-right text-[var(--color-warm-gray)] hidden sm:table-cell">
+                      <td
+                        style={{
+                          padding: "10px 16px",
+                          textAlign: "right",
+                          fontSize: 14,
+                          color: "#9b968c",
+                        }}
+                      >
                         {item.stock_minimo}
                       </td>
-                      <td className="px-4 py-3 text-center">
-                        <StatusBadge status={status} />
+                      <td style={{ padding: "10px 16px", textAlign: "center" }}>
+                        <span
+                          style={{
+                            display: "inline-block",
+                            padding: "4px 10px",
+                            borderRadius: 999,
+                            fontSize: 12,
+                            fontWeight: 500,
+                            backgroundColor: statusConf.bg,
+                            color: statusConf.color,
+                            lineHeight: 1,
+                          }}
+                        >
+                          {statusConf.label}
+                        </span>
                       </td>
                     </tr>
                   );
@@ -177,74 +293,115 @@ export default function AlertasPage() {
             </table>
           </div>
         ) : (
-          <div className="p-8 text-center">
-            <p className="text-sm text-[var(--color-warm-gray)]">
-              No hay productos con stock bajo
-            </p>
+          <div style={{ padding: 48, textAlign: "center", fontSize: 14, color: "#9b968c" }}>
+            No hay productos con stock bajo
           </div>
         )}
       </div>
 
-      {/* Sección 2: Configuración de alertas */}
-      <div className="bg-white rounded-sm border border-[var(--color-sand)]/30 p-6 mb-6">
-        <h2 className="text-sm font-medium tracking-wide text-[var(--color-dark)] mb-6">
-          Configuración de alertas
-        </h2>
-
-        <div className="space-y-5 max-w-lg">
-          {/* Notificar por email */}
-          <div className="flex items-center gap-3">
-            <input
-              type="checkbox"
-              checked={config.notificar_email}
-              onChange={(e) => setConfig({ ...config, notificar_email: e.target.checked })}
-              className="w-4 h-4 accent-[var(--color-oak)]"
-            />
-            <label className="text-sm text-[var(--color-dark)]">
-              Notificaciones por email
-            </label>
+      {/* ── Two-column layout: Config + History ───────────── */}
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "1fr 1fr",
+          gap: 18,
+        }}
+      >
+        {/* ── Left: Config card ───────────────────────────── */}
+        <div
+          style={{
+            border: "1px solid #eeece7",
+            borderRadius: 12,
+            padding: 22,
+          }}
+        >
+          <div style={{ fontSize: 14, fontWeight: 700, color: "#37352f", marginBottom: 20 }}>
+            Configuraci&oacute;n de alertas
           </div>
-          {config.notificar_email && (
-            <input
-              type="email"
-              value={config.email_destino}
-              onChange={(e) => setConfig({ ...config, email_destino: e.target.value })}
-              placeholder="correo@ejemplo.com"
-              className="w-full px-3 py-2 text-sm border border-[var(--color-sand)]/40 rounded-sm focus:outline-none focus:border-[var(--color-oak)]"
-            />
-          )}
 
-          {/* Notificar por WhatsApp */}
-          <div className="flex items-center gap-3">
-            <input
-              type="checkbox"
-              checked={config.notificar_whatsapp}
-              onChange={(e) => setConfig({ ...config, notificar_whatsapp: e.target.checked })}
-              className="w-4 h-4 accent-[var(--color-oak)]"
-            />
-            <label className="text-sm text-[var(--color-dark)]">
-              Notificaciones por WhatsApp
-            </label>
+          {/* Email toggle */}
+          <div style={{ marginBottom: 16 }}>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                gap: 12,
+              }}
+            >
+              <div>
+                <div style={{ fontSize: 14, fontWeight: 500, color: "#37352f" }}>
+                  Notificaciones por email
+                </div>
+                <div style={{ fontSize: 12, color: "#9b968c", marginTop: 2 }}>
+                  Recibe alertas de stock bajo por correo
+                </div>
+              </div>
+              <Toggle
+                checked={config.notificar_email}
+                onChange={(v) => setConfig({ ...config, notificar_email: v })}
+              />
+            </div>
+            {config.notificar_email && (
+              <input
+                type="email"
+                value={config.email_destino}
+                onChange={(e) => setConfig({ ...config, email_destino: e.target.value })}
+                placeholder="correo@ejemplo.com"
+                style={{ ...inputStyle, marginTop: 10 }}
+              />
+            )}
           </div>
-          {config.notificar_whatsapp && (
-            <input
-              type="tel"
-              value={config.telefono_destino}
-              onChange={(e) => setConfig({ ...config, telefono_destino: e.target.value })}
-              placeholder="+52 771 100 9084"
-              className="w-full px-3 py-2 text-sm border border-[var(--color-sand)]/40 rounded-sm focus:outline-none focus:border-[var(--color-oak)]"
-            />
-          )}
 
-          {/* Frecuencia */}
-          <div>
-            <label className="block text-sm text-[var(--color-dark)] mb-1.5">
+          {/* WhatsApp toggle */}
+          <div style={{ marginBottom: 16 }}>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                gap: 12,
+              }}
+            >
+              <div>
+                <div style={{ fontSize: 14, fontWeight: 500, color: "#37352f" }}>
+                  Notificaciones por WhatsApp
+                </div>
+                <div style={{ fontSize: 12, color: "#9b968c", marginTop: 2 }}>
+                  Recibe alertas directamente en tu tel&eacute;fono
+                </div>
+              </div>
+              <Toggle
+                checked={config.notificar_whatsapp}
+                onChange={(v) => setConfig({ ...config, notificar_whatsapp: v })}
+              />
+            </div>
+            {config.notificar_whatsapp && (
+              <input
+                type="tel"
+                value={config.telefono_destino}
+                onChange={(e) => setConfig({ ...config, telefono_destino: e.target.value })}
+                placeholder="+52 771 100 9084"
+                style={{ ...inputStyle, marginTop: 10 }}
+              />
+            )}
+          </div>
+
+          {/* Frequency dropdown */}
+          <div style={{ marginBottom: 16 }}>
+            <div style={{ fontSize: 14, fontWeight: 500, color: "#37352f", marginBottom: 6 }}>
               Frecuencia de notificaciones
-            </label>
+            </div>
             <select
               value={config.frecuencia_horas}
-              onChange={(e) => setConfig({ ...config, frecuencia_horas: Number(e.target.value) })}
-              className="w-full px-3 py-2 text-sm border border-[var(--color-sand)]/40 rounded-sm focus:outline-none focus:border-[var(--color-oak)]"
+              onChange={(e) =>
+                setConfig({ ...config, frecuencia_horas: Number(e.target.value) })
+              }
+              style={{
+                ...inputStyle,
+                appearance: "auto" as React.CSSProperties["appearance"],
+                cursor: "pointer",
+              }}
             >
               <option value={6}>Cada 6 horas</option>
               <option value={12}>Cada 12 horas</option>
@@ -253,104 +410,146 @@ export default function AlertasPage() {
             </select>
           </div>
 
-          {/* Alertas activas */}
-          <div className="flex items-center gap-3">
-            <input
-              type="checkbox"
+          {/* Alertas activas toggle */}
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              gap: 12,
+              marginBottom: 20,
+            }}
+          >
+            <div>
+              <div style={{ fontSize: 14, fontWeight: 500, color: "#37352f" }}>
+                Alertas activas
+              </div>
+              <div style={{ fontSize: 12, color: "#9b968c", marginTop: 2 }}>
+                Activar o desactivar todas las alertas
+              </div>
+            </div>
+            <Toggle
               checked={config.activo}
-              onChange={(e) => setConfig({ ...config, activo: e.target.checked })}
-              className="w-4 h-4 accent-[var(--color-oak)]"
+              onChange={(v) => setConfig({ ...config, activo: v })}
             />
-            <label className="text-sm text-[var(--color-dark)]">
-              Alertas activas
-            </label>
           </div>
 
-          {/* Botón guardar */}
-          <div className="flex items-center gap-3 pt-2">
+          {/* Save button */}
+          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
             <button
               onClick={handleSaveConfig}
               disabled={saving}
-              className="px-4 py-2.5 bg-[var(--color-dark)] text-white text-xs tracking-[0.15em] uppercase rounded-sm hover:bg-[var(--color-camel)] transition-colors disabled:opacity-50"
+              style={{
+                padding: "9px 18px",
+                backgroundColor: "#37352f",
+                color: "#fff",
+                borderRadius: 8,
+                fontSize: 14,
+                fontWeight: 500,
+                border: "none",
+                cursor: saving ? "not-allowed" : "pointer",
+                opacity: saving ? 0.55 : 1,
+                transition: "opacity 0.15s",
+              }}
+              onMouseEnter={(e) => {
+                if (!saving) e.currentTarget.style.opacity = "0.85";
+              }}
+              onMouseLeave={(e) => {
+                if (!saving) e.currentTarget.style.opacity = "1";
+              }}
             >
-              {saving ? "Guardando..." : "Guardar configuración"}
+              {saving ? "Guardando..." : "Guardar configuraci\u00f3n"}
             </button>
             {saved && (
-              <span className="text-xs text-green-600">
-                Configuración guardada
+              <span style={{ fontSize: 13, color: "#16794a", fontWeight: 500 }}>
+                Configuraci&oacute;n guardada
               </span>
             )}
           </div>
         </div>
-      </div>
 
-      {/* Sección 3: Historial de alertas */}
-      <div className="bg-white rounded-sm border border-[var(--color-sand)]/30 overflow-hidden">
-        <div className="px-6 py-4 border-b border-[var(--color-sand)]/20">
-          <h2 className="text-sm font-medium tracking-wide text-[var(--color-dark)]">
-            Historial de alertas
-          </h2>
-        </div>
+        {/* ── Right: Alert history ────────────────────────── */}
+        <div
+          style={{
+            border: "1px solid #eeece7",
+            borderRadius: 12,
+            overflow: "hidden",
+            display: "flex",
+            flexDirection: "column",
+          }}
+        >
+          <div
+            style={{
+              padding: "12px 16px",
+              borderBottom: "1px solid #f1efe9",
+            }}
+          >
+            <span style={{ fontSize: 14, fontWeight: 700, color: "#37352f" }}>
+              Historial de alertas
+            </span>
+          </div>
 
-        {logs.length > 0 ? (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-[var(--color-sand)]/20">
-                  <th className="text-left px-4 py-3 text-[10px] tracking-[0.15em] uppercase text-[var(--color-warm-gray)] font-normal">
-                    Fecha
-                  </th>
-                  <th className="text-left px-4 py-3 text-[10px] tracking-[0.15em] uppercase text-[var(--color-warm-gray)] font-normal">
-                    Producto
-                  </th>
-                  <th className="text-right px-4 py-3 text-[10px] tracking-[0.15em] uppercase text-[var(--color-warm-gray)] font-normal">
-                    Stock
-                  </th>
-                  <th className="text-left px-4 py-3 text-[10px] tracking-[0.15em] uppercase text-[var(--color-warm-gray)] font-normal hidden sm:table-cell">
-                    Canal
-                  </th>
-                  <th className="text-center px-4 py-3 text-[10px] tracking-[0.15em] uppercase text-[var(--color-warm-gray)] font-normal">
-                    Enviado
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {logs.map((log) => (
-                  <tr
-                    key={log.id}
-                    className="border-b border-[var(--color-sand)]/10 hover:bg-[var(--color-linen)]/30 transition-colors"
-                  >
-                    <td className="px-4 py-3 text-[var(--color-dark)]">
-                      {formatDate(log.created_at)}
-                    </td>
-                    <td className="px-4 py-3 text-[var(--color-dark)]">
+          {logs.length > 0 ? (
+            <div style={{ flex: 1, overflowY: "auto" }}>
+              {logs.map((log, idx) => (
+                <div
+                  key={log.id}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    padding: "12px 16px",
+                    borderTop: idx > 0 ? "1px solid #f1efe9" : "none",
+                    transition: "background-color 0.1s",
+                  }}
+                  onMouseEnter={(e) =>
+                    (e.currentTarget.style.backgroundColor = "#faf9f6")
+                  }
+                  onMouseLeave={(e) =>
+                    (e.currentTarget.style.backgroundColor = "transparent")
+                  }
+                >
+                  <div>
+                    <div style={{ fontSize: 14, fontWeight: 500, color: "#37352f" }}>
                       {log.producto_nombre}
-                    </td>
-                    <td className="px-4 py-3 text-right font-medium text-[var(--color-dark)]">
-                      {log.stock_actual}
-                    </td>
-                    <td className="px-4 py-3 text-[var(--color-warm-gray)] hidden sm:table-cell">
-                      {log.canal}
-                    </td>
-                    <td className="px-4 py-3 text-center">
-                      {log.enviado ? (
-                        <span className="text-green-600">&#10003;</span>
-                      ) : (
-                        <span className="text-red-500">&#10005;</span>
-                      )}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        ) : (
-          <div className="p-8 text-center">
-            <p className="text-sm text-[var(--color-warm-gray)]">
+                    </div>
+                    <div
+                      style={{
+                        fontSize: 12,
+                        color: "#9b968c",
+                        marginTop: 3,
+                        display: "flex",
+                        gap: 8,
+                        flexWrap: "wrap",
+                      }}
+                    >
+                      <span>{formatDate(log.created_at)}</span>
+                      <span>&middot;</span>
+                      <span>{log.canal}</span>
+                      <span>&middot;</span>
+                      <span>Stock: {log.stock_actual}</span>
+                    </div>
+                  </div>
+                  <div
+                    style={{
+                      fontSize: 18,
+                      fontWeight: 700,
+                      color: log.enviado ? "#16794a" : "#c0392b",
+                      flexShrink: 0,
+                      marginLeft: 12,
+                    }}
+                  >
+                    {log.enviado ? "\u2713" : "\u2715"}
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div style={{ padding: 48, textAlign: "center", fontSize: 14, color: "#9b968c" }}>
               Sin alertas registradas
-            </p>
-          </div>
-        )}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

@@ -10,7 +10,7 @@ export async function GET(request: NextRequest) {
   const search = searchParams.get("search") || "";
   const categoria = searchParams.get("categoria") || "";
 
-  // Si piden solo alertas, usar la vista
+  // Si piden solo alertas, usar la vista y mapear al formato esperado
   if (alerta === "true") {
     const { data, error } = await supabase
       .from("vista_stock_bajo")
@@ -19,7 +19,23 @@ export async function GET(request: NextRequest) {
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
-    return NextResponse.json({ data });
+
+    const mapped = (data || []).map((row) => ({
+      id: row.id,
+      producto_id: row.id,
+      cantidad: row.cantidad,
+      stock_minimo: row.stock_minimo,
+      ubicacion: row.ubicacion,
+      productos: {
+        id: row.id,
+        nombre: row.nombre,
+        slug: row.slug,
+        categoria: row.categoria,
+        sku: row.sku,
+      },
+    }));
+
+    return NextResponse.json({ data: mapped });
   }
 
   // Query normal: inventario con join a productos

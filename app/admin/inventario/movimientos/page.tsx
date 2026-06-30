@@ -15,11 +15,11 @@ interface Movimiento {
   productos: { nombre: string; slug: string };
 }
 
-const TIPO_LABELS: Record<string, string> = {
-  entrada: "Entrada",
-  salida: "Salida",
-  ajuste: "Ajuste",
-  devolucion: "Devolución",
+const TIPO_CONFIG: Record<string, { label: string; color: string }> = {
+  entrada: { label: "Entrada", color: "#16794a" },
+  salida: { label: "Salida", color: "#c2410c" },
+  ajuste: { label: "Ajuste", color: "#b7791f" },
+  devolucion: { label: "Devolución", color: "#16794a" },
 };
 
 export default function MovimientosPage() {
@@ -50,123 +50,132 @@ export default function MovimientosPage() {
     });
 
   return (
-    <div className="max-w-5xl">
-      <div className="flex items-center gap-2 text-xs text-[var(--color-warm-gray)] mb-4">
-        <Link href="/admin/inventario" className="hover:text-[var(--color-oak)] transition-colors">
+    <div style={{ maxWidth: 1180, margin: "0 auto" }}>
+      {/* Breadcrumb */}
+      <div style={{ display: "flex", alignItems: "center", gap: 7, fontSize: 12.5, color: "#9b968c", marginBottom: 16 }}>
+        <Link href="/admin/inventario" style={{ color: "#9b968c", textDecoration: "none" }}
+          onMouseEnter={(e) => (e.currentTarget.style.color = "#37352f")}
+          onMouseLeave={(e) => (e.currentTarget.style.color = "#9b968c")}>
           Inventario
         </Link>
         <span>/</span>
-        <span className="text-[var(--color-dark)]">Movimientos</span>
+        <span style={{ color: "#37352f" }}>Movimientos</span>
       </div>
 
-      <div className="mb-6">
-        <h1 className="font-serif text-2xl md:text-3xl tracking-wider text-[var(--color-dark)]">
-          Historial de movimientos
+      <div style={{ marginBottom: 22 }}>
+        <h1 style={{ fontSize: 28, fontWeight: 700, color: "#37352f" }}>
+          📋 Historial de movimientos
         </h1>
-        <p className="mt-1 text-sm text-[var(--color-warm-gray)]">
+        <p style={{ fontSize: 14, color: "#8b867c", marginTop: 4 }}>
           Registro de todos los cambios de stock
         </p>
       </div>
 
-      <div className="bg-white rounded-sm border border-[var(--color-sand)]/30 overflow-hidden">
+      <div style={{ border: "1px solid #eeece7", borderRadius: 12, overflow: "hidden" }}>
         {loading ? (
-          <div className="p-12 text-center text-sm text-[var(--color-warm-gray)]">
+          <div style={{ padding: 48, textAlign: "center", fontSize: 14, color: "#9b968c" }}>
             Cargando movimientos...
           </div>
         ) : movimientos.length === 0 ? (
-          <div className="p-12 text-center text-sm text-[var(--color-warm-gray)]">
-            Sin movimientos registrados
+          <div style={{ padding: 48, textAlign: "center", fontSize: 14, color: "#9b968c" }}>
+            Sin movimientos registrados.
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-[var(--color-sand)]/20">
-                  <th className="text-left px-4 py-3 text-[10px] tracking-[0.15em] uppercase text-[var(--color-warm-gray)] font-normal">
-                    Fecha
-                  </th>
-                  <th className="text-left px-4 py-3 text-[10px] tracking-[0.15em] uppercase text-[var(--color-warm-gray)] font-normal">
-                    Producto
-                  </th>
-                  <th className="text-left px-4 py-3 text-[10px] tracking-[0.15em] uppercase text-[var(--color-warm-gray)] font-normal">
-                    Tipo
-                  </th>
-                  <th className="text-right px-4 py-3 text-[10px] tracking-[0.15em] uppercase text-[var(--color-warm-gray)] font-normal">
-                    Cambio
-                  </th>
-                  <th className="text-left px-4 py-3 text-[10px] tracking-[0.15em] uppercase text-[var(--color-warm-gray)] font-normal hidden md:table-cell">
-                    Nota
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {movimientos.map((mov) => (
-                  <tr
-                    key={mov.id}
-                    className="border-b border-[var(--color-sand)]/10 hover:bg-[var(--color-linen)]/30 transition-colors"
-                  >
-                    <td className="px-4 py-3 text-xs text-[var(--color-warm-gray)]">
-                      {formatDate(mov.creado_en)}
-                    </td>
-                    <td className="px-4 py-3">
+          <>
+            {movimientos.map((mov) => {
+              const cfg = TIPO_CONFIG[mov.tipo] || { label: mov.tipo, color: "#6b6760" };
+              const delta = mov.cantidad_despues - mov.cantidad_antes;
+              const deltaStr = (delta >= 0 ? "+" : "") + delta;
+
+              return (
+                <div
+                  key={mov.id}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    padding: "13px 18px",
+                    borderBottom: "1px solid #f4f2ec",
+                    cursor: "pointer",
+                  }}
+                  onMouseEnter={(e) => (e.currentTarget.style.background = "#faf9f6")}
+                  onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+                >
+                  <div>
+                    <div style={{ display: "flex", alignItems: "center", gap: 9 }}>
+                      <span style={{ fontSize: 13, fontWeight: 600, color: cfg.color }}>
+                        {cfg.label}
+                      </span>
+                      <span style={{ fontSize: 12.5, color: cfg.color, fontVariantNumeric: "tabular-nums" }}>
+                        {deltaStr}
+                      </span>
+                      <span style={{ fontSize: 12.5, color: "#9b968c" }}>·</span>
                       <Link
                         href={`/admin/inventario/${mov.producto_id}`}
-                        className="text-[var(--color-dark)] hover:text-[var(--color-oak)] transition-colors"
+                        style={{ fontSize: 13, color: "#37352f", textDecoration: "none", fontWeight: 500 }}
+                        onMouseEnter={(e) => (e.currentTarget.style.color = "#6b6760")}
+                        onMouseLeave={(e) => (e.currentTarget.style.color = "#37352f")}
                       >
                         {mov.productos?.nombre || "—"}
                       </Link>
-                    </td>
-                    <td className="px-4 py-3">
-                      <span
-                        className={`text-xs font-medium ${
-                          mov.tipo === "entrada" || mov.tipo === "devolucion"
-                            ? "text-green-600"
-                            : mov.tipo === "salida"
-                              ? "text-red-600"
-                              : "text-amber-600"
-                        }`}
-                      >
-                        {TIPO_LABELS[mov.tipo] || mov.tipo}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 text-right text-xs">
-                      <span className="text-[var(--color-warm-gray)]">
-                        {mov.cantidad_antes}
-                      </span>
-                      <span className="mx-1 text-[var(--color-warm-gray)]">&rarr;</span>
-                      <span className="font-medium text-[var(--color-dark)]">
-                        {mov.cantidad_despues}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 text-xs text-[var(--color-warm-gray)] hidden md:table-cell">
-                      {mov.nota || "—"}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                    </div>
+                    <div style={{ fontSize: 11.5, color: "#9b968c", marginTop: 2 }}>
+                      {mov.nota || "Sin nota"}
+                    </div>
+                  </div>
+                  <div style={{ textAlign: "right", fontVariantNumeric: "tabular-nums" }}>
+                    <div style={{ fontSize: 12.5, color: "#6b6760" }}>
+                      {mov.cantidad_antes} → {mov.cantidad_despues}
+                    </div>
+                    <div style={{ fontSize: 11, color: "#b3ada1" }}>
+                      {formatDate(mov.creado_en)}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </>
         )}
 
-        {/* Paginación */}
         {totalPages > 1 && (
-          <div className="flex items-center justify-center gap-2 py-4 border-t border-[var(--color-sand)]/20">
+          <div style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 12,
+            padding: "12px 0",
+            borderTop: "1px solid #f1efe9",
+          }}>
             <button
               onClick={() => setPage((p) => Math.max(1, p - 1))}
               disabled={page === 1}
-              className="px-3 py-1.5 text-xs text-[var(--color-warm-gray)] hover:text-[var(--color-dark)] disabled:opacity-30 transition-colors"
+              style={{
+                fontFamily: "inherit",
+                fontSize: 12.5,
+                color: page === 1 ? "#d8d3c8" : "#6b6760",
+                background: "transparent",
+                border: 0,
+                cursor: page === 1 ? "default" : "pointer",
+              }}
             >
-              Anterior
+              ← Anterior
             </button>
-            <span className="text-xs text-[var(--color-warm-gray)]">
+            <span style={{ fontSize: 12.5, color: "#9b968c" }}>
               {page} de {totalPages}
             </span>
             <button
               onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
               disabled={page === totalPages}
-              className="px-3 py-1.5 text-xs text-[var(--color-warm-gray)] hover:text-[var(--color-dark)] disabled:opacity-30 transition-colors"
+              style={{
+                fontFamily: "inherit",
+                fontSize: 12.5,
+                color: page === totalPages ? "#d8d3c8" : "#6b6760",
+                background: "transparent",
+                border: 0,
+                cursor: page === totalPages ? "default" : "pointer",
+              }}
             >
-              Siguiente
+              Siguiente →
             </button>
           </div>
         )}

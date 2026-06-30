@@ -2,14 +2,19 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 const CATEGORIAS = [
   "Muebles",
   "Cojines & Textiles",
   "Adornos",
+  "Jarrones",
   "Iluminación",
   "Alfombras",
   "Acabados",
+  "Capelos",
+  "Relojes",
+  "Florero",
 ];
 
 interface ProductFormProps {
@@ -44,6 +49,18 @@ function slugify(text: string): string {
     .replace(/^-|-$/g, "");
 }
 
+const inputStyle: React.CSSProperties = {
+  width: "100%",
+  fontFamily: "inherit",
+  fontSize: 13.5,
+  color: "#37352f",
+  border: "1px solid #e6e3db",
+  borderRadius: 8,
+  padding: "9px 12px",
+  background: "#fff",
+  outline: "none",
+};
+
 export default function ProductForm({
   initialData,
   initialStock,
@@ -65,7 +82,6 @@ export default function ProductForm({
     materiales: initialData?.materiales?.join(", ") || "",
     acabados: initialData?.acabados?.join(", ") || "",
     imagen_url: initialData?.imagen_url || "",
-    // Solo para create
     cantidad_inicial: initialStock?.cantidad || 0,
     ubicacion: initialStock?.ubicacion || "Showroom",
     stock_minimo: initialStock?.stock_minimo || 2,
@@ -130,251 +146,210 @@ export default function ProductForm({
     router.refresh();
   };
 
-  const inputClass =
-    "w-full px-4 py-2.5 bg-white border border-[var(--color-sand)]/50 rounded-sm text-sm text-[var(--color-dark)] placeholder:text-[var(--color-warm-gray)]/40 focus:outline-none focus:border-[var(--color-oak)] transition-colors";
-  const labelClass =
-    "block text-[10px] tracking-[0.2em] uppercase text-[var(--color-warm-gray)] mb-1.5";
+  const title = mode === "create" ? "Nuevo producto" : "Editar producto";
+  const btnLabel = mode === "create" ? "Crear producto" : "Guardar cambios";
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 max-w-2xl">
-      {/* Información básica */}
-      <div className="bg-white rounded-sm border border-[var(--color-sand)]/30 p-6 space-y-4">
-        <h3 className="text-xs tracking-[0.15em] uppercase text-[var(--color-dark)] font-medium mb-4">
-          Información del producto
-        </h3>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="sm:col-span-2">
-            <label className={labelClass}>Nombre</label>
-            <input
-              type="text"
-              required
-              value={form.nombre}
-              onChange={(e) => handleNameChange(e.target.value)}
-              className={inputClass}
-              placeholder="Mesa de Centro Encino"
-            />
-          </div>
-
-          <div>
-            <label className={labelClass}>Slug (URL)</label>
-            <input
-              type="text"
-              required
-              value={form.slug}
-              onChange={(e) => setForm((f) => ({ ...f, slug: e.target.value }))}
-              className={inputClass}
-              placeholder="mesa-centro-encino"
-            />
-          </div>
-
-          <div>
-            <label className={labelClass}>SKU</label>
-            <input
-              type="text"
-              value={form.sku}
-              onChange={(e) => setForm((f) => ({ ...f, sku: e.target.value }))}
-              className={inputClass}
-              placeholder="MUE-001"
-            />
-          </div>
-
-          <div>
-            <label className={labelClass}>Categoría</label>
-            <select
-              value={form.categoria}
-              onChange={(e) =>
-                setForm((f) => ({ ...f, categoria: e.target.value }))
-              }
-              className={inputClass}
-            >
-              {CATEGORIAS.map((cat) => (
-                <option key={cat} value={cat}>
-                  {cat}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div>
-            <label className={labelClass}>Dimensiones</label>
-            <input
-              type="text"
-              value={form.dimensiones}
-              onChange={(e) =>
-                setForm((f) => ({ ...f, dimensiones: e.target.value }))
-              }
-              className={inputClass}
-              placeholder="120 × 60 × 45 cm"
-            />
-          </div>
-        </div>
-
-        <div>
-          <label className={labelClass}>Descripción</label>
-          <textarea
-            value={form.descripcion}
-            onChange={(e) =>
-              setForm((f) => ({ ...f, descripcion: e.target.value }))
-            }
-            className={`${inputClass} min-h-[80px] resize-y`}
-            placeholder="Descripción del producto..."
-          />
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div>
-            <label className={labelClass}>Materiales (separados por coma)</label>
-            <input
-              type="text"
-              value={form.materiales}
-              onChange={(e) =>
-                setForm((f) => ({ ...f, materiales: e.target.value }))
-              }
-              className={inputClass}
-              placeholder="Encino natural, Acero"
-            />
-          </div>
-          <div>
-            <label className={labelClass}>Acabados (separados por coma)</label>
-            <input
-              type="text"
-              value={form.acabados}
-              onChange={(e) =>
-                setForm((f) => ({ ...f, acabados: e.target.value }))
-              }
-              className={inputClass}
-              placeholder="Natural, Nogal, Negro"
-            />
-          </div>
-        </div>
-
-        <div>
-          <label className={labelClass}>URL de imagen</label>
-          <input
-            type="text"
-            value={form.imagen_url}
-            onChange={(e) =>
-              setForm((f) => ({ ...f, imagen_url: e.target.value }))
-            }
-            className={inputClass}
-            placeholder="/images/productos/mesa-centro.jpg"
-          />
-        </div>
+    <div style={{ maxWidth: 760 }}>
+      {/* Breadcrumb */}
+      <div style={{ display: "flex", alignItems: "center", gap: 7, fontSize: 12.5, color: "#9b968c", marginBottom: 16 }}>
+        <Link href="/admin/inventario" style={{ color: "#9b968c", textDecoration: "none" }}
+          onMouseEnter={(e) => (e.currentTarget.style.color = "#37352f")}
+          onMouseLeave={(e) => (e.currentTarget.style.color = "#9b968c")}>
+          Inventario
+        </Link>
+        <span>/</span>
+        <span style={{ color: "#37352f" }}>{title}</span>
       </div>
 
-      {/* Precios */}
-      <div className="bg-white rounded-sm border border-[var(--color-sand)]/30 p-6">
-        <h3 className="text-xs tracking-[0.15em] uppercase text-[var(--color-dark)] font-medium mb-4">
-          Precios
-        </h3>
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label className={labelClass}>Precio costo (MXN)</label>
-            <input
-              type="number"
-              min="0"
-              step="0.01"
-              value={form.precio_costo}
-              onChange={(e) =>
-                setForm((f) => ({ ...f, precio_costo: Number(e.target.value) }))
-              }
-              className={inputClass}
-            />
-          </div>
-          <div>
-            <label className={labelClass}>Precio venta (MXN)</label>
-            <input
-              type="number"
-              min="0"
-              step="0.01"
-              value={form.precio_venta}
-              onChange={(e) =>
-                setForm((f) => ({ ...f, precio_venta: Number(e.target.value) }))
-              }
-              className={inputClass}
-            />
-          </div>
-        </div>
-      </div>
+      <h1 style={{ fontSize: 26, fontWeight: 700, color: "#37352f", letterSpacing: "-0.01em", marginBottom: 22 }}>
+        {title}
+      </h1>
 
-      {/* Stock inicial (solo en crear) */}
-      {mode === "create" && (
-        <div className="bg-white rounded-sm border border-[var(--color-sand)]/30 p-6">
-          <h3 className="text-xs tracking-[0.15em] uppercase text-[var(--color-dark)] font-medium mb-4">
-            Stock inicial
-          </h3>
-          <div className="grid grid-cols-3 gap-4">
-            <div>
-              <label className={labelClass}>Cantidad</label>
-              <input
-                type="number"
-                min="0"
-                value={form.cantidad_inicial}
-                onChange={(e) =>
-                  setForm((f) => ({
-                    ...f,
-                    cantidad_inicial: Number(e.target.value),
-                  }))
-                }
-                className={inputClass}
-              />
-            </div>
-            <div>
-              <label className={labelClass}>Ubicación</label>
+      <form onSubmit={handleSubmit}>
+        {/* Información del producto */}
+        <div style={{ border: "1px solid #eeece7", borderRadius: 12, padding: 22, marginBottom: 16 }}>
+          <div style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: "0.12em", color: "#b3ada1", fontWeight: 600, marginBottom: 16 }}>
+            Información del producto
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
+            <label style={{ gridColumn: "span 2" }}>
+              <div style={{ fontSize: 12, color: "#6b6760", marginBottom: 5 }}>Nombre</div>
               <input
                 type="text"
-                value={form.ubicacion}
-                onChange={(e) =>
-                  setForm((f) => ({ ...f, ubicacion: e.target.value }))
-                }
-                className={inputClass}
+                required
+                value={form.nombre}
+                onChange={(e) => handleNameChange(e.target.value)}
+                placeholder="Mesa de Centro Encino"
+                style={inputStyle}
               />
-            </div>
-            <div>
-              <label className={labelClass}>Stock mínimo</label>
+            </label>
+            <label>
+              <div style={{ fontSize: 12, color: "#6b6760", marginBottom: 5 }}>SKU</div>
+              <input
+                type="text"
+                value={form.sku}
+                onChange={(e) => setForm((f) => ({ ...f, sku: e.target.value }))}
+                placeholder="MUE-001"
+                style={inputStyle}
+              />
+            </label>
+            <label>
+              <div style={{ fontSize: 12, color: "#6b6760", marginBottom: 5 }}>Categoría</div>
+              <select
+                value={form.categoria}
+                onChange={(e) => setForm((f) => ({ ...f, categoria: e.target.value }))}
+                style={inputStyle}
+              >
+                {CATEGORIAS.map((cat) => (
+                  <option key={cat} value={cat}>{cat}</option>
+                ))}
+              </select>
+            </label>
+            <label style={{ gridColumn: "span 2" }}>
+              <div style={{ fontSize: 12, color: "#6b6760", marginBottom: 5 }}>Dimensiones</div>
+              <input
+                type="text"
+                value={form.dimensiones}
+                onChange={(e) => setForm((f) => ({ ...f, dimensiones: e.target.value }))}
+                placeholder="120 × 60 × 45 cm"
+                style={inputStyle}
+              />
+            </label>
+            <label style={{ gridColumn: "span 2" }}>
+              <div style={{ fontSize: 12, color: "#6b6760", marginBottom: 5 }}>Descripción</div>
+              <textarea
+                value={form.descripcion}
+                onChange={(e) => setForm((f) => ({ ...f, descripcion: e.target.value }))}
+                placeholder="Descripción del producto..."
+                style={{ ...inputStyle, minHeight: 78, resize: "vertical" as const }}
+              />
+            </label>
+            <label style={{ gridColumn: "span 2" }}>
+              <div style={{ fontSize: 12, color: "#6b6760", marginBottom: 5 }}>Materiales (separados por coma)</div>
+              <input
+                type="text"
+                value={form.materiales}
+                onChange={(e) => setForm((f) => ({ ...f, materiales: e.target.value }))}
+                placeholder="Encino natural, Acero"
+                style={inputStyle}
+              />
+            </label>
+          </div>
+        </div>
+
+        {/* Precios */}
+        <div style={{ border: "1px solid #eeece7", borderRadius: 12, padding: 22, marginBottom: 16 }}>
+          <div style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: "0.12em", color: "#b3ada1", fontWeight: 600, marginBottom: 16 }}>
+            Precios
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
+            <label>
+              <div style={{ fontSize: 12, color: "#6b6760", marginBottom: 5 }}>Precio costo (MXN)</div>
               <input
                 type="number"
                 min="0"
-                value={form.stock_minimo}
-                onChange={(e) =>
-                  setForm((f) => ({
-                    ...f,
-                    stock_minimo: Number(e.target.value),
-                  }))
-                }
-                className={inputClass}
+                step="0.01"
+                value={form.precio_costo}
+                onChange={(e) => setForm((f) => ({ ...f, precio_costo: Number(e.target.value) }))}
+                style={inputStyle}
               />
-            </div>
+            </label>
+            <label>
+              <div style={{ fontSize: 12, color: "#6b6760", marginBottom: 5 }}>Precio venta (MXN)</div>
+              <input
+                type="number"
+                min="0"
+                step="0.01"
+                value={form.precio_venta}
+                onChange={(e) => setForm((f) => ({ ...f, precio_venta: Number(e.target.value) }))}
+                style={inputStyle}
+              />
+            </label>
           </div>
         </div>
-      )}
 
-      {/* Error y botones */}
-      {error && (
-        <p className="text-xs text-red-600/80">{error}</p>
-      )}
+        {/* Stock inicial (solo create) */}
+        {mode === "create" && (
+          <div style={{ border: "1px solid #eeece7", borderRadius: 12, padding: 22, marginBottom: 16 }}>
+            <div style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: "0.12em", color: "#b3ada1", fontWeight: 600, marginBottom: 16 }}>
+              Stock inicial
+            </div>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 14 }}>
+              <label>
+                <div style={{ fontSize: 12, color: "#6b6760", marginBottom: 5 }}>Cantidad</div>
+                <input
+                  type="number"
+                  min="0"
+                  value={form.cantidad_inicial}
+                  onChange={(e) => setForm((f) => ({ ...f, cantidad_inicial: Number(e.target.value) }))}
+                  style={inputStyle}
+                />
+              </label>
+              <label>
+                <div style={{ fontSize: 12, color: "#6b6760", marginBottom: 5 }}>Ubicación</div>
+                <input
+                  type="text"
+                  value={form.ubicacion}
+                  onChange={(e) => setForm((f) => ({ ...f, ubicacion: e.target.value }))}
+                  style={inputStyle}
+                />
+              </label>
+              <label>
+                <div style={{ fontSize: 12, color: "#6b6760", marginBottom: 5 }}>Stock mínimo</div>
+                <input
+                  type="number"
+                  min="0"
+                  value={form.stock_minimo}
+                  onChange={(e) => setForm((f) => ({ ...f, stock_minimo: Number(e.target.value) }))}
+                  style={inputStyle}
+                />
+              </label>
+            </div>
+          </div>
+        )}
 
-      <div className="flex gap-3">
-        <button
-          type="submit"
-          disabled={loading}
-          className="px-6 py-2.5 bg-[var(--color-dark)] text-white text-xs tracking-[0.15em] uppercase rounded-sm hover:bg-[var(--color-camel)] transition-colors disabled:opacity-50"
-        >
-          {loading
-            ? "Guardando..."
-            : mode === "create"
-              ? "Crear producto"
-              : "Guardar cambios"}
-        </button>
-        <button
-          type="button"
-          onClick={() => router.back()}
-          className="px-6 py-2.5 border border-[var(--color-sand)]/50 text-xs tracking-[0.15em] uppercase text-[var(--color-warm-gray)] rounded-sm hover:border-[var(--color-oak)] transition-colors"
-        >
-          Cancelar
-        </button>
-      </div>
-    </form>
+        {error && (
+          <div style={{ fontSize: 13, color: "#c2410c", marginBottom: 12 }}>{error}</div>
+        )}
+
+        <div style={{ display: "flex", gap: 10 }}>
+          <button
+            type="submit"
+            disabled={loading}
+            style={{
+              fontFamily: "inherit",
+              fontSize: 13.5,
+              fontWeight: 500,
+              color: "#fff",
+              background: "#37352f",
+              border: 0,
+              borderRadius: 8,
+              padding: "11px 22px",
+              cursor: loading ? "not-allowed" : "pointer",
+              opacity: loading ? 0.5 : 1,
+            }}
+          >
+            {loading ? "Guardando..." : btnLabel}
+          </button>
+          <button
+            type="button"
+            onClick={() => router.push("/admin/inventario")}
+            style={{
+              fontFamily: "inherit",
+              fontSize: 13.5,
+              color: "#6b6760",
+              background: "#fff",
+              border: "1px solid #e6e3db",
+              borderRadius: 8,
+              padding: "11px 22px",
+              cursor: "pointer",
+            }}
+          >
+            Cancelar
+          </button>
+        </div>
+      </form>
+    </div>
   );
 }

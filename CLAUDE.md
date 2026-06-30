@@ -195,7 +195,7 @@ LOMEI HOME
 
 ---
 
-### Página 5: Servicios (/servicios) — Fase 1 (pendiente)
+### Página 5: Servicios (/servicios)
 
 - Diseño residencial
 - Diseño comercial
@@ -205,7 +205,7 @@ LOMEI HOME
 
 ---
 
-### Página 6: Contacto (/contacto) — Fase 1 (pendiente)
+### Página 6: Contacto (/contacto)
 
 - Formulario: nombre, email, teléfono, tipo de proyecto, mensaje
 - Botón de agendar cita
@@ -299,7 +299,7 @@ lomei-home-app/
 │   ├── sanity.ts               ← Cliente de Sanity
 │   └── data/
 │       ├── proyectos.ts        ← 16 proyectos reales
-│       └── productos.ts        ← 10 productos (imágenes pendientes de actualizar)
+│       └── productos.ts        ← 10 productos (fallback mock)
 ├── public/
 │   └── images/
 │       ├── logos/              ← Logos oficiales LOMEI
@@ -333,7 +333,84 @@ lomei-home-app/
 
 ---
 
-## 6. Convenciones de código
+## 6. Estilo visual del Admin Panel — "Notion Style"
+
+El panel de administración (`/admin/*`) sigue un estilo visual inspirado en Notion, **completamente separado** del estilo público del sitio (que usa la paleta LOMEI de §2).
+
+### Paleta del admin
+
+```css
+--admin-bg:         #fff;        /* fondo principal */
+--admin-sidebar-bg: #f8f7f4;     /* sidebar y fondos secundarios */
+--admin-text:       #37352f;     /* texto principal */
+--admin-text-muted: #9b968c;     /* texto secundario */
+--admin-text-mid:   #6b6760;     /* texto intermedio */
+--admin-border:     #eeece7;     /* bordes de cards y tablas */
+--admin-border-light: #f1efe9;   /* separadores de filas */
+--admin-hover:      #faf9f6;     /* hover en filas */
+--admin-accent:     #37352f;     /* botones primarios, chips activos */
+```
+
+### Tipografía del admin
+
+```css
+font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+/* NO usar Cormorant Garamond ni Montserrat en el admin */
+```
+
+### Reglas de diseño del admin
+
+- **Cards**: `border: 1px solid #eeece7`, `border-radius: 12px`, padding 20-28px
+- **Tablas**: header con `background: #f8f7f4`, columnas en 11px uppercase `#9b968c`
+- **Chips/filtros**: activo = `bg #37352f` texto blanco, inactivo = `bg #fff` borde `#e6e3db`
+- **Status pills**: `border-radius: 999px`, colores semánticos:
+  - En stock: `bg #eaf3ec` / `color #16794a`
+  - Bajo: `bg #fbf3e0` / `color #b7791f`
+  - Crítico: `bg #fdf3ec` / `color #c2410c`
+  - Agotado: `bg #f1efe9` / `color #8a857c`
+- **Inputs**: `border: 1px solid #e6e3db`, `border-radius: 8px`, padding 9-11px
+- **Botones primarios**: `bg #37352f`, `color #fff`, `border-radius: 8px`
+- **Encabezados de sección**: 11px uppercase, `letter-spacing: 0.12em`, `color #b3ada1`, `font-weight: 600`
+- **Emojis como iconos**: cada sección/categoría usa emojis (📊📦💰🧾🔔)
+- **Sidebar**: fondo `#f8f7f4`, monograma "L" oscuro, navegación con emojis
+- **Inline styles**: el admin usa estilos inline (no Tailwind) para independencia del sitio público
+- **Sin sombras**: bordes sutiles en lugar de box-shadow
+
+### Categorías y emojis
+
+| Categoría | Emoji |
+|---|---|
+| Muebles | 🛋️ |
+| Cojines & Textiles | 🧶 |
+| Adornos | 🏺 |
+| Jarrones | 🏺 |
+| Iluminación | 💡 |
+| Alfombras | 🧵 |
+| Acabados | 🪞 |
+| Capelos | 🔔 |
+| Relojes | ⏳ |
+| Florero | 🌸 |
+
+### Páginas del admin
+
+```
+/admin/login          ← Login centrado con monograma "L"
+/admin                ← Dashboard con KPIs emoji + alertas + actividad
+/admin/pos            ← Punto de Venta (POS) — buscar productos, carrito, datos cliente, checkout
+/admin/inventario     ← Lista con búsqueda, chips de categoría, tabla
+/admin/inventario/[id]       ← Detalle de producto + ajuste de stock + historial
+/admin/inventario/[id]/editar ← Formulario de edición (ProductForm)
+/admin/inventario/nuevo       ← Formulario de creación (ProductForm)
+/admin/inventario/movimientos ← Historial global de movimientos
+/admin/ordenes        ← Lista de órdenes con filtros de estado
+/admin/ordenes/[id]   ← Detalle de orden + cambio de estado
+/admin/ventas         ← Resumen de ventas con gráfica y KPIs
+/admin/alertas        ← Alertas de stock bajo + configuración
+```
+
+---
+
+## 7. Convenciones de código
 
 - **Componentes**: PascalCase, un componente por archivo
 - **Hooks**: camelCase con prefijo `use`
@@ -346,7 +423,7 @@ lomei-home-app/
 
 ---
 
-## 7. Fases del proyecto
+## 8. Fases del proyecto
 
 ### Fase 1 — Vitrina (activa — entrega 30 junio 2026)
 Objetivo: sitio público funcional con identidad de LOMEI HOME
@@ -360,12 +437,11 @@ Objetivo: sitio público funcional con identidad de LOMEI HOME
 - [x] Integración con Sanity CMS (schemas + queries + studio)
 - [x] Logo oficial integrado (Navbar, Footer, Hero)
 - [x] 16 proyectos reales con ~80 renders en /images/proyectos/
-- [ ] **Página de Servicios** (esqueleto → completa, fecha: 9 junio)
-- [ ] **Página de Contacto** (esqueleto → formulario funcional, fecha: 9 junio)
-- [ ] Actualizar imágenes de productos (`lib/data/productos.ts` usa paths viejos)
-- [ ] Actualizar imágenes en Nosotros (`app/nosotros/page.tsx` tiene 4 paths viejos)
-- [ ] Carga de contenido real en Sanity CMS
-- [ ] Deploy en Vercel + dominio lomeihome.mx
+- [x] Página de Servicios completa
+- [x] Página de Contacto con formulario funcional
+- [x] Productos conectados a Sanity CMS (contenido real cargado)
+- [x] Imágenes en Nosotros actualizadas
+- [x] Deploy en Vercel + dominio lomeihome.mx
 
 ### Fase 3 — Operaciones (entrega 15 julio 2026, con 2do desarrollador)
 - [ ] Base de datos (Supabase PostgreSQL)
@@ -381,7 +457,7 @@ Objetivo: sitio público funcional con identidad de LOMEI HOME
 
 ---
 
-## 8. Cotización (26 mayo 2026)
+## 9. Cotización (26 mayo 2026)
 
 | Concepto | Precio |
 |---|---|
@@ -397,7 +473,7 @@ Mantenimiento: Básico $400 · Recomendado $700 · Premium $1,000 (mensual, apar
 
 ---
 
-## 9. Reglas que Claude NUNCA debe romper en este proyecto
+## 10. Reglas que Claude NUNCA debe romper en este proyecto
 
 1. **La paleta es fija** — no agregar colores fuera de los definidos en §2
 2. **Tipografía solo Cormorant Garamond + Montserrat** — nunca Inter, Roboto, Jost ni system fonts
