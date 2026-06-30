@@ -26,6 +26,9 @@ export default async function HomePage() {
       <Hero />
       <AboutPreview />
       <ServicesStrip />
+      <div className="max-w-[85rem] mx-auto px-6 md:px-10 lg:px-16">
+        <hr className="border-t border-[var(--color-sand)]" />
+      </div>
       <ProjectsGrid />
       <CatalogPreview productos={productos} />
       <Footer />

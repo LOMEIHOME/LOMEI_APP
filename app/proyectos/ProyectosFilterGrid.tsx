@@ -12,12 +12,6 @@ interface Props {
   categories: string[];
 }
 
-/* ============================================================
-   Proyectos — Opción B «Degradado permanente»
-   Una sola fuente de información: número · categoría · año +
-   nombre en serif, siempre visibles sobre un degradado
-   inferior (también en móvil). Sin texto duplicado debajo.
-   ============================================================ */
 export default function ProyectosFilterGrid({ proyectos, categories }: Props) {
   const [active, setActive] = useState("Todos");
 
@@ -35,7 +29,7 @@ export default function ProyectosFilterGrid({ proyectos, categories }: Props) {
   return (
     <>
       {/* Filtros */}
-      <div className="mb-12">
+      <div className="mb-10 md:mb-12">
         <FilterTabs
           categories={categories}
           active={active}
@@ -44,7 +38,7 @@ export default function ProyectosFilterGrid({ proyectos, categories }: Props) {
         />
       </div>
 
-      {/* Grid asimétrico */}
+      {/* Grid estilo IKEA — 2 columnas uniformes */}
       <AnimatePresence mode="wait">
         <motion.div
           key={active}
@@ -52,43 +46,37 @@ export default function ProyectosFilterGrid({ proyectos, categories }: Props) {
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -10 }}
           transition={{ duration: 0.4 }}
-          className="grid grid-cols-1 md:grid-cols-12 gap-5"
+          className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5"
         >
           {filtered.map((p, i) => {
-            // Patrón asimétrico: alternar entre cards grandes y pequeñas
-            const isLarge = i % 3 === 0;
-            const colSpan = isLarge ? "md:col-span-7" : "md:col-span-5";
-            const aspectRatio = isLarge ? "aspect-[16/10]" : "aspect-[4/3]";
             const num = String(i + 1).padStart(2, "0");
 
             return (
               <Link
                 key={p.slug}
                 href={`/proyectos/${p.slug}`}
-                className={`group block ${colSpan}`}
+                className="group block"
               >
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: i * 0.08 }}
+                  transition={{ duration: 0.5, delay: i * 0.06 }}
                 >
-                  <div
-                    className={`relative ${aspectRatio} overflow-hidden rounded-sm`}
-                  >
+                  <div className="relative aspect-[4/3] overflow-hidden rounded-sm">
                     <Image
                       src={p.images[0]}
                       alt={p.title}
                       fill
                       className="object-cover transition-transform duration-700 group-hover:scale-105"
-                      sizes={isLarge ? "(max-width: 768px) 100vw, 58vw" : "(max-width: 768px) 100vw, 42vw"}
+                      sizes="(max-width: 768px) 100vw, 50vw"
                     />
-                    {/* Degradado permanente — caption siempre visible */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-[rgba(42,33,24,0.72)] via-[rgba(42,33,24,0.16)] via-45% to-transparent flex items-end p-5 md:p-6">
+                    {/* Degradado permanente */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-[rgba(42,33,24,0.72)] via-[rgba(42,33,24,0.16)] via-45% to-transparent flex items-end p-5 md:p-7">
                       <div className="flex flex-col gap-1">
                         <p className="text-[10.5px] tracking-[0.2em] uppercase text-[var(--color-sand)]">
                           {num} · {p.category} · {p.year}
                         </p>
-                        <p className="font-serif text-xl md:text-[1.5625rem] tracking-wider text-[var(--color-white)]">
+                        <p className="font-serif text-lg md:text-2xl tracking-wider text-[var(--color-white)]">
                           {p.title}
                         </p>
                       </div>

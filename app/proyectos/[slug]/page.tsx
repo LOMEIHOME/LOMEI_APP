@@ -46,8 +46,8 @@ export default async function ProyectoDetallePage({
           sizes="100vw"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-dark)]/60 to-transparent" />
-        <div className="absolute bottom-0 left-0 right-0 p-6 md:p-16">
-          <div className="max-w-7xl mx-auto">
+        <div className="absolute bottom-0 left-0 right-0 px-6 md:px-10 lg:px-16 py-8 md:py-12">
+          <div className="max-w-[85rem] mx-auto">
             <FadeIn>
               <p className="text-[10px] tracking-[0.25em] uppercase text-[var(--color-sand)]">
                 {proyecto.category} · {proyecto.year}
@@ -68,7 +68,7 @@ export default async function ProyectoDetallePage({
       </section>
 
       {/* Contenido */}
-      <section className="max-w-7xl mx-auto px-6 py-16 md:py-24">
+      <section className="max-w-[85rem] mx-auto px-6 md:px-10 lg:px-16 py-16 md:py-24 lg:py-32">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-12 md:gap-16">
           <div className="md:col-span-7">
             <FadeIn>
@@ -134,7 +134,7 @@ export default async function ProyectoDetallePage({
 
       {/* Galería */}
       {proyecto.images.length > 1 && (
-        <section className="max-w-7xl mx-auto px-6 pb-16 md:pb-24">
+        <section className="max-w-[85rem] mx-auto px-6 md:px-10 lg:px-16 pb-16 md:pb-24 lg:pb-32">
           <FadeIn>
             <SectionTag>Galería</SectionTag>
           </FadeIn>
@@ -168,7 +168,7 @@ export default async function ProyectoDetallePage({
 
       {/* Navegación anterior / siguiente */}
       <section className="border-t border-[var(--color-sand)]/30">
-        <div className="max-w-7xl mx-auto px-6 py-12 flex items-center justify-between">
+        <div className="max-w-[85rem] mx-auto px-6 md:px-10 lg:px-16 py-12 flex items-center justify-between">
           {prev ? (
             <Link
               href={`/proyectos/${prev.slug}`}

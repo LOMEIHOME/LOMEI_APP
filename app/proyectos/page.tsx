@@ -5,7 +5,7 @@ import ProyectosFilterGrid from "./ProyectosFilterGrid";
 import FadeIn from "@/components/sections/FadeIn";
 import { getAllProyectos } from "@/lib/sanity";
 
-export const revalidate = 60; // ISR: revalida cada 60 segundos
+export const revalidate = 60;
 
 export default async function ProyectosPage() {
   const proyectos = await getAllProyectos();
@@ -19,8 +19,8 @@ export default async function ProyectosPage() {
       <Navbar />
 
       {/* Header */}
-      <section className="bg-[var(--color-linen)] pt-24 md:pt-32 pb-12 md:pb-16 px-6 md:px-10 lg:px-16">
-        <div>
+      <section className="bg-[var(--color-linen)] pt-24 md:pt-32 pb-12 md:pb-16">
+        <div className="max-w-[85rem] mx-auto px-6 md:px-10 lg:px-16">
           <FadeIn>
             <SectionTag className="!text-[11px] !text-[var(--color-oak)]">
               Portafolio
@@ -40,12 +40,14 @@ export default async function ProyectosPage() {
         </div>
       </section>
 
-      {/* Grid con filtros — ancho completo */}
-      <section className="px-6 md:px-10 lg:px-16 py-14 md:py-16">
-        <ProyectosFilterGrid
-          proyectos={proyectos}
-          categories={categories}
-        />
+      {/* Grid con filtros */}
+      <section className="py-12 md:py-16 lg:py-20">
+        <div className="max-w-[85rem] mx-auto px-6 md:px-10 lg:px-16">
+          <ProyectosFilterGrid
+            proyectos={proyectos}
+            categories={categories}
+          />
+        </div>
       </section>
 
       <Footer />

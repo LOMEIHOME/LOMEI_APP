@@ -14,6 +14,7 @@
   --color-camel:     #8B6340;
   --color-dark:      #2A2118;
   --color-white:     #FAFAF7;
+  --color-espresso:  #3A2A1C;   /* footer — espresso cálido, más rico que --dark */
 }
 
 @theme inline {
@@ -25,6 +26,7 @@
   --color-camel:     #8B6340;
   --color-dark:      #2A2118;
   --color-white:     #FAFAF7;
+  --color-espresso:  #3A2A1C;
 
   --font-serif: 'Cormorant Garamond', serif;
   --font-sans:  'Montserrat', sans-serif;

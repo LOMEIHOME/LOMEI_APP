@@ -83,8 +83,8 @@ export default function NosotrosPage() {
           sizes="100vw"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-dark)]/65 to-transparent" />
-        <div className="absolute bottom-0 left-0 right-0 p-6 md:p-16">
-          <div className="max-w-7xl mx-auto">
+        <div className="absolute bottom-0 left-0 right-0 px-6 md:px-10 lg:px-16 py-8 md:py-12">
+          <div className="max-w-[85rem] mx-auto">
             <FadeIn>
               <SectionTag className="!text-[11px] !text-[var(--color-sand)]">
                 Nosotros
@@ -105,7 +105,7 @@ export default function NosotrosPage() {
       </section>
 
       {/* Historia del estudio */}
-      <section className="max-w-7xl mx-auto px-6 py-16 md:py-24 lg:py-32">
+      <section className="max-w-[85rem] mx-auto px-6 md:px-10 lg:px-16 py-16 md:py-24 lg:py-32">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-16 items-center">
           <div className="md:col-span-5">
             <FadeIn>
@@ -165,7 +165,7 @@ export default function NosotrosPage() {
 
       {/* El Showroom */}
       <section className="bg-[var(--color-linen)] py-16 md:py-24 lg:py-32">
-        <div className="max-w-7xl mx-auto px-6">
+        <div className="max-w-[85rem] mx-auto px-6 md:px-10 lg:px-16">
           <FadeIn>
             <SectionTag className="!text-[11px] !text-[var(--color-oak)]">
               El showroom
@@ -248,7 +248,7 @@ export default function NosotrosPage() {
       </section>
 
       {/* Proceso de trabajo — línea de tiempo */}
-      <section className="max-w-7xl mx-auto px-6 py-16 md:py-24 lg:py-32">
+      <section className="max-w-[85rem] mx-auto px-6 md:px-10 lg:px-16 py-16 md:py-24 lg:py-32">
         <FadeIn>
           <SectionTag className="!text-[11px] !text-[var(--color-oak)]">
             Cómo trabajamos

@@ -31,7 +31,7 @@ export default function Hero() {
       <div className="absolute top-0 left-0 right-0 h-36 bg-gradient-to-b from-[var(--color-dark)]/55 to-transparent" />
 
       {/* Contenido — anclado abajo a la izquierda */}
-      <div className="absolute left-0 right-0 bottom-0 z-10 flex flex-col items-start px-7 pb-20 md:px-16 md:pb-24">
+      <div className="absolute left-0 right-0 bottom-0 z-10 flex flex-col items-start px-6 md:px-10 lg:px-16 pb-20 md:pb-24">
         {/* Eyebrow con filete */}
         <motion.span
           initial={{ opacity: 0, y: 10 }}
@@ -77,7 +77,7 @@ export default function Hero() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.6, delay: 1.0 }}
-        className="absolute bottom-8 right-8 md:right-16 flex flex-col items-center gap-2"
+        className="absolute bottom-8 right-6 md:right-10 lg:right-16 flex flex-col items-center gap-2"
       >
         <span className="text-[9px] tracking-[0.2em] uppercase text-[var(--color-white)]/60">
           Scroll

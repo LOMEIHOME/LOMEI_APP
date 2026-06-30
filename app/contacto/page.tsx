@@ -8,8 +8,8 @@ export default function ContactoPage() {
     <>
       <Navbar forceScrolled />
 
-      <section className="bg-[var(--color-linen)] pt-24 md:pt-32 pb-12 md:pb-16 px-6">
-        <div className="max-w-7xl mx-auto">
+      <section className="bg-[var(--color-linen)] pt-24 md:pt-32 pb-12 md:pb-16">
+        <div className="max-w-[85rem] mx-auto px-6 md:px-10 lg:px-16">
           <FadeIn>
             <SectionTag className="!text-[11px] !text-[var(--color-oak)]">
               Contacto
@@ -29,7 +29,7 @@ export default function ContactoPage() {
         </div>
       </section>
 
-      <section className="max-w-7xl mx-auto px-6 py-14 md:py-20">
+      <section className="max-w-[85rem] mx-auto px-6 md:px-10 lg:px-16 py-16 md:py-24 lg:py-32">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16">
           {/* Info de contacto */}
           <FadeIn>
@@ -120,8 +120,8 @@ export default function ContactoPage() {
       </section>
 
       {/* Mapa */}
-      <section className="px-6 pb-14 md:pb-20">
-        <div className="max-w-7xl mx-auto">
+      <section className="pb-16 md:pb-24">
+        <div className="max-w-[85rem] mx-auto px-6 md:px-10 lg:px-16">
           <FadeIn>
             <div className="relative w-full aspect-[16/7] md:aspect-[16/5] rounded-sm overflow-hidden">
               <iframe
