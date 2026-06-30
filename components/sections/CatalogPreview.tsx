@@ -21,7 +21,7 @@ export default function CatalogPreview({ productos }: Props) {
 
   return (
     <section className="bg-[var(--color-linen)] py-16 md:py-24 lg:py-32">
-      <div className="max-w-[85rem] mx-auto px-4 md:px-10 lg:px-16">
+      <div className="max-w-[85rem] mx-auto px-6 md:px-10 lg:px-16">
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 md:mb-12 gap-4">
           <div>
             <FadeIn>

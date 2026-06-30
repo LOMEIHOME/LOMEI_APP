@@ -42,7 +42,7 @@ export default async function ProductoDetallePage({
       <Navbar forceScrolled />
 
       <section className="pt-24 md:pt-28 pb-12 md:pb-24">
-        <div className="max-w-7xl mx-auto px-6">
+        <div className="max-w-[85rem] mx-auto px-6 md:px-10 lg:px-16">
           <div className="grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-16">
             {/* Galería — 7 cols */}
             <div className="md:col-span-7">
@@ -131,8 +131,8 @@ export default async function ProductoDetallePage({
 
       {/* Productos relacionados */}
       {related.length > 0 && (
-        <section className="bg-[var(--color-linen)] py-16 md:py-24">
-          <div className="max-w-7xl mx-auto px-6">
+        <section className="bg-[var(--color-linen)] py-16 md:py-24 lg:py-32">
+          <div className="max-w-[85rem] mx-auto px-6 md:px-10 lg:px-16">
             <FadeIn>
               <SectionTag>También te puede interesar</SectionTag>
             </FadeIn>
