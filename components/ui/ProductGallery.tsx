@@ -35,12 +35,12 @@ export default function ProductGallery({ images, name, badge }: ProductGalleryPr
       </FadeIn>
 
       {images.length > 1 && (
-        <div className="mt-4 grid grid-cols-4 gap-3">
+        <div className="mt-3 md:mt-4 flex gap-2 md:gap-3 overflow-x-auto scrollbar-hide pb-1">
           {images.map((img, i) => (
             <FadeIn key={i} delay={0.05 * i}>
               <button
                 onClick={() => setActiveIndex(i)}
-                className={`relative aspect-square overflow-hidden rounded-sm bg-[var(--color-linen)] w-full cursor-pointer transition-opacity duration-300 ${
+                className={`relative w-16 h-16 md:w-20 md:h-20 shrink-0 overflow-hidden rounded-sm bg-[var(--color-linen)] cursor-pointer transition-opacity duration-300 ${
                   i === activeIndex ? "ring-1 ring-[var(--color-oak)] opacity-100" : "opacity-60 hover:opacity-100"
                 }`}
               >
@@ -49,7 +49,7 @@ export default function ProductGallery({ images, name, badge }: ProductGalleryPr
                   alt={`${name} — vista ${i + 1}`}
                   fill
                   className="object-cover"
-                  sizes="15vw"
+                  sizes="80px"
                 />
               </button>
             </FadeIn>

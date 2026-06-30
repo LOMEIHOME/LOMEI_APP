@@ -11,7 +11,7 @@ interface Orden {
   id: string;
   numero: number;
   cliente_nombre: string;
-  created_at: string;
+  creado_en: string;
   total: number;
   estado: "pendiente" | "completada" | "cancelada";
 }
@@ -287,7 +287,7 @@ export default function OrdenesPage() {
                           fontSize: 13,
                         }}
                       >
-                        {formatDate(o.created_at)}
+                        {formatDate(o.creado_en)}
                       </td>
                       <td
                         style={{

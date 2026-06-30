@@ -105,7 +105,7 @@ export default function AdminDashboardPage() {
       const kpisJson = await kpisRes.json();
       const alertasJson = await alertasRes.json();
       const topJson = await topRes.json();
-      setKpis(kpisJson);
+      setKpis(kpisJson.data || kpisJson);
       setAlertas(alertasJson.data || []);
       setTopProductos(topJson.data || []);
     } catch {
