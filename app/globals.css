@@ -86,3 +86,12 @@ body::before {
   background: var(--color-sand);
   border-radius: 3px;
 }
+
+/* Ocultar scrollbar horizontal en filtros móvil */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}

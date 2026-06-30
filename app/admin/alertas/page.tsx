@@ -26,9 +26,9 @@ interface AlertaConfig {
 
 interface AlertaLog {
   id: string;
-  created_at: string;
-  producto_nombre: string;
-  stock_actual: number;
+  creado_en: string;
+  productos: { nombre: string } | null;
+  cantidad_actual: number;
   canal: string;
   enviado: boolean;
 }
@@ -105,7 +105,7 @@ export default function AlertasPage() {
       const configJson = await configRes.json();
       const logsJson = await logsRes.json();
       setAlertas(alertasJson.data || []);
-      if (configJson) setConfig(configJson);
+      if (configJson.data) setConfig(configJson.data);
       setLogs(logsJson.data || []);
     } catch {
       // silenciar errores de red
@@ -511,7 +511,7 @@ export default function AlertasPage() {
                 >
                   <div>
                     <div style={{ fontSize: 14, fontWeight: 500, color: "#37352f" }}>
-                      {log.producto_nombre}
+                      {log.productos?.nombre || "Producto"}
                     </div>
                     <div
                       style={{
@@ -523,11 +523,11 @@ export default function AlertasPage() {
                         flexWrap: "wrap",
                       }}
                     >
-                      <span>{formatDate(log.created_at)}</span>
+                      <span>{formatDate(log.creado_en)}</span>
                       <span>&middot;</span>
                       <span>{log.canal}</span>
                       <span>&middot;</span>
-                      <span>Stock: {log.stock_actual}</span>
+                      <span>Stock: {log.cantidad_actual}</span>
                     </div>
                   </div>
                   <div

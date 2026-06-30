@@ -95,8 +95,8 @@ export default function CatalogoFilterGrid({ productos, categories }: Props) {
               onChange={(e) => setQuery(e.target.value)}
               onFocus={() => setFocused(true)}
               onBlur={() => setFocused(false)}
-              placeholder="Buscar por nombre, material o categoría..."
-              className="flex-1 bg-transparent text-sm text-[var(--color-dark)] placeholder:text-[var(--color-warm-gray)] outline-none tracking-wide"
+              placeholder="Buscar producto..."
+              className="flex-1 bg-transparent text-[13px] md:text-sm text-[var(--color-dark)] placeholder:text-[var(--color-warm-gray)] outline-none tracking-wide"
             />
             {query && (
               <button

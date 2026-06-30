@@ -216,44 +216,41 @@ LOMEI HOME
 
 ## 4. Stack tecnológico
 
-### Repos en GitHub
-- **forma-espacio-app** (frontend) — renombrar a `lomei-home-app`
-- **forma-espacio-api** (backend) — renombrar a `lomei-home-api`
+### Repo en GitHub
+- **LOMEIHOME/LOMEI_APP** — monorepo (frontend + API routes + admin)
 
-### Frontend
+### Frontend + Backend (monorepo Next.js)
 ```
-Framework:    Next.js 14 (App Router)
-Estilos:      Tailwind CSS + CSS Variables para la paleta
+Framework:    Next.js 16 (App Router, Turbopack)
+Estilos:      Tailwind CSS 4 + CSS Variables para la paleta
 Tipografía:   Google Fonts — Cormorant Garamond + Montserrat
-Imágenes:     Next/Image con Cloudinary para optimización
+Imágenes:     Next/Image + Sanity CDN (urlFor)
 Animaciones:  Framer Motion (sutiles, nunca llamativas)
-CMS:          Sanity.io (gestión de proyectos y productos)
+CMS:          Sanity.io (proyectos y productos del sitio público)
+Base de datos: Supabase PostgreSQL (inventario, órdenes, clientes, alertas)
+Auth:         Supabase Auth (admin panel)
+Emails:       Nodemailer (tickets de venta)
 Deploy:       Vercel
-```
-
-### Backend (Fase 3 — Operaciones / Fase 2 — Tienda)
-```
-Runtime:      Node.js con Express
-Base de datos: PostgreSQL vía Supabase
-Auth:         Clerk (Fase 2)
-Pagos:        Stripe (Fase 2)
-Emails:       Resend (Fase 2)
-Deploy:       Railway
 ```
 
 ### Variables de entorno necesarias
 ```bash
-# .env.local (frontend)
+# .env.local
 NEXT_PUBLIC_SANITY_PROJECT_ID=
 NEXT_PUBLIC_SANITY_DATASET=production
-NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=
-NEXT_PUBLIC_SITE_URL=https://lomeihome.mx
+SANITY_API_TOKEN=              # Lectura desde Sanity
+SANITY_WRITE_TOKEN=            # Escritura a Sanity (solo para seeds)
 
-# Fase 3 (Operaciones) + Fase 2 (Tienda)
 NEXT_PUBLIC_SUPABASE_URL=
-NEXT_PUBLIC_SUPABASE_ANON_KEY=
-STRIPE_SECRET_KEY=
-NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=   # anon key (formato sb_publishable_)
+SUPABASE_SERVICE_ROLE_KEY=              # service role (formato sb_secret_)
+
+NEXT_PUBLIC_SITE_URL=https://lomeihome.com
+
+SMTP_HOST=                     # Para envío de tickets
+SMTP_PORT=
+SMTP_USER=
+SMTP_PASS=
 ```
 
 ---
@@ -261,73 +258,65 @@ NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=
 ## 5. Estructura de carpetas del proyecto
 
 ```
-lomei-home-app/
+LOMEI_APP/
 ├── app/
-│   ├── layout.tsx              ← Layout global (Nav + Footer)
-│   ├── page.tsx                ← Página de inicio
+│   ├── layout.tsx              ← Layout global
+│   ├── page.tsx                ← Página de inicio (Sanity: proyectos + productos)
 │   ├── globals.css             ← Variables CSS + estilos globales
 │   ├── proyectos/
-│   │   ├── page.tsx            ← Lista de proyectos
-│   │   └── [slug]/
-│   │       └── page.tsx        ← Detalle de proyecto
+│   │   ├── page.tsx            ← Lista de proyectos (Sanity)
+│   │   ├── ProyectosFilterGrid.tsx ← Grid 2 cols con filtros
+│   │   └── [slug]/page.tsx     ← Detalle de proyecto (Sanity)
 │   ├── catalogo/
-│   │   ├── page.tsx            ← Catálogo de productos
-│   │   └── [slug]/
-│   │       └── page.tsx        ← Detalle de producto
-│   ├── nosotros/
-│   │   └── page.tsx            ← Página nosotros
-│   ├── servicios/
-│   │   └── page.tsx            ← PENDIENTE (esqueleto)
-│   └── contacto/
-│       └── page.tsx            ← PENDIENTE (esqueleto)
+│   │   ├── page.tsx            ← Catálogo de productos (Sanity)
+│   │   ├── CatalogoFilterGrid.tsx ← Grid con buscador inteligente
+│   │   └── [slug]/page.tsx     ← Detalle de producto (Sanity)
+│   ├── nosotros/page.tsx       ← Página nosotros
+│   ├── servicios/page.tsx      ← Página servicios
+│   ├── contacto/page.tsx       ← Página contacto con formulario
+│   ├── admin/
+│   │   ├── layout.tsx          ← AdminShell (sidebar + header)
+│   │   ├── login/page.tsx      ← Login con monograma
+│   │   ├── page.tsx            ← Dashboard KPIs + top vendidos (Supabase)
+│   │   ├── pos/page.tsx        ← Punto de Venta (Supabase)
+│   │   ├── inventario/         ← CRUD productos (Supabase)
+│   │   ├── ordenes/            ← Lista + detalle órdenes (Supabase)
+│   │   ├── ventas/page.tsx     ← Resumen de ventas (Supabase)
+│   │   └── alertas/page.tsx    ← Alertas de stock (Supabase)
+│   └── api/
+│       ├── dashboard/kpis/     ← KPIs del dashboard
+│       ├── dashboard/top-productos/ ← Top 5 más vendidos
+│       ├── inventario/         ← CRUD inventario
+│       ├── productos/          ← CRUD productos
+│       ├── ordenes/            ← CRUD órdenes
+│       ├── clientes/           ← CRUD clientes
+│       ├── pos/productos/      ← Búsqueda ligera para POS
+│       ├── ventas/resumen/     ← Datos de ventas
+│       ├── alertas/            ← Config + log de alertas
+│       └── contacto/           ← Formulario de contacto
 ├── components/
-│   ├── layout/
-│   │   ├── Navbar.tsx          ← Logo real (dark/white según scroll)
-│   │   └── Footer.tsx          ← Logo blanco real
-│   ├── ui/
-│   │   ├── Button.tsx
-│   │   ├── Badge.tsx
-│   │   ├── FadeIn.tsx
-│   │   └── SectionTag.tsx
-│   └── sections/
-│       ├── Hero.tsx            ← Logo + render Paseo de Claustros
-│       ├── AboutPreview.tsx
-│       ├── ServicesStrip.tsx
-│       ├── ProjectsGrid.tsx
-│       └── CatalogPreview.tsx
+│   ├── layout/                 ← Navbar, Footer
+│   ├── ui/                     ← Button, Badge, FilterTabs, ProductGallery, etc.
+│   ├── sections/               ← Hero, AboutPreview, ServicesStrip, ProjectsGrid, etc.
+│   └── admin/                  ← AdminSidebar, AdminHeader, ProductForm, etc.
 ├── lib/
-│   ├── sanity.ts               ← Cliente de Sanity
-│   └── data/
-│       ├── proyectos.ts        ← 16 proyectos reales
-│       └── productos.ts        ← 10 productos (fallback mock)
-├── public/
-│   └── images/
-│       ├── logos/              ← Logos oficiales LOMEI
-│       │   ├── logo-dark.png   ← Logo completo fondo claro
-│       │   ├── logo-white.png  ← Logo completo fondo oscuro
-│       │   ├── icon-dark.png   ← Monograma "L" oscuro
-│       │   ├── icon-white.png  ← Monograma "L" blanco
-│       │   └── logo-redes.png  ← Logo para redes sociales
-│       ├── proyectos/          ← 16 carpetas con renders reales
-│       │   ├── paseo-de-claustros/   (10 renders)
-│       │   ├── sophia-distrito/      (5 renders)
-│       │   ├── atria-distrito/       (10 renders)
-│       │   ├── oficina-ave-fenix/    (6 renders)
-│       │   ├── cocina-alturia-zibata/ (5 renders)
-│       │   ├── ceja-de-bravo/        (5 renders)
-│       │   ├── puerta-coyoacan/      (4 renders)
-│       │   ├── roof-mirador-campanario/ (4 renders)
-│       │   ├── terraza-campo-real/   (5 renders)
-│       │   ├── recamara-bebe-villas/ (4 renders)
-│       │   ├── canadas-del-lago/     (3 renders)
-│       │   ├── valle-de-las-flores/  (5 renders)
-│       │   ├── casa-gema/            (2 renders)
-│       │   ├── teresitas/            (2 renders)
-│       │   ├── vestidor-pachuquilla/ (3 renders)
-│       │   └── san-juan-del-rio/     (3 renders)
-│       └── showroom/           ← Imágenes originales del showroom (legacy)
+│   ├── sanity.ts               ← Wrapper Sanity con fallback a mock data
+│   ├── supabase/admin.ts       ← Cliente Supabase para API routes
+│   ├── ticket.ts               ← Generación de notas de venta
+│   ├── email.ts                ← Envío de emails (nodemailer)
+│   └── data/                   ← Datos mock (fallback si Sanity no responde)
+├── sanity/
+│   ├── client.ts               ← Cliente Sanity + urlFor
+│   ├── queries.ts              ← GROQ queries
+│   └── schemas/                ← Schemas: proyecto, producto
+├── supabase/
+│   ├── schema.sql              ← Schema completo (productos, inventario, ordenes, clientes, alertas)
+│   └── migrations/             ← Migraciones SQL
+├── scripts/
+│   ├── seed-supabase.mjs       ← Seed de productos en Supabase
+│   └── seed-proyectos-sanity.mjs ← Seed de 16 proyectos en Sanity
+├── public/images/              ← Logos, proyectos (16 carpetas), showroom
 ├── CLAUDE.md                   ← Este archivo
-├── next.config.ts
 └── package.json
 ```
 
@@ -395,7 +384,7 @@ font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 
 ```
 /admin/login          ← Login centrado con monograma "L"
-/admin                ← Dashboard con KPIs emoji + alertas + actividad
+/admin                ← Dashboard con KPIs emoji + top 5 vendidos + alertas reposición
 /admin/pos            ← Punto de Venta (POS) — buscar productos, carrito, datos cliente, checkout
 /admin/inventario     ← Lista con búsqueda, chips de categoría, tabla
 /admin/inventario/[id]       ← Detalle de producto + ajuste de stock + historial
@@ -425,34 +414,37 @@ font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 
 ## 8. Fases del proyecto
 
-### Fase 1 — Vitrina (activa — entrega 30 junio 2026)
+### Fase 1 — Vitrina (completada)
 Objetivo: sitio público funcional con identidad de LOMEI HOME
 
 - [x] Setup inicial Next.js 16 + Tailwind CSS 4 + fuentes
 - [x] Componentes base: Navbar, Footer, Button, Badge, SectionTag, FadeIn
-- [x] Página de Inicio completa (Hero, About, Services, Projects, Catalog)
-- [x] Página de Proyectos (grid con filtros + 16 proyectos reales)
-- [x] Página de Catálogo (grid con filtros + detalle)
+- [x] Página de Inicio completa (Hero, About, Services, Projects carousel, Catalog)
+- [x] Página de Proyectos (grid 2 cols con filtros + 16 proyectos reales)
+- [x] Página de Catálogo (grid con buscador inteligente + filtros + detalle)
 - [x] Página Nosotros completa
-- [x] Integración con Sanity CMS (schemas + queries + studio)
-- [x] Logo oficial integrado (Navbar, Footer, Hero)
-- [x] 16 proyectos reales con ~80 renders en /images/proyectos/
 - [x] Página de Servicios completa
 - [x] Página de Contacto con formulario funcional
-- [x] Productos conectados a Sanity CMS (contenido real cargado)
-- [x] Imágenes en Nosotros actualizadas
-- [x] Deploy en Vercel + dominio lomeihome.mx
+- [x] Integración con Sanity CMS (schemas + queries + studio)
+- [x] Logo oficial integrado (Navbar, Footer, Hero)
+- [x] 16 proyectos con ~80 imágenes en Sanity CDN
+- [x] ~135 productos en Sanity CMS
+- [x] Deploy en Vercel + dominio lomeihome.com
+- [x] Responsive design en todas las páginas (max-w-[85rem] estándar)
 
-### Fase 3 — Operaciones (entrega 15 julio 2026, con 2do desarrollador)
-- [ ] Base de datos (Supabase PostgreSQL)
-- [ ] Panel de control de inventario
-- [ ] Dashboard de reportes de ventas
-- [ ] Sistema de alertas de stock bajo
+### Fase 3 — Operaciones (completada)
+- [x] Base de datos Supabase PostgreSQL (productos, inventario, ordenes, clientes, alertas)
+- [x] Panel admin completo estilo Notion (login, dashboard, inventario, ordenes, ventas, alertas)
+- [x] Punto de Venta (POS) — búsqueda, carrito, registro cliente, checkout, ticket por email
+- [x] Dashboard con KPIs, top 5 vendidos, alertas de reposición
+- [x] Sistema de alertas de stock bajo con configuración
+- [x] Seed de ~135 productos en Supabase desde catálogo Sanity
+- [x] Tabla de clientes con tipos (menudeo, mayorista, diseñador, arquitecto)
 
-### Fase 2 — Tienda en línea (posterior, $7,500 MXN)
+### Fase 2 — Tienda en línea (pendiente, $7,500 MXN)
 - [ ] Carrito de compras
 - [ ] Checkout con Stripe
-- [ ] Cuentas de clientes (Clerk)
+- [ ] Cuentas de clientes (Clerk o Supabase Auth)
 - [ ] Notificaciones por correo (Resend)
 
 ---
@@ -488,4 +480,4 @@ Mantenimiento: Básico $400 · Recomendado $700 · Premium $1,000 (mensual, apar
 
 ---
 
-*Última actualización: 27 mayo 2026 — Luis Fonseca / LOMEI HOME*
+*Última actualización: 29 junio 2026 — Luis Fonseca / LOMEI HOME*

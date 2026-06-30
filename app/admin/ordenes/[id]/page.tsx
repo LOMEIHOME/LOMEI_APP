@@ -7,7 +7,7 @@ import OrderStatusBadge from "@/components/admin/OrderStatusBadge";
 
 interface OrdenItem {
   id: string;
-  producto_nombre: string;
+  productos: { nombre: string } | null;
   cantidad: number;
   precio_unitario: number;
   subtotal: number;
@@ -17,7 +17,7 @@ interface Orden {
   id: string;
   numero: number;
   estado: "pendiente" | "completada" | "cancelada";
-  created_at: string;
+  creado_en: string;
   cliente_nombre: string;
   cliente_email: string;
   cliente_telefono: string | null;
@@ -25,7 +25,7 @@ interface Orden {
   descuento: number;
   total: number;
   nota: string | null;
-  items: OrdenItem[];
+  orden_items: OrdenItem[];
 }
 
 const formatPrice = (n: number) =>
@@ -195,7 +195,7 @@ export default function OrdenDetallePage() {
         </h1>
         <OrderStatusBadge estado={orden.estado} />
         <span style={{ fontSize: 13, color: "#9b968c" }}>
-          {formatDate(orden.created_at)}
+          {formatDate(orden.creado_en)}
         </span>
       </div>
 
@@ -276,16 +276,16 @@ export default function OrdenDetallePage() {
               </tr>
             </thead>
             <tbody>
-              {orden.items?.map((item, i) => (
+              {orden.orden_items?.map((item, i) => (
                 <tr
                   key={item.id}
                   style={{
-                    borderBottom: i < orden.items.length - 1 ? "1px solid #f3f1ec" : "none",
+                    borderBottom: i < orden.orden_items.length - 1 ? "1px solid #f3f1ec" : "none",
                   }}
                   className="hover:bg-[#f8f7f4] transition-colors"
                 >
                   <td style={{ padding: "12px 16px", color: "#37352f" }}>
-                    {item.producto_nombre}
+                    {item.productos?.nombre || "Producto eliminado"}
                   </td>
                   <td style={{ padding: "12px 16px", textAlign: "right", color: "#37352f" }}>
                     {item.cantidad}
