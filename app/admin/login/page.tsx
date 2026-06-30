@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
 import { createClient } from "@/lib/supabase/browser";
 
 export default function AdminLoginPage() {
@@ -33,77 +32,112 @@ export default function AdminLoginPage() {
     router.refresh();
   };
 
+  const inputStyle: React.CSSProperties = {
+    width: "100%",
+    fontFamily: "inherit",
+    fontSize: 14,
+    color: "#37352f",
+    border: "1px solid #e6e3db",
+    borderRadius: 8,
+    padding: "11px 14px",
+    background: "#fff",
+    outline: "none",
+  };
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[var(--color-cream)] px-4">
-      <div className="w-full max-w-sm">
+    <div style={{
+      minHeight: "100vh",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      background: "#f8f7f4",
+      padding: "0 16px",
+    }}>
+      <div style={{ width: "100%", maxWidth: 360 }}>
         {/* Logo */}
-        <div className="flex justify-center mb-10">
-          <div className="relative h-10 w-48">
-            <Image
-              src="/images/logos/logo-dark.png"
-              alt="LOMEI HOME"
-              fill
-              className="object-contain"
-              sizes="192px"
-              priority
-            />
+        <div style={{ textAlign: "center", marginBottom: 36 }}>
+          <div style={{
+            width: 48,
+            height: 48,
+            borderRadius: 12,
+            background: "#37352f",
+            display: "inline-flex",
+            alignItems: "center",
+            justifyContent: "center",
+            color: "#fff",
+            fontWeight: 700,
+            fontSize: 22,
+            marginBottom: 12,
+          }}>
+            L
           </div>
+          <div style={{ fontSize: 18, fontWeight: 700, color: "#37352f" }}>LOMEI HOME</div>
+          <div style={{ fontSize: 12.5, color: "#9b968c", marginTop: 2 }}>Panel de administración</div>
         </div>
 
-        {/* Formulario */}
-        <form onSubmit={handleSubmit} className="space-y-5">
-          <div>
-            <label
-              htmlFor="email"
-              className="block text-[10px] tracking-[0.2em] uppercase text-[var(--color-warm-gray)] mb-2"
+        {/* Form card */}
+        <div style={{
+          background: "#fff",
+          border: "1px solid #eeece7",
+          borderRadius: 12,
+          padding: 28,
+        }}>
+          <form onSubmit={handleSubmit}>
+            <div style={{ marginBottom: 16 }}>
+              <div style={{ fontSize: 12, color: "#6b6760", marginBottom: 5 }}>
+                Correo electrónico
+              </div>
+              <input
+                type="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="admin@lomeihome.mx"
+                style={inputStyle}
+              />
+            </div>
+
+            <div style={{ marginBottom: 20 }}>
+              <div style={{ fontSize: 12, color: "#6b6760", marginBottom: 5 }}>
+                Contraseña
+              </div>
+              <input
+                type="password"
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="••••••••"
+                style={inputStyle}
+              />
+            </div>
+
+            {error && (
+              <div style={{ fontSize: 13, color: "#c2410c", marginBottom: 12 }}>
+                {error}
+              </div>
+            )}
+
+            <button
+              type="submit"
+              disabled={loading}
+              style={{
+                width: "100%",
+                fontFamily: "inherit",
+                fontSize: 14,
+                fontWeight: 500,
+                color: "#fff",
+                background: "#37352f",
+                border: 0,
+                borderRadius: 8,
+                padding: "11px 0",
+                cursor: loading ? "not-allowed" : "pointer",
+                opacity: loading ? 0.5 : 1,
+              }}
             >
-              Correo electrónico
-            </label>
-            <input
-              id="email"
-              type="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-3 bg-white border border-[var(--color-sand)]/60 rounded-sm text-sm text-[var(--color-dark)] placeholder:text-[var(--color-warm-gray)]/50 focus:outline-none focus:border-[var(--color-oak)] transition-colors"
-              placeholder="admin@lomeihome.mx"
-            />
-          </div>
-
-          <div>
-            <label
-              htmlFor="password"
-              className="block text-[10px] tracking-[0.2em] uppercase text-[var(--color-warm-gray)] mb-2"
-            >
-              Contraseña
-            </label>
-            <input
-              id="password"
-              type="password"
-              required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-3 bg-white border border-[var(--color-sand)]/60 rounded-sm text-sm text-[var(--color-dark)] placeholder:text-[var(--color-warm-gray)]/50 focus:outline-none focus:border-[var(--color-oak)] transition-colors"
-              placeholder="••••••••"
-            />
-          </div>
-
-          {error && (
-            <p className="text-xs text-red-600/80">{error}</p>
-          )}
-
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full py-3 bg-[var(--color-dark)] text-white text-xs tracking-[0.2em] uppercase rounded-sm hover:bg-[var(--color-camel)] transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {loading ? "Ingresando..." : "Ingresar"}
-          </button>
-        </form>
-
-        <p className="mt-8 text-center text-[10px] tracking-wider text-[var(--color-warm-gray)]">
-          Panel de Administración
-        </p>
+              {loading ? "Ingresando..." : "Ingresar"}
+            </button>
+          </form>
+        </div>
       </div>
     </div>
   );

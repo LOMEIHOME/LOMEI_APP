@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import SearchInput from "@/components/admin/SearchInput";
 import OrderStatusBadge from "@/components/admin/OrderStatusBadge";
 
@@ -42,6 +42,7 @@ export default function OrdenesPage() {
   const [estado, setEstado] = useState<EstadoFilter>("");
   const [page, setPage] = useState(1);
   const [pagination, setPagination] = useState<Pagination>({ page: 1, pages: 1, total: 0 });
+  const router = useRouter();
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -71,38 +72,64 @@ export default function OrdenesPage() {
   }, [estado, search]);
 
   return (
-    <div className="max-w-6xl">
+    <div style={{ maxWidth: 960, margin: "0 auto" }}>
       {/* Header */}
-      <div className="mb-8">
-        <h1 className="font-serif text-2xl md:text-3xl tracking-wider text-[var(--color-dark)]">
-          Órdenes
+      <div style={{ marginBottom: 28 }}>
+        <h1
+          style={{
+            fontSize: 28,
+            fontWeight: 700,
+            color: "#37352f",
+            lineHeight: 1.2,
+            margin: 0,
+          }}
+        >
+          {"🧾 Órdenes"}
         </h1>
-        <p className="mt-1 text-sm text-[var(--color-warm-gray)]">
+        <p
+          style={{
+            fontSize: 14,
+            color: "#8b867c",
+            marginTop: 4,
+          }}
+        >
           {pagination.total} orden{pagination.total !== 1 ? "es" : ""} registrada{pagination.total !== 1 ? "s" : ""}
         </p>
       </div>
 
       {/* Filtros */}
-      <div className="flex flex-col sm:flex-row gap-3 mb-6">
-        <div className="sm:w-72">
-          <SearchInput
-            value={search}
-            onChange={setSearch}
-            placeholder="Buscar por número o cliente..."
-          />
-        </div>
-        <div className="flex gap-2 flex-wrap">
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: 12,
+          marginBottom: 24,
+          flexWrap: "wrap",
+        }}
+      >
+        <SearchInput
+          value={search}
+          onChange={setSearch}
+          placeholder="Buscar por número o cliente..."
+        />
+        <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
           {ESTADOS.map((e) => {
             const isActive = estado === e.key;
             return (
               <button
                 key={e.key}
                 onClick={() => setEstado(e.key)}
-                className={`px-3 py-2 text-[10px] tracking-[0.15em] uppercase rounded-sm border transition-colors ${
-                  isActive
-                    ? "bg-[var(--color-dark)] text-white border-[var(--color-dark)]"
-                    : "bg-white text-[var(--color-warm-gray)] border-[var(--color-sand)]/40 hover:border-[var(--color-oak)]"
-                }`}
+                style={{
+                  padding: "6px 14px",
+                  fontSize: 13,
+                  fontWeight: 500,
+                  borderRadius: 6,
+                  border: isActive ? "1px solid #37352f" : "1px solid #e6e3db",
+                  backgroundColor: isActive ? "#37352f" : "#fff",
+                  color: isActive ? "#fff" : "#6b6760",
+                  cursor: "pointer",
+                  transition: "all 0.15s ease",
+                }}
               >
                 {e.label}
               </button>
@@ -112,72 +139,176 @@ export default function OrdenesPage() {
       </div>
 
       {/* Tabla */}
-      <div className="bg-white rounded-sm border border-[var(--color-sand)]/30 overflow-hidden">
+      <div
+        style={{
+          border: "1px solid #eeece7",
+          borderRadius: 12,
+          overflow: "hidden",
+          backgroundColor: "#fff",
+        }}
+      >
         {loading ? (
-          <div className="p-12 text-center text-sm text-[var(--color-warm-gray)]">
+          <div
+            style={{
+              padding: 48,
+              textAlign: "center",
+              fontSize: 14,
+              color: "#9b968c",
+            }}
+          >
             Cargando...
           </div>
         ) : ordenes.length === 0 ? (
-          <div className="p-12 text-center">
-            <p className="text-sm text-[var(--color-warm-gray)]">
-              No hay órdenes que mostrar.
-            </p>
+          <div
+            style={{
+              padding: 48,
+              textAlign: "center",
+              fontSize: 14,
+              color: "#9b968c",
+            }}
+          >
+            No hay órdenes que mostrar.
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
+          <div style={{ overflowX: "auto" }}>
+            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 14 }}>
               <thead>
-                <tr className="border-b border-[var(--color-sand)]/20">
-                  <th className="text-left px-4 py-3 text-[10px] tracking-[0.15em] uppercase text-[var(--color-warm-gray)] font-normal">
+                <tr style={{ backgroundColor: "#f8f7f4" }}>
+                  <th
+                    style={{
+                      textAlign: "left",
+                      padding: "10px 16px",
+                      fontSize: 11,
+                      fontWeight: 500,
+                      textTransform: "uppercase",
+                      letterSpacing: "0.06em",
+                      color: "#9b968c",
+                      borderBottom: "1px solid #eeece7",
+                    }}
+                  >
                     Número
                   </th>
-                  <th className="text-left px-4 py-3 text-[10px] tracking-[0.15em] uppercase text-[var(--color-warm-gray)] font-normal">
+                  <th
+                    style={{
+                      textAlign: "left",
+                      padding: "10px 16px",
+                      fontSize: 11,
+                      fontWeight: 500,
+                      textTransform: "uppercase",
+                      letterSpacing: "0.06em",
+                      color: "#9b968c",
+                      borderBottom: "1px solid #eeece7",
+                    }}
+                  >
                     Cliente
                   </th>
-                  <th className="text-left px-4 py-3 text-[10px] tracking-[0.15em] uppercase text-[var(--color-warm-gray)] font-normal hidden sm:table-cell">
+                  <th
+                    className="hidden sm:table-cell"
+                    style={{
+                      textAlign: "left",
+                      padding: "10px 16px",
+                      fontSize: 11,
+                      fontWeight: 500,
+                      textTransform: "uppercase",
+                      letterSpacing: "0.06em",
+                      color: "#9b968c",
+                      borderBottom: "1px solid #eeece7",
+                    }}
+                  >
                     Fecha
                   </th>
-                  <th className="text-right px-4 py-3 text-[10px] tracking-[0.15em] uppercase text-[var(--color-warm-gray)] font-normal">
+                  <th
+                    style={{
+                      textAlign: "right",
+                      padding: "10px 16px",
+                      fontSize: 11,
+                      fontWeight: 500,
+                      textTransform: "uppercase",
+                      letterSpacing: "0.06em",
+                      color: "#9b968c",
+                      borderBottom: "1px solid #eeece7",
+                    }}
+                  >
                     Total
                   </th>
-                  <th className="text-center px-4 py-3 text-[10px] tracking-[0.15em] uppercase text-[var(--color-warm-gray)] font-normal">
+                  <th
+                    style={{
+                      textAlign: "center",
+                      padding: "10px 16px",
+                      fontSize: 11,
+                      fontWeight: 500,
+                      textTransform: "uppercase",
+                      letterSpacing: "0.06em",
+                      color: "#9b968c",
+                      borderBottom: "1px solid #eeece7",
+                    }}
+                  >
                     Estado
-                  </th>
-                  <th className="text-center px-4 py-3 text-[10px] tracking-[0.15em] uppercase text-[var(--color-warm-gray)] font-normal">
-                    Acciones
                   </th>
                 </tr>
               </thead>
               <tbody>
-                {ordenes.map((o) => (
-                  <tr
-                    key={o.id}
-                    className="border-b border-[var(--color-sand)]/10 hover:bg-[var(--color-linen)]/30 transition-colors"
-                  >
-                    <td className="px-4 py-3 font-medium text-[var(--color-dark)]">
-                      #{String(o.numero).padStart(4, "0")}
-                    </td>
-                    <td className="px-4 py-3 text-[var(--color-dark)]">
-                      {o.cliente_nombre}
-                    </td>
-                    <td className="px-4 py-3 text-[var(--color-warm-gray)] hidden sm:table-cell">
-                      {formatDate(o.created_at)}
-                    </td>
-                    <td className="px-4 py-3 text-right font-medium text-[var(--color-dark)]">
-                      {formatPrice(o.total)}
-                    </td>
-                    <td className="px-4 py-3 text-center">
-                      <OrderStatusBadge estado={o.estado} />
-                    </td>
-                    <td className="px-4 py-3 text-center">
-                      <Link
-                        href={`/admin/ordenes/${o.id}`}
-                        className="text-xs text-[var(--color-oak)] hover:text-[var(--color-camel)] transition-colors"
+                {ordenes.map((o, i) => (
+                    <tr
+                      key={o.id}
+                      onClick={() => router.push(`/admin/ordenes/${o.id}`)}
+                      style={{
+                        borderBottom: i < ordenes.length - 1 ? "1px solid #f3f1ec" : "none",
+                        cursor: "pointer",
+                        transition: "background 0.1s ease",
+                      }}
+                      className="hover:bg-[#f8f7f4]"
+                    >
+                      <td
+                        style={{
+                          padding: "12px 16px",
+                          fontFamily: "ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, monospace",
+                          fontSize: 13,
+                          fontWeight: 500,
+                          color: "#37352f",
+                        }}
                       >
-                        Ver
-                      </Link>
-                    </td>
-                  </tr>
+                        #{String(o.numero).padStart(4, "0")}
+                      </td>
+                      <td
+                        style={{
+                          padding: "12px 16px",
+                          color: "#37352f",
+                          fontSize: 14,
+                        }}
+                      >
+                        {o.cliente_nombre}
+                      </td>
+                      <td
+                        className="hidden sm:table-cell"
+                        style={{
+                          padding: "12px 16px",
+                          color: "#9b968c",
+                          fontSize: 13,
+                        }}
+                      >
+                        {formatDate(o.created_at)}
+                      </td>
+                      <td
+                        style={{
+                          padding: "12px 16px",
+                          textAlign: "right",
+                          fontWeight: 600,
+                          color: "#37352f",
+                          fontSize: 14,
+                        }}
+                      >
+                        {formatPrice(o.total)}
+                      </td>
+                      <td
+                        style={{
+                          padding: "12px 16px",
+                          textAlign: "center",
+                        }}
+                      >
+                        <OrderStatusBadge estado={o.estado} />
+                      </td>
+                    </tr>
                 ))}
               </tbody>
             </table>
@@ -187,16 +318,30 @@ export default function OrdenesPage() {
 
       {/* Paginación */}
       {pagination.pages > 1 && (
-        <div className="flex justify-center gap-1 mt-6">
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            gap: 4,
+            marginTop: 24,
+          }}
+        >
           {Array.from({ length: pagination.pages }, (_, i) => i + 1).map((p) => (
             <button
               key={p}
               onClick={() => setPage(p)}
-              className={`w-8 h-8 text-xs rounded-sm border transition-colors ${
-                page === p
-                  ? "bg-[var(--color-dark)] text-white border-[var(--color-dark)]"
-                  : "bg-white text-[var(--color-warm-gray)] border-[var(--color-sand)]/40 hover:border-[var(--color-oak)]"
-              }`}
+              style={{
+                width: 32,
+                height: 32,
+                fontSize: 13,
+                fontWeight: 500,
+                borderRadius: 6,
+                border: page === p ? "1px solid #37352f" : "1px solid #e6e3db",
+                backgroundColor: page === p ? "#37352f" : "#fff",
+                color: page === p ? "#fff" : "#6b6760",
+                cursor: "pointer",
+                transition: "all 0.15s ease",
+              }}
             >
               {p}
             </button>

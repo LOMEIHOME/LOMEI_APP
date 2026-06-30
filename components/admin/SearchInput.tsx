@@ -25,13 +25,13 @@ export default function SearchInput({
   }, [value]);
 
   return (
-    <div className="relative">
+    <div className="relative w-[280px]">
       <svg
-        className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--color-warm-gray)]"
+        className="absolute left-3 top-1/2 -translate-y-1/2 w-[15px] h-[15px] text-[#9b968c]"
         fill="none"
         viewBox="0 0 24 24"
         stroke="currentColor"
-        strokeWidth={1.5}
+        strokeWidth={2}
       >
         <path
           strokeLinecap="round"
@@ -44,7 +44,7 @@ export default function SearchInput({
         value={local}
         onChange={(e) => setLocal(e.target.value)}
         placeholder={placeholder}
-        className="w-full pl-10 pr-4 py-2.5 bg-white border border-[var(--color-sand)]/40 rounded-sm text-sm text-[var(--color-dark)] placeholder:text-[var(--color-warm-gray)]/50 focus:outline-none focus:border-[var(--color-oak)] transition-colors"
+        className="w-full pl-10 pr-4 py-2 bg-[#f8f7f4] border border-[#eeece7] rounded-[9px] text-[14px] text-[#37352f] placeholder:text-[#b4afa7] focus:outline-none focus:border-[#c8c5bd] transition-colors"
       />
     </div>
   );
