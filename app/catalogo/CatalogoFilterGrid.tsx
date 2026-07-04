@@ -64,7 +64,7 @@ export default function CatalogoFilterGrid({ productos, categories }: Props) {
   }, [productos]);
 
   return (
-    <>
+    <div className="w-full">
       {/* Buscador + Filtros */}
       <div className="mb-5 md:mb-12 space-y-3 md:space-y-5">
         {/* Buscador */}
@@ -138,48 +138,49 @@ export default function CatalogoFilterGrid({ productos, categories }: Props) {
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -10 }}
           transition={{ duration: 0.4 }}
-          className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 md:gap-6"
+          className="grid grid-cols-2 lg:grid-cols-3 gap-2.5 md:gap-6"
         >
           {filtered.map((p, i) => (
-            <motion.div
+            <Link
               key={p.slug}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: Math.min(i * 0.05, 0.5) }}
+              href={`/catalogo/${p.slug}`}
+              className="group block"
             >
-              <div className="group bg-[var(--color-white)] pb-2 md:pb-5 h-full flex flex-col overflow-hidden rounded-sm">
-                <Link href={`/catalogo/${p.slug}`} className="block">
-                  {/* Imagen */}
-                  <div className="relative aspect-square md:aspect-[10/11] overflow-hidden">
-                    <Image
-                      src={p.images[0]}
-                      alt={p.name}
-                      fill
-                      className="object-cover transition-transform duration-700 group-hover:scale-105"
-                      sizes="(max-width: 640px) 50vw, (max-width: 1024px) 50vw, 33vw"
-                    />
-                    {p.badge && (
-                      <div className="absolute top-2 left-2 md:top-3 md:left-3">
-                        <Badge>{p.badge}</Badge>
-                      </div>
-                    )}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: Math.min(i * 0.05, 0.5) }}
+              >
+                <div className="relative aspect-[3/4] md:aspect-[5/3] overflow-hidden rounded-sm">
+                  <Image
+                    src={p.images[0]}
+                    alt={p.name}
+                    fill
+                    className="object-cover transition-transform duration-700 group-hover:scale-105"
+                    sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                  />
+                  {p.badge && (
+                    <div className="absolute top-2 left-2 md:top-3 md:left-3">
+                      <Badge>{p.badge}</Badge>
+                    </div>
+                  )}
+                  {/* Overlay con info */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-[rgba(42,33,24,0.72)] via-[rgba(42,33,24,0.12)] via-50% to-transparent flex items-end p-4 md:p-6">
+                    <div className="flex flex-col gap-0.5">
+                      <p className="text-[10px] md:text-[10.5px] tracking-[0.2em] uppercase text-[var(--color-sand)]">
+                        {p.category}
+                      </p>
+                      <p className="font-serif text-base md:text-xl tracking-wider text-[var(--color-white)]">
+                        {p.name}
+                      </p>
+                      <p className="font-serif italic text-sm md:text-base text-[var(--color-sand)]">
+                        {formatPrice(p.price)}
+                      </p>
+                    </div>
                   </div>
-
-                  {/* Info */}
-                  <div className="px-2 md:px-5 pt-2 md:pt-4 flex flex-col gap-0.5 md:gap-1">
-                    <p className="text-[8px] md:text-[10px] tracking-[0.2em] uppercase text-[var(--color-oak)]">
-                      {p.category}
-                    </p>
-                    <p className="font-serif text-[12px] md:text-lg lg:text-xl leading-snug tracking-[0.03em] text-[var(--color-dark)] line-clamp-2">
-                      {p.name}
-                    </p>
-                    <p className="font-serif italic text-[11px] md:text-lg text-[var(--color-oak)]">
-                      {formatPrice(p.price)}
-                    </p>
-                  </div>
-                </Link>
-              </div>
-            </motion.div>
+                </div>
+              </motion.div>
+            </Link>
           ))}
         </motion.div>
       </AnimatePresence>
@@ -201,6 +202,6 @@ export default function CatalogoFilterGrid({ productos, categories }: Props) {
           </button>
         </div>
       )}
-    </>
+    </div>
   );
 }

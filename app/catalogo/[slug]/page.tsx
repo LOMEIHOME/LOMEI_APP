@@ -38,7 +38,7 @@ export default async function ProductoDetallePage({
     .slice(0, 3);
 
   return (
-    <>
+    <div className="overflow-x-hidden">
       <Navbar forceScrolled />
 
       <section className="pt-20 md:pt-28 pb-12 md:pb-24">
@@ -136,30 +136,32 @@ export default async function ProductoDetallePage({
             <FadeIn>
               <SectionTag>También te puede interesar</SectionTag>
             </FadeIn>
-            <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {related.map((p, i) => (
-                <FadeIn key={p.slug} delay={0.1 * i}>
-                  <Link href={`/catalogo/${p.slug}`} className="group block">
-                    <div className="relative aspect-[4/5] overflow-hidden rounded-sm bg-[var(--color-cream)]">
-                      <Image
-                        src={p.images[0]}
-                        alt={p.name}
-                        fill
-                        className="object-cover transition-transform duration-700 group-hover:scale-105"
-                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                      />
+            <div className="mt-8 flex gap-2.5 md:gap-6 overflow-x-auto scrollbar-hide snap-x snap-mandatory pb-2">
+              {related.map((p) => (
+                <Link key={p.slug} href={`/catalogo/${p.slug}`} className="group block shrink-0 w-[calc(50%-5px)] md:w-[calc(33.333%-16px)] snap-start">
+                  <div className="relative aspect-[3/4] overflow-hidden rounded-sm bg-[var(--color-cream)]">
+                    <Image
+                      src={p.images[0]}
+                      alt={p.name}
+                      fill
+                      className="object-cover transition-transform duration-700 group-hover:scale-105"
+                      sizes="(max-width: 768px) 50vw, 33vw"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[rgba(42,33,24,0.72)] via-[rgba(42,33,24,0.12)] via-50% to-transparent flex items-end p-3 md:p-6">
+                      <div className="flex flex-col gap-0.5">
+                        <p className="text-[9px] md:text-[10.5px] tracking-[0.2em] uppercase text-[var(--color-sand)]">
+                          {p.category}
+                        </p>
+                        <p className="font-serif text-sm md:text-xl tracking-wider text-[var(--color-white)]">
+                          {p.name}
+                        </p>
+                        <p className="font-serif italic text-xs md:text-base text-[var(--color-sand)]">
+                          {formatPrice(p.price)}
+                        </p>
+                      </div>
                     </div>
-                    <p className="mt-4 text-[10px] tracking-[0.2em] uppercase text-[var(--color-warm-gray)]">
-                      {p.category}
-                    </p>
-                    <p className="mt-1 text-sm text-[var(--color-dark)] group-hover:text-[var(--color-oak)] transition-colors duration-400">
-                      {p.name}
-                    </p>
-                    <p className="mt-1 text-sm font-serif text-[var(--color-oak)]">
-                      {formatPrice(p.price)}
-                    </p>
-                  </Link>
-                </FadeIn>
+                  </div>
+                </Link>
               ))}
             </div>
           </div>
@@ -167,6 +169,6 @@ export default async function ProductoDetallePage({
       )}
 
       <Footer />
-    </>
+    </div>
   );
 }
