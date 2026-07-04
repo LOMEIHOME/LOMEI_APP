@@ -66,11 +66,11 @@ export default function CatalogoFilterGrid({ productos, categories }: Props) {
   return (
     <>
       {/* Buscador + Filtros */}
-      <div className="mb-6 md:mb-12 space-y-5">
+      <div className="mb-5 md:mb-12 space-y-3 md:space-y-5">
         {/* Buscador */}
         <div className="relative">
           <div
-            className={`flex items-center gap-3 border rounded-sm px-4 py-3 transition-colors duration-300 ${
+            className={`flex items-center gap-2.5 border rounded-sm px-3 md:px-4 py-2.5 md:py-3 transition-colors duration-300 ${
               focused
                 ? "border-[var(--color-camel)] bg-white"
                 : "border-[var(--color-sand)]/60 bg-[var(--color-white)]"
@@ -138,7 +138,7 @@ export default function CatalogoFilterGrid({ productos, categories }: Props) {
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -10 }}
           transition={{ duration: 0.4 }}
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6"
+          className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 md:gap-6"
         >
           {filtered.map((p, i) => (
             <motion.div
@@ -147,33 +147,33 @@ export default function CatalogoFilterGrid({ productos, categories }: Props) {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: Math.min(i * 0.05, 0.5) }}
             >
-              <div className="group bg-[var(--color-white)] pb-3 md:pb-5 h-full flex flex-col overflow-hidden rounded-sm">
+              <div className="group bg-[var(--color-white)] pb-2 md:pb-5 h-full flex flex-col overflow-hidden rounded-sm">
                 <Link href={`/catalogo/${p.slug}`} className="block">
                   {/* Imagen */}
-                  <div className="relative aspect-[4/3] sm:aspect-square md:aspect-[10/11] overflow-hidden">
+                  <div className="relative aspect-square md:aspect-[10/11] overflow-hidden">
                     <Image
                       src={p.images[0]}
                       alt={p.name}
                       fill
                       className="object-cover transition-transform duration-700 group-hover:scale-105"
-                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                      sizes="(max-width: 640px) 50vw, (max-width: 1024px) 50vw, 33vw"
                     />
                     {p.badge && (
-                      <div className="absolute top-3 left-3">
+                      <div className="absolute top-2 left-2 md:top-3 md:left-3">
                         <Badge>{p.badge}</Badge>
                       </div>
                     )}
                   </div>
 
                   {/* Info */}
-                  <div className="px-3 md:px-5 pt-3 md:pt-4 flex flex-col gap-1">
-                    <p className="text-[9px] md:text-[10px] tracking-[0.2em] uppercase text-[var(--color-oak)]">
+                  <div className="px-2 md:px-5 pt-2 md:pt-4 flex flex-col gap-0.5 md:gap-1">
+                    <p className="text-[8px] md:text-[10px] tracking-[0.2em] uppercase text-[var(--color-oak)]">
                       {p.category}
                     </p>
-                    <p className="font-serif text-base md:text-lg lg:text-xl leading-snug tracking-[0.03em] text-[var(--color-dark)] line-clamp-2">
+                    <p className="font-serif text-[12px] md:text-lg lg:text-xl leading-snug tracking-[0.03em] text-[var(--color-dark)] line-clamp-2">
                       {p.name}
                     </p>
-                    <p className="font-serif italic text-sm md:text-lg text-[var(--color-oak)]">
+                    <p className="font-serif italic text-[11px] md:text-lg text-[var(--color-oak)]">
                       {formatPrice(p.price)}
                     </p>
                   </div>
