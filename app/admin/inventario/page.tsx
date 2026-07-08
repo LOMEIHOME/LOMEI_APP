@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import Link from "next/link";
 
 const CATEGORIAS = [
   "Todos",
@@ -74,6 +73,8 @@ export default function InventarioPage() {
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [categoria, setCategoria] = useState("");
+  const [syncing, setSyncing] = useState(false);
+  const [syncResult, setSyncResult] = useState<Record<string, unknown> | null>(null);
 
   // Debounce search
   useEffect(() => {
@@ -120,27 +121,64 @@ export default function InventarioPage() {
             {items.length} productos · {lowStockCount} con stock bajo
           </p>
         </div>
-        <Link
-          href="/admin/inventario/nuevo"
+        <button
+          onClick={async () => {
+            setSyncing(true);
+            setSyncResult(null);
+            try {
+              const res = await fetch("/api/sync/sanity", { method: "POST" });
+              const data = await res.json();
+              if (!res.ok) throw new Error(data.error || "Error al sincronizar");
+              setSyncResult(data);
+              fetchData();
+            } catch (err: unknown) {
+              const message = err instanceof Error ? err.message : "Error desconocido";
+              setSyncResult({ error: message });
+            } finally {
+              setSyncing(false);
+            }
+          }}
+          disabled={syncing}
           style={{
             display: "inline-flex",
             alignItems: "center",
             gap: 6,
             padding: "8px 16px",
-            backgroundColor: "#37352f",
+            backgroundColor: syncing ? "#9b968c" : "#37352f",
             color: "#fff",
             borderRadius: 8,
             fontSize: 14,
             fontWeight: 500,
-            textDecoration: "none",
+            border: "none",
+            cursor: syncing ? "wait" : "pointer",
+            fontFamily: "inherit",
             transition: "opacity 0.15s",
           }}
-          onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.85")}
-          onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
+          onMouseEnter={(e) => { if (!syncing) e.currentTarget.style.opacity = "0.85"; }}
+          onMouseLeave={(e) => { e.currentTarget.style.opacity = "1"; }}
         >
-          ＋ Nuevo producto
-        </Link>
+          {syncing ? "⏳ Sincronizando..." : "🔄 Sincronizar con Sanity"}
+        </button>
       </div>
+
+      {/* Resultado de sincronización */}
+      {syncResult && (
+        <div
+          style={{
+            marginBottom: 16,
+            padding: "10px 16px",
+            borderRadius: 8,
+            fontSize: 13,
+            backgroundColor: syncResult.error ? "#fdf3ec" : "#eaf3ec",
+            color: syncResult.error ? "#c2410c" : "#16794a",
+            border: `1px solid ${syncResult.error ? "#f5d5c3" : "#c3e2c9"}`,
+          }}
+        >
+          {syncResult.error
+            ? `❌ ${syncResult.error}`
+            : `✅ Sincronización completa — ${syncResult.creados ?? 0} creados, ${syncResult.actualizados ?? 0} actualizados, ${syncResult.sinCambios ?? 0} sin cambios`}
+        </div>
+      )}
 
       {/* Filters row */}
       <div className="flex flex-wrap items-center" style={{ gap: 10, marginBottom: 24 }}>

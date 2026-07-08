@@ -31,26 +31,60 @@ const formatDate = (d: string) =>
     year: "numeric",
   });
 
-function getDateRange(periodo: Periodo): { desde: string; hasta: string } {
+function getDateRange(periodo: Periodo, offset = 0): { desde: string; hasta: string } {
   const now = new Date();
   const fmt = (d: Date) => d.toISOString().split("T")[0];
 
   switch (periodo) {
-    case "hoy":
-      return { desde: fmt(now), hasta: fmt(now) };
+    case "hoy": {
+      const d = new Date(now);
+      d.setDate(d.getDate() + offset);
+      return { desde: fmt(d), hasta: fmt(d) };
+    }
     case "semana": {
-      const desde = new Date(now);
+      const hasta = new Date(now);
+      hasta.setDate(hasta.getDate() + offset * 7);
+      const desde = new Date(hasta);
       desde.setDate(desde.getDate() - 6);
-      return { desde: fmt(desde), hasta: fmt(now) };
+      return { desde: fmt(desde), hasta: fmt(hasta) };
     }
     case "mes": {
-      const desde = new Date(now.getFullYear(), now.getMonth(), 1);
-      const hasta = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+      const desde = new Date(now.getFullYear(), now.getMonth() + offset, 1);
+      const hasta = new Date(now.getFullYear(), now.getMonth() + offset + 1, 0);
       return { desde: fmt(desde), hasta: fmt(hasta) };
     }
     case "año": {
-      const desde = new Date(now.getFullYear(), 0, 1);
-      return { desde: fmt(desde), hasta: fmt(now) };
+      const year = now.getFullYear() + offset;
+      const desde = new Date(year, 0, 1);
+      const hasta = new Date(year, 11, 31);
+      return { desde: fmt(desde), hasta: fmt(hasta) };
+    }
+  }
+}
+
+function getPeriodLabel(periodo: Periodo, offset: number): string {
+  const now = new Date();
+  switch (periodo) {
+    case "hoy": {
+      const d = new Date(now);
+      d.setDate(d.getDate() + offset);
+      return d.toLocaleDateString("es-MX", { day: "numeric", month: "long", year: "numeric" });
+    }
+    case "semana": {
+      const hasta = new Date(now);
+      hasta.setDate(hasta.getDate() + offset * 7);
+      const desde = new Date(hasta);
+      desde.setDate(desde.getDate() - 6);
+      const fmtShort = (d: Date) => d.toLocaleDateString("es-MX", { day: "numeric", month: "short" });
+      return `${fmtShort(desde)} – ${fmtShort(hasta)}`;
+    }
+    case "mes": {
+      const d = new Date(now.getFullYear(), now.getMonth() + offset, 1);
+      const label = d.toLocaleDateString("es-MX", { month: "long", year: "numeric" });
+      return label.charAt(0).toUpperCase() + label.slice(1);
+    }
+    case "año": {
+      return String(now.getFullYear() + offset);
     }
   }
 }
@@ -73,12 +107,13 @@ function shortLabel(fecha: string, periodo: Periodo): string {
 export default function VentasPage() {
   const [data, setData] = useState<VentaResumen[]>([]);
   const [periodo, setPeriodo] = useState<Periodo>("mes");
+  const [offset, setOffset] = useState(0);
   const [loading, setLoading] = useState(true);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
     try {
-      const { desde, hasta } = getDateRange(periodo);
+      const { desde, hasta } = getDateRange(periodo, offset);
       const params = new URLSearchParams({ desde, hasta });
       const res = await fetch(`/api/ventas/resumen?${params}`);
       const json = await res.json();
@@ -87,11 +122,17 @@ export default function VentasPage() {
       // silenciar errores de red
     }
     setLoading(false);
-  }, [periodo]);
+  }, [periodo, offset]);
 
   useEffect(() => {
     fetchData();
   }, [fetchData]);
+
+  // Resetear offset al cambiar periodo
+  const handlePeriodoChange = (p: Periodo) => {
+    setPeriodo(p);
+    setOffset(0);
+  };
 
   const totalVentas = data.reduce((sum, r) => sum + r.total_ventas, 0);
   const totalOrdenes = data.reduce((sum, r) => sum + r.num_ordenes, 0);
@@ -120,7 +161,7 @@ export default function VentasPage() {
         {PERIODOS.map((p) => (
           <button
             key={p.key}
-            onClick={() => setPeriodo(p.key)}
+            onClick={() => handlePeriodoChange(p.key)}
             className="transition-colors"
             style={{
               fontSize: 12,
@@ -137,6 +178,54 @@ export default function VentasPage() {
             {p.label}
           </button>
         ))}
+      </div>
+
+      {/* ── Navegación de periodo ── */}
+      <div className="flex items-center justify-center mb-6" style={{ gap: 12 }}>
+        <button
+          onClick={() => setOffset(offset - 1)}
+          style={{
+            width: 32,
+            height: 32,
+            borderRadius: 8,
+            border: "1px solid #e6e3db",
+            background: "#fff",
+            cursor: "pointer",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            fontSize: 16,
+            color: "#6b6760",
+          }}
+          onMouseEnter={(e) => (e.currentTarget.style.background = "#faf9f6")}
+          onMouseLeave={(e) => (e.currentTarget.style.background = "#fff")}
+        >
+          ←
+        </button>
+        <span style={{ fontSize: 14, fontWeight: 500, color: "#37352f", minWidth: 160, textAlign: "center" }}>
+          {getPeriodLabel(periodo, offset)}
+        </span>
+        <button
+          onClick={() => setOffset(offset + 1)}
+          disabled={offset >= 0}
+          style={{
+            width: 32,
+            height: 32,
+            borderRadius: 8,
+            border: "1px solid #e6e3db",
+            background: offset >= 0 ? "#f1efe9" : "#fff",
+            cursor: offset >= 0 ? "not-allowed" : "pointer",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            fontSize: 16,
+            color: offset >= 0 ? "#c5c0b8" : "#6b6760",
+          }}
+          onMouseEnter={(e) => { if (offset < 0) e.currentTarget.style.background = "#faf9f6"; }}
+          onMouseLeave={(e) => { if (offset < 0) e.currentTarget.style.background = "#fff"; }}
+        >
+          →
+        </button>
       </div>
 
       {/* ── KPI Cards ── */}
