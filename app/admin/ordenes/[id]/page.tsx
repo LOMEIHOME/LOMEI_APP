@@ -20,7 +20,7 @@ interface Orden {
   creado_en: string;
   cliente_nombre: string;
   cliente_email: string;
-  cliente_telefono: string | null;
+  cliente_tel: string | null;
   subtotal: number;
   descuento: number;
   total: number;
@@ -220,7 +220,7 @@ export default function OrdenDetallePage() {
               {orden.cliente_email}
             </span>
             <span style={{ fontSize: 13, color: "#9b968c" }}>
-              {orden.cliente_telefono || "\u2014"}
+              {orden.cliente_tel || "\u2014"}
             </span>
           </div>
         </div>

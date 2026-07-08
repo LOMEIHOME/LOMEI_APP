@@ -265,27 +265,6 @@ export default function ProductoDetallePage() {
           </p>
         </div>
 
-        <button
-          onClick={() => router.push(`/admin/inventario/${id}/editar`)}
-          style={{
-            display: "inline-flex",
-            alignItems: "center",
-            gap: 6,
-            fontSize: 13.5,
-            fontWeight: 500,
-            color: "#37352f",
-            backgroundColor: "#f3f1ec",
-            border: "none",
-            borderRadius: 8,
-            padding: "8px 16px",
-            cursor: "pointer",
-            fontFamily: "inherit",
-          }}
-          onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#eae7e0")}
-          onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "#f3f1ec")}
-        >
-          ✎ Editar producto
-        </button>
       </div>
 
       {/* Two-column layout */}

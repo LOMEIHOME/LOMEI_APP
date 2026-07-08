@@ -138,7 +138,7 @@ export default function CatalogoFilterGrid({ productos, categories }: Props) {
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -10 }}
           transition={{ duration: 0.4 }}
-          className="grid grid-cols-2 lg:grid-cols-3 gap-2.5 md:gap-6"
+          className="grid grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6"
         >
           {filtered.map((p, i) => (
             <Link
@@ -151,12 +151,12 @@ export default function CatalogoFilterGrid({ productos, categories }: Props) {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: Math.min(i * 0.05, 0.5) }}
               >
-                <div className="relative aspect-[3/4] md:aspect-[5/3] overflow-hidden rounded-sm">
+                <div className="relative aspect-[3/4] overflow-hidden rounded-sm">
                   <Image
                     src={p.images[0]}
                     alt={p.name}
                     fill
-                    className="object-cover transition-transform duration-700 group-hover:scale-105"
+                    className="object-cover md:scale-[0.97] transition-transform duration-700 group-hover:scale-105"
                     sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
                   />
                   {p.badge && (

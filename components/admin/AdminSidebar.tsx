@@ -14,7 +14,6 @@ const NAV_ITEMS = [
 
 const QUICK_LINKS = [
   { label: "Nueva venta", href: "/admin/pos", emoji: "🛒" },
-  { label: "Nuevo producto", href: "/admin/inventario/nuevo", emoji: "＋" },
   { label: "Revisar alertas", href: "/admin/alertas", emoji: "🔔" },
 ];
 

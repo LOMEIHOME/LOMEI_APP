@@ -119,6 +119,7 @@ export async function POST(request: NextRequest) {
   });
 
   // Enviar nota de venta por email
+  let emailEnviado = false;
   if (process.env.EMAIL_USER && process.env.EMAIL_APP_PASSWORD) {
     try {
       await sendEmail({
@@ -126,8 +127,9 @@ export async function POST(request: NextRequest) {
         subject: `Nota de Venta ${folio} — LOMEI HOME`,
         html: ticketHtml,
       });
-    } catch {
-      // Email falla silenciosamente — la orden ya se guardó
+      emailEnviado = true;
+    } catch (err) {
+      console.error("Error enviando email:", err instanceof Error ? err.message : err);
     }
   }
 
@@ -139,6 +141,7 @@ export async function POST(request: NextRequest) {
         folio,
         total,
         ticket_html: ticketHtml,
+        email_enviado: emailEnviado,
       },
     },
     { status: 201 }
