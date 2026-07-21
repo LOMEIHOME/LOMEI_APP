@@ -214,10 +214,10 @@ export default function PuntoDeVentaPage() {
     setShowClientDropdown(false);
   };
 
-  // Totals
-  const subtotal = cart.reduce((s, i) => s + i.precio_unitario * i.cantidad, 0);
-  const iva = Math.round(subtotal * IVA_RATE * 100) / 100;
-  const total = subtotal + iva;
+  // Totals — el precio ya incluye IVA, calcular hacia atrás
+  const total = cart.reduce((s, i) => s + i.precio_unitario * i.cantidad, 0);
+  const subtotal = Math.round((total / (1 + IVA_RATE)) * 100) / 100;
+  const iva = Math.round((total - subtotal) * 100) / 100;
 
   const canSubmit = cart.length > 0 && clienteNombre.trim() && clienteEmail.trim() && !isSubmitting;
 
@@ -308,6 +308,29 @@ export default function PuntoDeVentaPage() {
     }
   };
 
+  // Imprimir ticket
+  const printTicket = () => {
+    if (!completedOrder?.ticket_html) return;
+    const w = window.open("", "_blank");
+    if (w) {
+      w.document.write(completedOrder.ticket_html);
+      w.document.close();
+      w.onload = () => w.print();
+    }
+  };
+
+  // Guardar ticket como HTML
+  const saveTicket = () => {
+    if (!completedOrder?.ticket_html) return;
+    const blob = new Blob([completedOrder.ticket_html], { type: "text/html" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `ticket-${completedOrder.folio}.html`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
   /* ── Success overlay ── */
   if (completedOrder) {
     return (
@@ -375,7 +398,7 @@ export default function PuntoDeVentaPage() {
             >
               Ticket enviado a <strong>{completedOrder.email}</strong>
             </div>
-            <div style={{ display: "flex", gap: 10, justifyContent: "center" }}>
+            <div style={{ display: "flex", gap: 10, justifyContent: "center", flexWrap: "wrap" }}>
               <button
                 onClick={resetAll}
                 style={{
@@ -407,6 +430,38 @@ export default function PuntoDeVentaPage() {
                 }}
               >
                 Ver ticket
+              </button>
+              <button
+                onClick={printTicket}
+                style={{
+                  fontFamily: "inherit",
+                  fontSize: 14,
+                  fontWeight: 500,
+                  color: "#37352f",
+                  background: "#fff",
+                  border: "1px solid #e6e3db",
+                  borderRadius: 8,
+                  padding: "11px 24px",
+                  cursor: "pointer",
+                }}
+              >
+                🖨️ Imprimir
+              </button>
+              <button
+                onClick={saveTicket}
+                style={{
+                  fontFamily: "inherit",
+                  fontSize: 14,
+                  fontWeight: 500,
+                  color: "#37352f",
+                  background: "#fff",
+                  border: "1px solid #e6e3db",
+                  borderRadius: 8,
+                  padding: "11px 24px",
+                  cursor: "pointer",
+                }}
+              >
+                💾 Guardar
               </button>
             </div>
           </div>
@@ -637,6 +692,7 @@ export default function PuntoDeVentaPage() {
                       }}
                     >
                       <button
+                        type="button"
                         onClick={() => updateQty(item.producto_id, -1)}
                         style={{
                           width: 28,
@@ -653,7 +709,7 @@ export default function PuntoDeVentaPage() {
                           fontFamily: "inherit",
                         }}
                       >
-                        −
+                        -
                       </button>
                       <span
                         style={{
@@ -667,6 +723,7 @@ export default function PuntoDeVentaPage() {
                         {item.cantidad}
                       </span>
                       <button
+                        type="button"
                         onClick={() => updateQty(item.producto_id, 1)}
                         disabled={item.cantidad >= item.stock_disponible}
                         style={{
@@ -690,7 +747,7 @@ export default function PuntoDeVentaPage() {
                           fontFamily: "inherit",
                         }}
                       >
-                        ＋
+                        +
                       </button>
                     </div>
 

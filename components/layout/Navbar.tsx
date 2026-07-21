@@ -10,6 +10,7 @@ const NAV_LINKS = [
   { href: "/catalogo", label: "Catálogo" },
   { href: "/servicios", label: "Servicios" },
   { href: "/contacto", label: "Contacto" },
+  { href: "/nosotros", label: "Nosotros" },
 ];
 
 export default function Navbar({ forceScrolled = false }: { forceScrolled?: boolean }) {

@@ -1,7 +1,7 @@
 export interface Proyecto {
   slug: string;
   title: string;
-  category: "Residencial" | "Comercial" | "Interiorismo";
+  category: "Obra" | "Diseño";
   year: string;
   location: string;
   description: string;
@@ -16,7 +16,7 @@ export const PROYECTOS: Proyecto[] = [
   {
     slug: "paseo-de-claustros",
     title: "Paseo de Claustros",
-    category: "Residencial",
+    category: "Obra",
     year: "2026",
     location: "Campanario, Querétaro",
     description:
@@ -30,7 +30,7 @@ export const PROYECTOS: Proyecto[] = [
   {
     slug: "sophia-distrito",
     title: "Sophia Distrito",
-    category: "Residencial",
+    category: "Obra",
     year: "2026",
     location: "Querétaro, México",
     description:
@@ -44,7 +44,7 @@ export const PROYECTOS: Proyecto[] = [
   {
     slug: "atria-distrito",
     title: "Proyecto Ejecutivo Atria Distrito",
-    category: "Comercial",
+    category: "Obra",
     year: "2026",
     location: "Querétaro, México",
     description:
@@ -58,7 +58,7 @@ export const PROYECTOS: Proyecto[] = [
   {
     slug: "oficina-ave-fenix",
     title: "Oficina Ave Fénix",
-    category: "Comercial",
+    category: "Obra",
     year: "2025",
     location: "Querétaro, México",
     description:
@@ -71,7 +71,7 @@ export const PROYECTOS: Proyecto[] = [
   {
     slug: "cocina-alturia-zibata",
     title: "Cocina Alturia Zibatá",
-    category: "Interiorismo",
+    category: "Diseño",
     year: "2025",
     location: "El Marqués, Querétaro",
     description:
@@ -84,7 +84,7 @@ export const PROYECTOS: Proyecto[] = [
   {
     slug: "ceja-de-bravo",
     title: "Ceja de Bravo",
-    category: "Interiorismo",
+    category: "Diseño",
     year: "2025",
     location: "Corregidora, Querétaro",
     description:
@@ -97,7 +97,7 @@ export const PROYECTOS: Proyecto[] = [
   {
     slug: "puerta-coyoacan",
     title: "Puerta Coyoacán",
-    category: "Residencial",
+    category: "Obra",
     year: "2025",
     location: "Ciudad de México",
     description:
@@ -110,7 +110,7 @@ export const PROYECTOS: Proyecto[] = [
   {
     slug: "roof-mirador-campanario",
     title: "Roof Mirador del Campanario",
-    category: "Residencial",
+    category: "Obra",
     year: "2025",
     location: "Querétaro, México",
     description:
@@ -123,7 +123,7 @@ export const PROYECTOS: Proyecto[] = [
   {
     slug: "terraza-campo-real",
     title: "Terraza Campo Real Refugio",
-    category: "Residencial",
+    category: "Obra",
     year: "2025",
     location: "Querétaro, México",
     description:
@@ -136,7 +136,7 @@ export const PROYECTOS: Proyecto[] = [
   {
     slug: "recamara-bebe-villas",
     title: "Recámara Bebé Villas del Refugio",
-    category: "Interiorismo",
+    category: "Diseño",
     year: "2025",
     location: "Querétaro, México",
     description:
@@ -149,7 +149,7 @@ export const PROYECTOS: Proyecto[] = [
   {
     slug: "canadas-del-lago",
     title: "Cañadas del Lago",
-    category: "Residencial",
+    category: "Obra",
     year: "2024",
     location: "Querétaro, México",
     description:
@@ -162,7 +162,7 @@ export const PROYECTOS: Proyecto[] = [
   {
     slug: "valle-de-las-flores",
     title: "Valle de las Flores",
-    category: "Residencial",
+    category: "Obra",
     year: "2024",
     location: "Pachuca, Hidalgo",
     description:
@@ -175,7 +175,7 @@ export const PROYECTOS: Proyecto[] = [
   {
     slug: "casa-gema",
     title: "Casa Gema",
-    category: "Residencial",
+    category: "Obra",
     year: "2024",
     location: "Pachuca, Hidalgo",
     description:
@@ -188,7 +188,7 @@ export const PROYECTOS: Proyecto[] = [
   {
     slug: "teresitas",
     title: "Teresitas",
-    category: "Residencial",
+    category: "Obra",
     year: "2024",
     location: "Campanario, Querétaro",
     description:
@@ -201,7 +201,7 @@ export const PROYECTOS: Proyecto[] = [
   {
     slug: "vestidor-pachuquilla",
     title: "Vestidor Glam Pachuquilla",
-    category: "Interiorismo",
+    category: "Diseño",
     year: "2024",
     location: "Pachuquilla, Hidalgo",
     description:
@@ -214,7 +214,7 @@ export const PROYECTOS: Proyecto[] = [
   {
     slug: "san-juan-del-rio",
     title: "San Juan del Río — Cuarto de Lavado",
-    category: "Interiorismo",
+    category: "Diseño",
     year: "2024",
     location: "San Juan del Río, Querétaro",
     description:

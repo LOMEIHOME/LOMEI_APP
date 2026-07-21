@@ -50,7 +50,7 @@ export default function Hero() {
           transition={{ duration: 0.8, delay: 0.3 }}
           className="mt-5 max-w-full md:max-w-[58%] text-left font-serif text-[1.5625rem] md:text-[2.125rem] lg:text-[2.5rem] font-normal italic leading-[1.3] tracking-[0.015em] text-[var(--color-white)]/[0.97] [text-shadow:0_2px_28px_rgba(0,0,0,0.38)]"
         >
-          &ldquo;Un espacio no solo se construye, se diseña para vivirse&rdquo;
+          Diseño con alma propia
         </motion.p>
 
         {/* CTA — link subrayado con flecha */}

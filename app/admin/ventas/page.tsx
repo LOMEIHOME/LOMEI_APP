@@ -8,6 +8,14 @@ interface VentaResumen {
   total_ventas: number;
 }
 
+interface OrdenDetalle {
+  id: string;
+  numero: number;
+  cliente_nombre: string;
+  total: number;
+  creado_en: string;
+}
+
 type Periodo = "hoy" | "semana" | "mes" | "año";
 
 const PERIODOS: { key: Periodo; label: string }[] = [
@@ -106,6 +114,7 @@ function shortLabel(fecha: string, periodo: Periodo): string {
 
 export default function VentasPage() {
   const [data, setData] = useState<VentaResumen[]>([]);
+  const [ordenes, setOrdenes] = useState<OrdenDetalle[]>([]);
   const [periodo, setPeriodo] = useState<Periodo>("mes");
   const [offset, setOffset] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -115,9 +124,14 @@ export default function VentasPage() {
     try {
       const { desde, hasta } = getDateRange(periodo, offset);
       const params = new URLSearchParams({ desde, hasta });
-      const res = await fetch(`/api/ventas/resumen?${params}`);
-      const json = await res.json();
+      const [resumenRes, ordenesRes] = await Promise.all([
+        fetch(`/api/ventas/resumen?${params}`),
+        fetch(`/api/ordenes?limit=50`),
+      ]);
+      const json = await resumenRes.json();
+      const ordenesJson = await ordenesRes.json();
       setData(json.data || []);
+      setOrdenes(ordenesJson.data || []);
     } catch {
       // silenciar errores de red
     }
@@ -424,6 +438,84 @@ export default function VentasPage() {
           </div>
         )}
       </div>
+      {/* ── Detalle de órdenes con ticket ── */}
+      {ordenes.length > 0 && (
+        <div
+          className="mt-6"
+          style={{
+            border: "1px solid #eeece7",
+            borderRadius: 12,
+            overflow: "hidden",
+          }}
+        >
+          <div style={{ padding: "14px 16px", borderBottom: "1px solid #eeece7" }}>
+            <p className="font-bold" style={{ fontSize: 13.5, color: "#37352f" }}>
+              🧾 Órdenes recientes
+            </p>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full" style={{ borderCollapse: "collapse" }}>
+              <thead>
+                <tr style={{ background: "#f8f7f4" }}>
+                  {["Folio", "Cliente", "Total", "Fecha", "Ticket"].map((h) => (
+                    <th
+                      key={h}
+                      className={`font-medium ${h === "Total" || h === "Ticket" ? "text-right" : "text-left"}`}
+                      style={{
+                        padding: "10px 16px",
+                        fontSize: 11,
+                        color: "#9b968c",
+                        textTransform: "uppercase",
+                        letterSpacing: "0.05em",
+                      }}
+                    >
+                      {h}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {ordenes.map((orden) => {
+                  const folio = `NV-${String(orden.numero).padStart(4, "0")}`;
+                  return (
+                    <tr
+                      key={orden.id}
+                      className="transition-colors"
+                      style={{ borderTop: "1px solid #f1efe9" }}
+                      onMouseEnter={(e) => (e.currentTarget.style.background = "#faf9f6")}
+                      onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+                    >
+                      <td style={{ padding: "10px 16px", fontSize: 13, color: "#37352f", fontFamily: "monospace" }}>
+                        {folio}
+                      </td>
+                      <td style={{ padding: "10px 16px", fontSize: 13, color: "#37352f" }}>
+                        {orden.cliente_nombre}
+                      </td>
+                      <td className="text-right font-medium" style={{ padding: "10px 16px", fontSize: 13, color: "#37352f" }}>
+                        {formatPrice(orden.total)}
+                      </td>
+                      <td style={{ padding: "10px 16px", fontSize: 13, color: "#9b968c" }}>
+                        {formatDate(orden.creado_en)}
+                      </td>
+                      <td className="text-right" style={{ padding: "10px 16px" }}>
+                        <a
+                          href={`/admin/ordenes/${orden.id}`}
+                          className="transition-colors"
+                          style={{ fontSize: 12, color: "#37352f", textDecoration: "underline", textUnderlineOffset: 2 }}
+                          onMouseEnter={(e) => (e.currentTarget.style.color = "#A0845C")}
+                          onMouseLeave={(e) => (e.currentTarget.style.color = "#37352f")}
+                        >
+                          Ver ticket
+                        </a>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

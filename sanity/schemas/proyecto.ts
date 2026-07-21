@@ -24,9 +24,8 @@ export const proyecto = defineType({
       type: "string",
       options: {
         list: [
-          { title: "Residencial", value: "Residencial" },
-          { title: "Comercial", value: "Comercial" },
-          { title: "Interiorismo", value: "Interiorismo" },
+          { title: "Obra", value: "Obra" },
+          { title: "Diseño", value: "Diseño" },
         ],
       },
       validation: (rule) => rule.required(),

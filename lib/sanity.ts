@@ -37,13 +37,13 @@ function adaptProyecto(p: SanityProyecto): Proyecto {
     area: p.area || "",
     duration: p.duration || "",
     materials: p.materials || [],
-    images: p.images?.map((img) => urlFor(img).width(1200).url()) || [],
+    images: p.images?.filter((img) => img.asset).map((img) => urlFor(img).width(1200).url()) || [],
     featured: p.featured || false,
   };
 }
 
 function adaptProducto(p: SanityProducto): Producto {
-  const images = p.images?.map((img) => urlFor(img).width(1200).url()) || [];
+  const images = p.images?.filter((img) => img.asset).map((img) => urlFor(img).width(1200).url()) || [];
   return {
     slug: p.slug.current,
     name: p.name,

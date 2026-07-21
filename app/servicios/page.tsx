@@ -64,6 +64,19 @@ export default function ServiciosPage() {
                           sizes="(max-width: 768px) 100vw, 42vw"
                           loading={i < 2 ? "eager" : "lazy"}
                         />
+                        {servicio.id === "paisajismo" && (
+                          <div className="absolute bottom-4 right-4 md:bottom-6 md:right-6 bg-white/85 backdrop-blur-sm rounded-sm p-2.5">
+                            <div className="relative h-12 w-36 md:h-14 md:w-44">
+                              <Image
+                                src="/images/servicios/naturhabitat-logo.png"
+                                alt="Naturhabitat Landscape Studio"
+                                fill
+                                className="object-contain"
+                                sizes="144px"
+                              />
+                            </div>
+                          </div>
+                        )}
                       </div>
                     </FadeIn>
                   </div>
@@ -99,9 +112,25 @@ export default function ServiciosPage() {
                       </div>
                     </FadeIn>
                     <FadeIn delay={0.3}>
-                      <p className="mt-6 font-serif text-lg md:text-xl text-[var(--color-oak)] tracking-wide">
-                        {servicio.precio}
-                      </p>
+                      {servicio.id === "paisajismo" ? (
+                        <a
+                          href="https://www.instagram.com/naturhabitat/"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="mt-6 inline-flex items-center gap-2.5 text-sm tracking-[0.12em] uppercase text-[var(--color-oak)] hover:text-[var(--color-camel)] transition-colors duration-400"
+                        >
+                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                            <rect x="2" y="2" width="20" height="20" rx="5" />
+                            <circle cx="12" cy="12" r="5" />
+                            <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none" />
+                          </svg>
+                          @naturhabitat
+                        </a>
+                      ) : (
+                        <p className="mt-6 font-serif text-lg md:text-xl text-[var(--color-oak)] tracking-wide">
+                          {servicio.precio}
+                        </p>
+                      )}
                     </FadeIn>
                   </div>
                 </div>
