@@ -10,14 +10,14 @@ import Image from "next/image";
 const FOOTER_LINKS = [
   { href: "/proyectos", label: "Proyectos" },
   { href: "/catalogo", label: "Catálogo" },
-  { href: "/nosotros", label: "Nosotros" },
   { href: "/servicios", label: "Servicios" },
   { href: "/contacto", label: "Contacto" },
+  { href: "/nosotros", label: "Nosotros" },
 ];
 
 export default function Footer() {
   return (
-    <footer className="bg-[#3A2A1C] text-[var(--color-linen)] mt-auto">
+    <footer className="bg-[var(--color-espresso)] text-[var(--color-linen)] mt-auto">
       <div className="max-w-[85rem] mx-auto px-6 md:px-10 lg:px-16 pt-14 md:pt-20 pb-0">
         {/* CTA */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 md:gap-8 pb-10 md:pb-12 border-b border-[var(--color-warm-gray)]/25">
@@ -28,7 +28,7 @@ export default function Footer() {
           </h2>
           <Link
             href="/contacto"
-            className="text-xs tracking-[0.2em] uppercase text-[var(--color-white)] border-b border-[var(--color-white)]/50 pb-1.5 hover:text-[var(--color-sand)] hover:border-[var(--color-sand)] transition-colors duration-400 whitespace-nowrap self-start md:self-auto"
+            className="text-xs tracking-[0.2em] uppercase text-[var(--color-linen)] border-b border-[var(--color-linen)]/50 pb-1.5 hover:text-[var(--color-sand)] hover:border-[var(--color-sand)] transition-colors duration-400 whitespace-nowrap self-start md:self-auto"
           >
             Agenda una cita →
           </Link>
@@ -53,7 +53,7 @@ export default function Footer() {
 
           {/* Navegación */}
           <div>
-            <p className="text-[11px] tracking-[0.25em] uppercase text-[var(--color-sand)]/80 mb-4">
+            <p className="text-[11px] tracking-[0.25em] uppercase text-[var(--color-warm-gray)] mb-4">
               Navegación
             </p>
             <ul className="flex flex-col gap-2.5">
@@ -61,7 +61,7 @@ export default function Footer() {
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-[14.5px] font-light text-[var(--color-linen)] hover:text-[var(--color-white)] transition-colors duration-400"
+                    className="text-[14.5px] font-light text-[var(--color-linen)]/75 hover:text-[var(--color-white)] transition-colors duration-400"
                   >
                     {link.label}
                   </Link>
@@ -72,10 +72,10 @@ export default function Footer() {
 
           {/* Contacto */}
           <div>
-            <p className="text-[11px] tracking-[0.25em] uppercase text-[var(--color-sand)]/80 mb-4">
+            <p className="text-[11px] tracking-[0.25em] uppercase text-[var(--color-warm-gray)] mb-4">
               Contacto
             </p>
-            <ul className="flex flex-col gap-3 text-base md:text-[14.5px] font-light text-[var(--color-linen)]">
+            <ul className="flex flex-col gap-3 text-base md:text-[14.5px] font-light text-[var(--color-linen)]/75">
               <li>
                 <a
                   href="https://instagram.com/lomeihome"
@@ -102,17 +102,27 @@ export default function Footer() {
                   442 487 4466
                 </a>
               </li>
+              <li>
+                <a
+                  href="https://maps.google.com/?q=LOMEI+HOME+Queretaro"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-[var(--color-white)] transition-colors duration-400"
+                >
+                  Querétaro, Qro., México
+                </a>
+              </li>
             </ul>
           </div>
         </div>
 
         {/* Barra inferior */}
         <div className="mt-12 py-6 border-t border-[var(--color-warm-gray)]/25 flex flex-col md:flex-row items-center justify-between gap-2">
-          <p className="text-xs font-light tracking-wider text-[var(--color-linen)]/60">
+          <p className="text-xs font-light tracking-wider text-[var(--color-warm-gray)]">
             &copy; {new Date().getFullYear()} LOMEI HOME. Todos los derechos
             reservados.
           </p>
-          <p className="text-xs font-light tracking-wider text-[var(--color-linen)]/60">
+          <p className="text-xs font-light tracking-wider text-[var(--color-warm-gray)]">
             Querétaro, México
           </p>
         </div>

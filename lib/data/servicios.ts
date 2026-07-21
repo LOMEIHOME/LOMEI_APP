@@ -12,9 +12,21 @@ export interface Servicio {
 
 export const SERVICIOS: Servicio[] = [
   {
-    id: "asesoria-online",
+    id: "interiorismo",
     num: "01",
-    nombre: "Asesoría Online y Presencial",
+    nombre: "Interiorismo",
+    descripcion:
+      "Creamos espacios funcionales, armoniosos y llenos de personalidad. Desarrollamos una propuesta integral que define materiales, mobiliario, iluminación, colores y acabados para materializar tu visión.",
+    incluye:
+      "Entrevista preliminar + levantamiento + presentación con 3 visualizaciones 3D fotorrealistas + cotización.",
+    precio: "Desde $5,800 x espacio",
+    iconId: "interiorismo",
+    imagen: "/images/servicios/interiorismo.png",
+  },
+  {
+    id: "asesoria",
+    num: "02",
+    nombre: "Asesoría",
     descripcion:
       "Recibe acompañamiento profesional para resolver dudas, definir ideas y tomar decisiones con seguridad. Te ayudamos a transformar tu espacio de forma práctica, ya sea a distancia mediante una video llamada o en sitio.",
     incluye:
@@ -22,19 +34,6 @@ export const SERVICIOS: Servicio[] = [
     precio: "Desde $1,200 x espacio",
     iconId: "asesoria",
     imagen: "/images/servicios/asesoria.png",
-  },
-  {
-    id: "styling",
-    num: "02",
-    nombre: "Styling",
-    subtitulo: "Decora tu espacio",
-    descripcion:
-      "Renueva la personalidad de tu hogar con una cuidadosa selección de mobiliario, decoración, textiles, iluminación y accesorios que reflejen tu estilo y eleven cada ambiente.",
-    incluye:
-      "Entrevista preliminar + presentación con las selecciones pensadas para tu espacio + cotización / listado de compras.",
-    precio: "Desde $2,200 x espacio",
-    iconId: "styling",
-    imagen: "/images/servicios/styling.png",
   },
   {
     id: "custom-design",
@@ -50,45 +49,22 @@ export const SERVICIOS: Servicio[] = [
     imagen: "/images/servicios/custom-design.png",
   },
   {
-    id: "interiorismo",
+    id: "styling",
     num: "04",
-    nombre: "Proyecto de Interiorismo",
+    nombre: "Styling",
+    subtitulo: "Decora tu espacio",
     descripcion:
-      "Creamos espacios funcionales, armoniosos y llenos de personalidad. Desarrollamos una propuesta integral que define materiales, mobiliario, iluminación, colores y acabados para materializar tu visión.",
+      "Renueva la personalidad de tu hogar con una cuidadosa selección de mobiliario, decoración, textiles, iluminación y accesorios que reflejen tu estilo y eleven cada ambiente.",
     incluye:
-      "Entrevista preliminar + levantamiento + presentación con 3 visualizaciones 3D fotorrealistas + cotización.",
-    precio: "Desde $5,800 x espacio",
-    iconId: "interiorismo",
-    imagen: "/images/servicios/interiorismo.png",
+      "Entrevista preliminar + presentación con las selecciones pensadas para tu espacio + cotización / listado de compras.",
+    precio: "Desde $2,200 x espacio",
+    iconId: "styling",
+    imagen: "/images/servicios/styling.png",
   },
   {
-    id: "proyecto-ejecutivo",
+    id: "proyecto-obra",
     num: "05",
-    nombre: "Proyecto Ejecutivo",
-    descripcion:
-      "Transformamos el diseño arquitectónico en un plan preciso para su construcción. Generamos planos, detalles técnicos, especificaciones y documentación necesaria para ejecutar el proyecto con claridad y control.",
-    incluye:
-      "Entrevista preliminar + levantamiento topográfico + propuesta con renders fotorrealistas exteriores + planos arquitectónicos + planos de instalaciones básicas + planos estructurales + propuesta de acabados exteriores.",
-    precio: "Desde $250 x m²",
-    iconId: "proyecto-ejecutivo",
-    imagen: "/images/servicios/proyecto-ejecutivo.png",
-  },
-  {
-    id: "paisajismo",
-    num: "06",
-    nombre: "Paisajismo",
-    descripcion:
-      "Diseñamos espacios exteriores e interiores que conectan arquitectura y naturaleza de manera armónica. Creamos propuestas integrales que incluyen vegetación, iluminación, materiales y elementos decorativos para transformar jardines, terrazas y áreas exteriores en ambientes funcionales, estéticos y llenos de vida.",
-    incluye:
-      "Entrevista preliminar + levantamiento + creación de concepto + paleta vegetal + propuesta en render + plano de distribución + cotización.",
-    precio: "Desde $4,000 x espacio",
-    iconId: "paisajismo",
-    imagen: "/images/servicios/paisajismo.png",
-  },
-  {
-    id: "ejecucion-de-obra",
-    num: "07",
-    nombre: "Ejecución de Obra",
+    nombre: "Proyecto Obra",
     descripcion:
       "Coordinamos y supervisamos cada etapa de la obra para garantizar que el proyecto se materialice conforme al diseño, cuidando calidad, tiempos y presupuesto.",
     incluye:
@@ -99,8 +75,8 @@ export const SERVICIOS: Servicio[] = [
   },
   {
     id: "fabricacion-mobiliario",
-    num: "08",
-    nombre: "Fabricación de Mobiliario a Medida",
+    num: "06",
+    nombre: "Fabricación de Muebles",
     descripcion:
       "Creamos mobiliario personalizado que aprovecha al máximo cada espacio. Diseñado y fabricado con materiales seleccionados para ofrecer funcionalidad, durabilidad y un acabado excepcional.",
     incluye:
@@ -108,5 +84,30 @@ export const SERVICIOS: Servicio[] = [
     precio: "Desde 15% del monto total de la cotización de material + mano de obra",
     iconId: "fabricacion",
     imagen: "/images/servicios/fabricacion-mobiliario.png",
+  },
+  {
+    id: "proyecto-ejecutivo",
+    num: "07",
+    nombre: "Ejecutivo",
+    descripcion:
+      "Transformamos el diseño arquitectónico en un plan preciso para su construcción. Generamos planos, detalles técnicos, especificaciones y documentación necesaria para ejecutar el proyecto con claridad y control.",
+    incluye:
+      "Entrevista preliminar + levantamiento topográfico + propuesta con renders fotorrealistas exteriores + planos arquitectónicos + planos de instalaciones básicas + planos estructurales + propuesta de acabados exteriores.",
+    precio: "Desde $250 x m²",
+    iconId: "proyecto-ejecutivo",
+    imagen: "/images/servicios/proyecto-ejecutivo.png",
+  },
+  {
+    id: "paisajismo",
+    num: "08",
+    nombre: "Paisajismo",
+    subtitulo: "En colaboración con Naturhabitat",
+    descripcion:
+      "A través de nuestra colaboración con Naturhabitat, concebimos espacios exteriores como escenarios vivos donde la arquitectura y la naturaleza conviven en equilibrio. Diseñamos propuestas de paisajismo biodinámico que integran vegetación, materiales y soluciones sustentables para crear ambientes funcionales, estéticos y de bajo mantenimiento, apoyándonos en tecnologías de ecoinnovación que favorecen el desarrollo responsable de cada proyecto.",
+    incluye:
+      "Entrevista preliminar + levantamiento + creación de concepto + paleta vegetal + propuesta en render + plano de distribución + cotización.",
+    precio: "",
+    iconId: "paisajismo",
+    imagen: "/images/servicios/paisajismo.png",
   },
 ];

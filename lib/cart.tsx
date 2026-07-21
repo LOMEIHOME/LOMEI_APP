@@ -86,9 +86,10 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const clearCart = useCallback(() => setItems([]), []);
 
   const itemCount = items.reduce((sum, i) => sum + i.quantity, 0);
-  const subtotal = items.reduce((sum, i) => sum + i.price * i.quantity, 0);
-  const iva = Math.round(subtotal * IVA_RATE * 100) / 100;
-  const total = subtotal + iva;
+  // El precio ya incluye IVA — calcular hacia atrás
+  const total = items.reduce((sum, i) => sum + i.price * i.quantity, 0);
+  const subtotal = Math.round((total / (1 + IVA_RATE)) * 100) / 100;
+  const iva = Math.round((total - subtotal) * 100) / 100;
 
   return (
     <CartContext.Provider

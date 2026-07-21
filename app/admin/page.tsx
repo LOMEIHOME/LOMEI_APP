@@ -9,6 +9,8 @@ interface Kpis {
   stock_bajo: number;
   ventas_mes: number;
   ingresos_mes: number;
+  productos_por_categoria?: Record<string, number>;
+  stock_bajo_por_categoria?: Record<string, number>;
 }
 
 interface AlertaItem {
@@ -28,6 +30,16 @@ interface TopProducto {
   nombre: string;
   categoria: string;
   vendidos: number;
+}
+
+interface Correlacion {
+  a: string;
+  b: string;
+  nombre_a: string;
+  nombre_b: string;
+  cat_a: string;
+  cat_b: string;
+  count: number;
 }
 
 const formatPrice = (n: number) =>
@@ -92,22 +104,26 @@ export default function AdminDashboardPage() {
   });
   const [alertas, setAlertas] = useState<AlertaItem[]>([]);
   const [topProductos, setTopProductos] = useState<TopProducto[]>([]);
+  const [correlaciones, setCorrelaciones] = useState<Correlacion[]>([]);
   const [loading, setLoading] = useState(true);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
     try {
-      const [kpisRes, alertasRes, topRes] = await Promise.all([
+      const [kpisRes, alertasRes, topRes, corrRes] = await Promise.all([
         fetch("/api/dashboard/kpis"),
         fetch("/api/inventario?alerta=true"),
         fetch("/api/dashboard/top-productos"),
+        fetch("/api/dashboard/correlacion"),
       ]);
       const kpisJson = await kpisRes.json();
       const alertasJson = await alertasRes.json();
       const topJson = await topRes.json();
+      const corrJson = await corrRes.json();
       setKpis(kpisJson.data || kpisJson);
       setAlertas(alertasJson.data || []);
       setTopProductos(topJson.data || []);
+      setCorrelaciones(corrJson.data || []);
     } catch {
       // silenciar errores de red
     }
@@ -151,7 +167,7 @@ export default function AdminDashboardPage() {
       {/* KPI Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-7">
         {/* Productos activos */}
-        <div className="bg-[#f8f7f4] rounded-xl p-[17px]">
+        <div className="bg-[#f8f7f4] rounded-xl p-[17px] group relative">
           <div className="text-[19px] mb-2.5">{"\u{1F4E6}"}</div>
           <div className="text-[28px] font-bold text-[#37352f] leading-none">
             {kpis.productos_activos}
@@ -159,6 +175,20 @@ export default function AdminDashboardPage() {
           <div className="text-[12.5px] text-[#8b867c] mt-1">
             Productos activos
           </div>
+          {kpis.productos_por_categoria && Object.keys(kpis.productos_por_categoria).length > 0 && (
+            <div className="mt-3 pt-3 border-t border-[#e6e3db] space-y-1">
+              {Object.entries(kpis.productos_por_categoria)
+                .sort(([, a], [, b]) => b - a)
+                .map(([cat, count]) => (
+                  <div key={cat} className="flex items-center justify-between text-[11.5px]">
+                    <span className="text-[#8b867c] truncate">
+                      {getCategoryEmoji(cat)} {cat}
+                    </span>
+                    <span className="text-[#37352f] font-medium ml-2">{count}</span>
+                  </div>
+                ))}
+            </div>
+          )}
         </div>
 
         {/* Stock bajo */}
@@ -171,6 +201,20 @@ export default function AdminDashboardPage() {
             {kpis.stock_bajo}
           </div>
           <div className="text-[12.5px] text-[#b06a44] mt-1">Stock bajo</div>
+          {kpis.stock_bajo_por_categoria && Object.keys(kpis.stock_bajo_por_categoria).length > 0 && (
+            <div className="mt-3 pt-3 border-t border-[#f0c9b4] space-y-1">
+              {Object.entries(kpis.stock_bajo_por_categoria)
+                .sort(([, a], [, b]) => b - a)
+                .map(([cat, count]) => (
+                  <div key={cat} className="flex items-center justify-between text-[11.5px]">
+                    <span className="text-[#b06a44] truncate">
+                      {getCategoryEmoji(cat)} {cat}
+                    </span>
+                    <span className="text-[#c2410c] font-medium ml-2">{count}</span>
+                  </div>
+                ))}
+            </div>
+          )}
         </button>
 
         {/* Ventas del mes */}
@@ -323,6 +367,40 @@ export default function AdminDashboardPage() {
           )}
         </div>
       </div>
+
+      {/* Correlación de productos */}
+      {correlaciones.length > 0 && (
+        <div className="mt-7">
+          <h2 className="text-[15px] font-bold text-[#37352f] mb-3">
+            {"\u{1F517}"} Se compran juntos
+          </h2>
+          <div className="flex flex-col gap-2">
+            {correlaciones.slice(0, 8).map((corr) => (
+              <div
+                key={`${corr.a}-${corr.b}`}
+                className="flex items-center gap-3 p-3 rounded-xl border border-[#eeece7] bg-white"
+              >
+                <div className="flex-1 min-w-0">
+                  <div className="text-[13px] text-[#37352f]">
+                    <span className="font-medium">{corr.nombre_a}</span>
+                    <span className="text-[#9b968c] mx-2">+</span>
+                    <span className="font-medium">{corr.nombre_b}</span>
+                  </div>
+                  <div className="text-[11px] text-[#9b968c] mt-0.5">
+                    {corr.cat_a}{corr.cat_a !== corr.cat_b ? ` · ${corr.cat_b}` : ""}
+                  </div>
+                </div>
+                <div className="text-right shrink-0">
+                  <div className="text-[14px] font-semibold text-[#37352f]">
+                    {corr.count}
+                  </div>
+                  <div className="text-[11px] text-[#9b968c]">veces</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

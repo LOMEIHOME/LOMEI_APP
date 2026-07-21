@@ -87,6 +87,13 @@ body::before {
   border-radius: 3px;
 }
 
+/* Justificar texto en móvil */
+@media (max-width: 768px) {
+  p {
+    text-align: justify;
+  }
+}
+
 /* Ocultar scrollbar horizontal en filtros móvil */
 .scrollbar-hide {
   -ms-overflow-style: none;

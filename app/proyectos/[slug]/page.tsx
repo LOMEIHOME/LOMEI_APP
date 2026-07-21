@@ -85,6 +85,11 @@ export default async function ProyectoDetallePage({
             <FadeIn delay={0.2}>
               <div className="bg-[var(--color-linen)] rounded-sm p-8">
                 <SectionTag>Ficha técnica</SectionTag>
+                {proyecto.description && (
+                  <p className="mt-4 text-sm leading-relaxed text-[var(--color-dark)]/80">
+                    {proyecto.description}
+                  </p>
+                )}
                 <div className="mt-6 space-y-5">
                   <div className="border-b border-[var(--color-sand)]/40 pb-4">
                     <p className="text-[10px] tracking-[0.2em] uppercase text-[var(--color-warm-gray)]">
@@ -92,14 +97,6 @@ export default async function ProyectoDetallePage({
                     </p>
                     <p className="mt-1 text-sm text-[var(--color-dark)]">
                       {proyecto.area}
-                    </p>
-                  </div>
-                  <div className="border-b border-[var(--color-sand)]/40 pb-4">
-                    <p className="text-[10px] tracking-[0.2em] uppercase text-[var(--color-warm-gray)]">
-                      Duración
-                    </p>
-                    <p className="mt-1 text-sm text-[var(--color-dark)]">
-                      {proyecto.duration}
                     </p>
                   </div>
                   <div className="border-b border-[var(--color-sand)]/40 pb-4">
@@ -132,35 +129,26 @@ export default async function ProyectoDetallePage({
         </div>
       </section>
 
-      {/* Galería */}
+      {/* Galería — carousel cronológico */}
       {proyecto.images.length > 1 && (
         <section className="max-w-[85rem] mx-auto px-6 md:px-10 lg:px-16 pb-16 md:pb-24 lg:pb-32">
           <FadeIn>
             <SectionTag>Galería</SectionTag>
           </FadeIn>
-          <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="mt-8 flex gap-4 overflow-x-auto snap-x snap-mandatory pb-4 scrollbar-thin scrollbar-thumb-[var(--color-sand)] scrollbar-track-transparent">
             {proyecto.images.slice(1).map((img, i) => (
-              <FadeIn key={img} delay={0.1 * i}>
-                <div
-                  className={`relative overflow-hidden rounded-sm ${
-                    i === 0 && proyecto.images.length > 3
-                      ? "md:col-span-2 aspect-[16/9]"
-                      : "aspect-[4/3]"
-                  }`}
-                >
-                  <Image
-                    src={img}
-                    alt={`${proyecto.title} — imagen ${i + 2}`}
-                    fill
-                    className="object-cover"
-                    sizes={
-                      i === 0 && proyecto.images.length > 3
-                        ? "100vw"
-                        : "(max-width: 768px) 100vw, 50vw"
-                    }
-                  />
-                </div>
-              </FadeIn>
+              <div
+                key={img}
+                className="relative flex-shrink-0 w-[85vw] md:w-[60vw] lg:w-[45vw] aspect-[4/3] snap-center overflow-hidden rounded-sm"
+              >
+                <Image
+                  src={img}
+                  alt={`${proyecto.title} — imagen ${i + 2}`}
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 768px) 85vw, (max-width: 1024px) 60vw, 45vw"
+                />
+              </div>
             ))}
           </div>
         </section>

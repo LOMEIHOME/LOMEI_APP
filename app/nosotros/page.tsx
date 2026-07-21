@@ -1,4 +1,7 @@
+"use client";
+
 import Image from "next/image";
+import { useState, useEffect, useCallback } from "react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import SectionTag from "@/components/ui/SectionTag";
@@ -38,69 +41,146 @@ const PROCESO = [
   },
 ];
 
-const SHOWROOM_SPACES = [
-  {
-    title: "Mesa de trabajo",
-    desc: "Espacio para asesorías con clientes y presentación de proyectos en renders y planos.",
-  },
-  {
-    title: "Mueble repisero",
-    desc: "Exhibición de muestras de distintos acabados: telas, piedras naturales, placas y accesorios.",
-  },
-  {
-    title: "Coffee station",
-    desc: "Área de bebidas para ofrecer una experiencia cálida durante la visita al showroom.",
-  },
-  {
-    title: "Set recibidor",
-    desc: "Un espacio que muestra cómo creamos cotidianamente un ambiente acogedor de hogar.",
-  },
+const SHOWROOM_IMAGES = [
+  { src: "/images/showroom/showroom-main.png", alt: "Vista principal del showroom" },
+  { src: "/images/showroom/showroom-led.png", alt: "Iluminación LED del showroom" },
+  { src: "/images/showroom/sala-recibidor.png", alt: "Sala recibidor del showroom" },
+  { src: "/images/showroom/sala-detalle.png", alt: "Detalle del showroom" },
 ];
 
-const MATERIALES = [
-  "Encino natural",
-  "Silestone",
-  "Nanocal",
-  "Porcelánico tipo concreto",
-  "Tapicería neutra",
-  "Vinil camel",
-  "LED indirecta",
-];
+function ShowroomCarousel() {
+  const [active, setActive] = useState(0);
+  const [paused, setPaused] = useState(false);
+
+  const next = useCallback(() => {
+    setActive((i) => (i + 1) % SHOWROOM_IMAGES.length);
+  }, []);
+
+  const prev = useCallback(() => {
+    setActive((i) => (i - 1 + SHOWROOM_IMAGES.length) % SHOWROOM_IMAGES.length);
+  }, []);
+
+  useEffect(() => {
+    if (paused) return;
+    const timer = setInterval(next, 3000);
+    return () => clearInterval(timer);
+  }, [paused, next]);
+
+  const num = String(active + 1).padStart(2, "0");
+
+  return (
+    <section className="bg-[var(--color-linen)] py-16 md:py-24 lg:py-32">
+      <div className="max-w-[85rem] mx-auto px-6 md:px-10 lg:px-16">
+        <FadeIn>
+          <SectionTag className="!text-[11px] !text-[var(--color-oak)]">
+            El showroom
+          </SectionTag>
+        </FadeIn>
+        <FadeIn delay={0.1}>
+          <h2 className="mt-4 font-serif text-2xl md:text-3xl lg:text-[2.625rem] tracking-wider text-[var(--color-dark)]">
+            Nuestro espacio
+          </h2>
+        </FadeIn>
+        <FadeIn delay={0.15}>
+          <p className="mt-4 text-[15px] leading-relaxed text-[var(--color-dark)]/72 max-w-2xl">
+            Un espacio diseñado para que nuestros clientes experimenten los
+            materiales, acabados y la estética del estudio en persona.
+          </p>
+        </FadeIn>
+
+        {/* Carrusel — mismo estilo que ProjectsGrid del home */}
+        <FadeIn delay={0.2}>
+          <div
+            className="relative mt-12 group"
+            onMouseEnter={() => setPaused(true)}
+            onMouseLeave={() => setPaused(false)}
+          >
+            <div className="relative aspect-[16/9] md:aspect-[16/7] overflow-hidden rounded-sm">
+              {SHOWROOM_IMAGES.map((img, i) => (
+                <Image
+                  key={img.src}
+                  src={img.src}
+                  alt={img.alt}
+                  fill
+                  className={`object-cover transition-opacity duration-700 ease-in-out ${
+                    i === active ? "opacity-100" : "opacity-0"
+                  }`}
+                  sizes="(max-width: 768px) 100vw, 85rem"
+                  priority={i === 0}
+                />
+              ))}
+
+              {/* Overlay con número */}
+              <div className="absolute inset-0 bg-gradient-to-t from-[rgba(42,33,24,0.72)] via-[rgba(42,33,24,0.12)] via-50% to-transparent flex items-end p-6 md:p-8 lg:p-10">
+                <p className="text-[10px] md:text-[11px] tracking-[0.2em] uppercase text-[var(--color-sand)]">
+                  {num} · {SHOWROOM_IMAGES[active].alt}
+                </p>
+              </div>
+
+              {/* Flechas */}
+              <button
+                onClick={prev}
+                aria-label="Anterior"
+                className="absolute left-4 md:left-6 top-1/2 -translate-y-1/2 w-10 h-10 md:w-11 md:h-11 rounded-full bg-white/15 backdrop-blur-sm flex items-center justify-center text-white/80 hover:bg-white/30 transition-all duration-300 opacity-0 group-hover:opacity-100"
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M15 19l-7-7 7-7" /></svg>
+              </button>
+              <button
+                onClick={next}
+                aria-label="Siguiente"
+                className="absolute right-4 md:right-6 top-1/2 -translate-y-1/2 w-10 h-10 md:w-11 md:h-11 rounded-full bg-white/15 backdrop-blur-sm flex items-center justify-center text-white/80 hover:bg-white/30 transition-all duration-300 opacity-0 group-hover:opacity-100"
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M9 5l7 7-7 7" /></svg>
+              </button>
+            </div>
+
+            {/* Indicadores pill */}
+            <div className="flex items-center justify-center gap-2 mt-5">
+              {SHOWROOM_IMAGES.map((img, i) => (
+                <button
+                  key={img.src}
+                  onClick={() => setActive(i)}
+                  className="group/dot flex items-center gap-0 transition-all duration-300"
+                  aria-label={img.alt}
+                >
+                  <div
+                    className={`rounded-full transition-all duration-500 ${
+                      i === active
+                        ? "w-8 h-1.5 bg-[var(--color-camel)]"
+                        : "w-1.5 h-1.5 bg-[var(--color-sand)] group-hover/dot:bg-[var(--color-warm-gray)]"
+                    }`}
+                  />
+                </button>
+              ))}
+            </div>
+          </div>
+        </FadeIn>
+      </div>
+    </section>
+  );
+}
 
 export default function NosotrosPage() {
   return (
     <>
-      <Navbar />
+      <Navbar forceScrolled />
 
-      {/* Hero */}
-      <section className="relative h-[50vh] md:h-[60vh] lg:h-[70vh]">
-        <Image
-          src="/images/showroom/fachada.png"
-          alt="Fachada Showroom LOMEI Home"
-          fill
-          className="object-cover"
-          priority
-          sizes="100vw"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-dark)]/65 to-transparent" />
-        <div className="absolute bottom-0 left-0 right-0 px-6 md:px-10 lg:px-16 py-8 md:py-12">
-          <div className="max-w-[85rem] mx-auto">
-            <FadeIn>
-              <SectionTag className="!text-[11px] !text-[var(--color-sand)]">
-                Nosotros
-              </SectionTag>
-            </FadeIn>
-            <FadeIn delay={0.1}>
-              <h1 className="mt-3 font-serif text-3xl md:text-4xl lg:text-6xl tracking-wider text-[var(--color-white)]">
-                LOMEI Home
-              </h1>
-            </FadeIn>
-            <FadeIn delay={0.2}>
-              <p className="mt-2 text-sm tracking-[0.08em] text-[var(--color-white)]/85">
-                Arquitectura e Interiorismo · Querétaro, México
-              </p>
-            </FadeIn>
-          </div>
+      {/* Header */}
+      <section className="bg-[var(--color-linen)] pt-32 pb-16 md:pt-40 md:pb-24">
+        <div className="max-w-[85rem] mx-auto px-6 md:px-10 lg:px-16 text-center">
+          <FadeIn>
+            <SectionTag>Nosotros</SectionTag>
+          </FadeIn>
+          <FadeIn delay={0.1}>
+            <h1 className="mt-4 font-serif text-4xl md:text-5xl lg:text-6xl tracking-wider text-[var(--color-dark)]">
+              LOMEI HOME
+            </h1>
+          </FadeIn>
+          <FadeIn delay={0.2}>
+            <p className="mt-6 max-w-2xl mx-auto text-base leading-relaxed text-[var(--color-dark)]/70">
+              Arquitectura e Interiorismo · Querétaro, México
+            </p>
+          </FadeIn>
         </div>
       </section>
 
@@ -111,7 +191,7 @@ export default function NosotrosPage() {
             <FadeIn>
               <div className="relative aspect-[3/4] overflow-hidden rounded-sm">
                 <Image
-                  src="/images/showroom/sala-recibidor.png"
+                  src="/images/showroom/arq-ana-lorena.jpg"
                   alt="Arq. Ana Lorena Vargas Mejía"
                   fill
                   className="object-cover"
@@ -163,89 +243,8 @@ export default function NosotrosPage() {
         </div>
       </section>
 
-      {/* El Showroom */}
-      <section className="bg-[var(--color-linen)] py-16 md:py-24 lg:py-32">
-        <div className="max-w-[85rem] mx-auto px-6 md:px-10 lg:px-16">
-          <FadeIn>
-            <SectionTag className="!text-[11px] !text-[var(--color-oak)]">
-              El showroom
-            </SectionTag>
-          </FadeIn>
-          <FadeIn delay={0.1}>
-            <h2 className="mt-4 font-serif text-2xl md:text-3xl lg:text-[2.625rem] tracking-wider text-[var(--color-dark)]">
-              Nuestro espacio
-            </h2>
-          </FadeIn>
-          <FadeIn delay={0.15}>
-            <p className="mt-4 text-[15px] leading-relaxed text-[var(--color-dark)]/72 max-w-2xl">
-              Un espacio diseñado para que nuestros clientes experimenten los
-              materiales, acabados y la estética del estudio en persona. Aquí,
-              cada rincón cuenta una historia.
-            </p>
-          </FadeIn>
-
-          {/* Renders del showroom */}
-          <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-5">
-            <FadeIn>
-              <div className="relative aspect-[16/10] overflow-hidden rounded-sm">
-                <Image
-                  src="/images/showroom/showroom-main.png"
-                  alt="Vista principal del showroom"
-                  fill
-                  className="object-cover"
-                  sizes="(max-width: 768px) 100vw, 50vw"
-                />
-              </div>
-            </FadeIn>
-            <FadeIn delay={0.1}>
-              <div className="relative aspect-[16/10] overflow-hidden rounded-sm">
-                <Image
-                  src="/images/showroom/showroom-led.png"
-                  alt="Iluminación LED del showroom"
-                  fill
-                  className="object-cover"
-                  sizes="(max-width: 768px) 100vw, 50vw"
-                />
-              </div>
-            </FadeIn>
-          </div>
-
-          {/* Espacios */}
-          <div className="mt-10 md:mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
-            {SHOWROOM_SPACES.map((s, i) => (
-              <FadeIn key={s.title} delay={0.1 * i}>
-                <div className="border-t border-[var(--color-sand)]/60 pt-5">
-                  <h3 className="font-serif text-xl tracking-[0.05em] text-[var(--color-dark)]">
-                    {s.title}
-                  </h3>
-                  <p className="mt-2.5 text-[13px] leading-relaxed text-[var(--color-dark)]/68">
-                    {s.desc}
-                  </p>
-                </div>
-              </FadeIn>
-            ))}
-          </div>
-
-          {/* Materiales */}
-          <FadeIn delay={0.2}>
-            <div className="mt-12 border-t border-[var(--color-sand)]/60 pt-7 flex flex-col md:flex-row md:items-baseline gap-4 md:gap-6">
-              <span className="text-[11px] tracking-[0.22em] uppercase text-[var(--color-oak)] whitespace-nowrap">
-                Materiales
-              </span>
-              <div className="flex flex-wrap gap-2.5">
-                {MATERIALES.map((m) => (
-                  <span
-                    key={m}
-                    className="px-3.5 py-2 text-[11px] tracking-[0.14em] uppercase border border-[var(--color-sand)]/90 text-[var(--color-camel)] rounded-sm"
-                  >
-                    {m}
-                  </span>
-                ))}
-              </div>
-            </div>
-          </FadeIn>
-        </div>
-      </section>
+      {/* El Showroom — Carrusel */}
+      <ShowroomCarousel />
 
       {/* Proceso de trabajo — línea de tiempo */}
       <section className="max-w-[85rem] mx-auto px-6 md:px-10 lg:px-16 py-16 md:py-24 lg:py-32">
@@ -284,6 +283,84 @@ export default function NosotrosPage() {
               </div>
             </FadeIn>
           ))}
+        </div>
+      </section>
+
+      {/* Nuestro equipo */}
+      <section className="border-t border-[var(--color-sand)]/30 bg-[var(--color-linen)] py-16 md:py-24 lg:py-32">
+        <div className="max-w-[85rem] mx-auto px-6 md:px-10 lg:px-16">
+          <FadeIn>
+            <SectionTag className="!text-[11px] !text-[var(--color-oak)]">
+              El equipo
+            </SectionTag>
+          </FadeIn>
+          <FadeIn delay={0.1}>
+            <h2 className="mt-4 font-serif text-2xl md:text-3xl lg:text-[2.625rem] tracking-wider text-[var(--color-dark)]">
+              Quienes hacemos LOMEI
+            </h2>
+          </FadeIn>
+          <FadeIn delay={0.15}>
+            <p className="mt-4 text-[15px] leading-relaxed text-[var(--color-dark)]/72 max-w-2xl">
+              Un equipo multidisciplinario que comparte la pasión por crear
+              espacios con identidad y propósito.
+            </p>
+          </FadeIn>
+
+          <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-10">
+            {[
+              {
+                name: "Arq. Ana Lorena Vargas",
+                role: "Directora Creativa",
+                desc: "Fundadora de LOMEI HOME. Lidera cada proyecto desde el concepto hasta la entrega, cuidando que cada espacio refleje la esencia del cliente.",
+              },
+              {
+                name: "Próximamente",
+                role: "Arquitectura",
+                desc: "Responsable del desarrollo de planos ejecutivos y coordinación de obra, asegurando que el diseño se materialice con precisión.",
+              },
+              {
+                name: "Próximamente",
+                role: "Interiorismo",
+                desc: "Encargado de la selección de materiales, mobiliario y acabados que dan vida a cada ambiente diseñado por el estudio.",
+              },
+              {
+                name: "Próximamente",
+                role: "Gestión de Proyectos",
+                desc: "Coordina tiempos, proveedores y presupuestos para que cada proyecto se entregue en forma y plazo.",
+              },
+            ].map((member, i) => (
+              <FadeIn key={i} delay={0.1 * i}>
+                <div>
+                  <div className="relative aspect-[3/4] overflow-hidden rounded-sm bg-[var(--color-sand)]/20">
+                    {member.name === "Arq. Ana Lorena Vargas" ? (
+                      <Image
+                        src="/images/showroom/arq-ana-lorena.jpg"
+                        alt={member.name}
+                        fill
+                        className="object-cover"
+                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                      />
+                    ) : (
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <p className="text-[11px] tracking-[0.2em] uppercase text-[var(--color-warm-gray)]">
+                          Próximamente
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                  <h3 className="mt-5 font-serif text-xl tracking-[0.05em] text-[var(--color-dark)]">
+                    {member.name}
+                  </h3>
+                  <p className="mt-1 text-[11px] tracking-[0.2em] uppercase text-[var(--color-oak)]">
+                    {member.role}
+                  </p>
+                  <p className="mt-3 text-[13px] leading-relaxed text-[var(--color-dark)]/68">
+                    {member.desc}
+                  </p>
+                </div>
+              </FadeIn>
+            ))}
+          </div>
         </div>
       </section>
 

@@ -137,7 +137,7 @@ LOMEI HOME
 
 **Header de página**
 - Fondo linen, título "Proyectos" en serif grande
-- Filtros: Todos / Residencial / Comercial / Interiorismo
+- Filtros: Todos / Obra / Diseño
 
 **Grid de proyectos**
 - Cards con imagen a pantalla completa de la card

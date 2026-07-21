@@ -42,7 +42,7 @@ const PROYECTOS = [
   {
     slug: "paseo-de-claustros",
     title: "Paseo de Claustros",
-    category: "Residencial",
+    category: "Obra",
     year: "2026",
     location: "Campanario, Querétaro",
     description:
@@ -56,7 +56,7 @@ const PROYECTOS = [
   {
     slug: "sophia-distrito",
     title: "Sophia Distrito",
-    category: "Residencial",
+    category: "Obra",
     year: "2026",
     location: "Querétaro, México",
     description:
@@ -70,7 +70,7 @@ const PROYECTOS = [
   {
     slug: "atria-distrito",
     title: "Proyecto Ejecutivo Atria Distrito",
-    category: "Comercial",
+    category: "Obra",
     year: "2026",
     location: "Querétaro, México",
     description:
@@ -84,7 +84,7 @@ const PROYECTOS = [
   {
     slug: "oficina-ave-fenix",
     title: "Oficina Ave Fénix",
-    category: "Comercial",
+    category: "Obra",
     year: "2025",
     location: "Querétaro, México",
     description:
@@ -98,7 +98,7 @@ const PROYECTOS = [
   {
     slug: "cocina-alturia-zibata",
     title: "Cocina Alturia Zibatá",
-    category: "Interiorismo",
+    category: "Diseño",
     year: "2025",
     location: "El Marqués, Querétaro",
     description:
@@ -112,7 +112,7 @@ const PROYECTOS = [
   {
     slug: "ceja-de-bravo",
     title: "Ceja de Bravo",
-    category: "Interiorismo",
+    category: "Diseño",
     year: "2025",
     location: "Corregidora, Querétaro",
     description:
@@ -126,7 +126,7 @@ const PROYECTOS = [
   {
     slug: "puerta-coyoacan",
     title: "Puerta Coyoacán",
-    category: "Residencial",
+    category: "Obra",
     year: "2025",
     location: "Ciudad de México",
     description:
@@ -140,7 +140,7 @@ const PROYECTOS = [
   {
     slug: "roof-mirador-campanario",
     title: "Roof Mirador del Campanario",
-    category: "Residencial",
+    category: "Obra",
     year: "2025",
     location: "Querétaro, México",
     description:
@@ -154,7 +154,7 @@ const PROYECTOS = [
   {
     slug: "terraza-campo-real",
     title: "Terraza Campo Real Refugio",
-    category: "Residencial",
+    category: "Obra",
     year: "2025",
     location: "Querétaro, México",
     description:
@@ -168,7 +168,7 @@ const PROYECTOS = [
   {
     slug: "recamara-bebe-villas",
     title: "Recámara Bebé Villas del Refugio",
-    category: "Interiorismo",
+    category: "Diseño",
     year: "2025",
     location: "Querétaro, México",
     description:
@@ -182,7 +182,7 @@ const PROYECTOS = [
   {
     slug: "canadas-del-lago",
     title: "Cañadas del Lago",
-    category: "Residencial",
+    category: "Obra",
     year: "2024",
     location: "Querétaro, México",
     description:
@@ -196,7 +196,7 @@ const PROYECTOS = [
   {
     slug: "valle-de-las-flores",
     title: "Valle de las Flores",
-    category: "Residencial",
+    category: "Obra",
     year: "2024",
     location: "Pachuca, Hidalgo",
     description:
@@ -210,7 +210,7 @@ const PROYECTOS = [
   {
     slug: "casa-gema",
     title: "Casa Gema",
-    category: "Residencial",
+    category: "Obra",
     year: "2024",
     location: "Pachuca, Hidalgo",
     description:
@@ -224,7 +224,7 @@ const PROYECTOS = [
   {
     slug: "teresitas",
     title: "Teresitas",
-    category: "Residencial",
+    category: "Obra",
     year: "2024",
     location: "Campanario, Querétaro",
     description:
@@ -238,7 +238,7 @@ const PROYECTOS = [
   {
     slug: "vestidor-pachuquilla",
     title: "Vestidor Glam Pachuquilla",
-    category: "Interiorismo",
+    category: "Diseño",
     year: "2024",
     location: "Pachuquilla, Hidalgo",
     description:
@@ -252,7 +252,7 @@ const PROYECTOS = [
   {
     slug: "san-juan-del-rio",
     title: "San Juan del Río — Cuarto de Lavado",
-    category: "Interiorismo",
+    category: "Diseño",
     year: "2024",
     location: "San Juan del Río, Querétaro",
     description:
