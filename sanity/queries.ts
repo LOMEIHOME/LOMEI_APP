@@ -12,7 +12,6 @@ export interface SanityProyecto {
   description: string;
   area: string;
   duration: string;
-  materials: string[];
   images: SanityImage[];
   featured: boolean;
 }
@@ -27,7 +26,7 @@ export async function getProyectos(): Promise<SanityProyecto[]> {
   return getClient().fetch(
     `*[_type == "proyecto"] | order(year desc) {
       _id, title, slug, category, year, location,
-      description, area, duration, materials,
+      description, area, duration,
       images, featured
     }`
   );
@@ -39,7 +38,7 @@ export async function getProyectoBySlug(
   return getClient().fetch(
     `*[_type == "proyecto" && slug.current == $slug][0] {
       _id, title, slug, category, year, location,
-      description, area, duration, materials,
+      description, area, duration,
       images, featured
     }`,
     { slug }
