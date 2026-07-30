@@ -36,7 +36,6 @@ function adaptProyecto(p: SanityProyecto): Proyecto {
     description: p.description || "",
     area: p.area || "",
     duration: p.duration || "",
-    materials: p.materials || [],
     images: p.images?.filter((img) => img.asset).map((img) => urlFor(img).width(1200).url()) || [],
     featured: p.featured || false,
   };

@@ -6,6 +6,7 @@ import Footer from "@/components/layout/Footer";
 import SectionTag from "@/components/ui/SectionTag";
 import Button from "@/components/ui/Button";
 import FadeIn from "@/components/sections/FadeIn";
+import ProyectoGallery from "@/components/ui/ProyectoGallery";
 import { getAllProyectos, getAllProyectoSlugs, getProyecto } from "@/lib/sanity";
 
 export const revalidate = 60;
@@ -32,74 +33,76 @@ export default async function ProyectoDetallePage({
     currentIndex < allProyectos.length - 1 ? allProyectos[currentIndex + 1] : null;
 
   return (
-    <>
-      <Navbar />
+    <div className="overflow-x-hidden">
+      <Navbar forceScrolled />
 
-      {/* Hero del proyecto */}
-      <section className="relative h-[70vh] md:h-[80vh]">
-        <Image
-          src={proyecto.images[0]}
-          alt={proyecto.title}
-          fill
-          className="object-cover"
-          priority
-          sizes="100vw"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-dark)]/60 to-transparent" />
-        <div className="absolute bottom-0 left-0 right-0 px-6 md:px-10 lg:px-16 py-8 md:py-12">
-          <div className="max-w-[85rem] mx-auto">
-            <FadeIn>
-              <p className="text-[10px] tracking-[0.25em] uppercase text-[var(--color-sand)]">
-                {proyecto.category} · {proyecto.year}
-              </p>
-            </FadeIn>
-            <FadeIn delay={0.1}>
-              <h1 className="mt-3 font-serif text-3xl md:text-5xl lg:text-6xl tracking-wider text-[var(--color-white)]">
-                {proyecto.title}
-              </h1>
-            </FadeIn>
-            <FadeIn delay={0.2}>
-              <p className="mt-2 text-sm text-[var(--color-white)]/70">
-                {proyecto.location}
-              </p>
-            </FadeIn>
-          </div>
-        </div>
-      </section>
+      {/* Layout principal — galería + info */}
+      <section className="pt-20 md:pt-28 pb-12 md:pb-24">
+        <div className="max-w-[85rem] mx-auto px-6 md:px-10 lg:px-16">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-16">
+            {/* Galería con carousel — 7 cols */}
+            <div className="md:col-span-7">
+              <ProyectoGallery
+                images={proyecto.images}
+                title={proyecto.title}
+              />
+            </div>
 
-      {/* Contenido */}
-      <section className="max-w-[85rem] mx-auto px-6 md:px-10 lg:px-16 py-16 md:py-24 lg:py-32">
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-12 md:gap-16">
-          <div className="md:col-span-7">
-            <FadeIn>
-              <SectionTag>Acerca del proyecto</SectionTag>
-            </FadeIn>
-            <FadeIn delay={0.1}>
-              <p className="mt-6 text-sm leading-relaxed text-[var(--color-warm-gray)]">
-                {proyecto.description}
-              </p>
-            </FadeIn>
-          </div>
+            {/* Info del proyecto — 5 cols */}
+            <div className="md:col-span-5 md:sticky md:top-28 md:self-start">
+              <FadeIn>
+                <p className="text-[10px] tracking-[0.25em] uppercase text-[var(--color-warm-gray)]">
+                  {proyecto.category} · {proyecto.year}
+                </p>
+              </FadeIn>
 
-          <div className="md:col-span-5">
-            <FadeIn delay={0.2}>
-              <div className="bg-[var(--color-linen)] rounded-sm p-8">
-                <SectionTag>Ficha técnica</SectionTag>
-                {proyecto.description && (
-                  <p className="mt-4 text-sm leading-relaxed text-[var(--color-dark)]/80">
+              <FadeIn delay={0.1}>
+                <h1 className="mt-3 font-serif text-2xl md:text-3xl lg:text-4xl tracking-wider text-[var(--color-dark)]">
+                  {proyecto.title}
+                </h1>
+              </FadeIn>
+
+              <FadeIn delay={0.15}>
+                <p className="mt-2 text-sm text-[var(--color-warm-gray)]">
+                  {proyecto.location}
+                </p>
+              </FadeIn>
+
+              <FadeIn delay={0.2}>
+                <div className="mt-6 h-[0.5px] bg-[var(--color-sand)]/50" />
+              </FadeIn>
+
+              {proyecto.description && (
+                <FadeIn delay={0.25}>
+                  <p className="mt-6 text-sm leading-relaxed text-[var(--color-warm-gray)]">
                     {proyecto.description}
                   </p>
-                )}
-                <div className="mt-6 space-y-5">
-                  <div className="border-b border-[var(--color-sand)]/40 pb-4">
-                    <p className="text-[10px] tracking-[0.2em] uppercase text-[var(--color-warm-gray)]">
-                      Área
-                    </p>
-                    <p className="mt-1 text-sm text-[var(--color-dark)]">
-                      {proyecto.area}
-                    </p>
-                  </div>
-                  <div className="border-b border-[var(--color-sand)]/40 pb-4">
+                </FadeIn>
+              )}
+
+              <FadeIn delay={0.3}>
+                <div className="mt-8 space-y-4">
+                  {proyecto.area && (
+                    <div className="border-b border-[var(--color-sand)]/30 pb-4">
+                      <p className="text-[10px] tracking-[0.2em] uppercase text-[var(--color-warm-gray)]">
+                        Área
+                      </p>
+                      <p className="mt-1 text-sm text-[var(--color-dark)]">
+                        {proyecto.area}
+                      </p>
+                    </div>
+                  )}
+                  {proyecto.duration && (
+                    <div className="border-b border-[var(--color-sand)]/30 pb-4">
+                      <p className="text-[10px] tracking-[0.2em] uppercase text-[var(--color-warm-gray)]">
+                        Duración
+                      </p>
+                      <p className="mt-1 text-sm text-[var(--color-dark)]">
+                        {proyecto.duration}
+                      </p>
+                    </div>
+                  )}
+                  <div>
                     <p className="text-[10px] tracking-[0.2em] uppercase text-[var(--color-warm-gray)]">
                       Ubicación
                     </p>
@@ -107,52 +110,33 @@ export default async function ProyectoDetallePage({
                       {proyecto.location}
                     </p>
                   </div>
-                  <div>
-                    <p className="text-[10px] tracking-[0.2em] uppercase text-[var(--color-warm-gray)]">
-                      Materiales principales
-                    </p>
-                    <div className="mt-2 flex flex-wrap gap-2">
-                      {proyecto.materials.map((m) => (
-                        <span
-                          key={m}
-                          className="px-3 py-1 text-[10px] tracking-[0.15em] uppercase bg-[var(--color-cream)] text-[var(--color-oak)] rounded-sm"
-                        >
-                          {m}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
                 </div>
-              </div>
-            </FadeIn>
+              </FadeIn>
+
+              <FadeIn delay={0.35}>
+                <div className="mt-8 md:mt-10 flex flex-col gap-3">
+                  <a
+                    href={`https://wa.me/527711009084?text=${encodeURIComponent(
+                      `Hola, me interesa saber más sobre el proyecto: ${proyecto.title}`
+                    )}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <Button variant="secondary" className="w-full">
+                      Solicitar información
+                    </Button>
+                  </a>
+                  <Link href="/proyectos">
+                    <Button variant="ghost" className="w-full">
+                      Ver todos los proyectos
+                    </Button>
+                  </Link>
+                </div>
+              </FadeIn>
+            </div>
           </div>
         </div>
       </section>
-
-      {/* Galería — carousel cronológico */}
-      {proyecto.images.length > 1 && (
-        <section className="max-w-[85rem] mx-auto px-6 md:px-10 lg:px-16 pb-16 md:pb-24 lg:pb-32">
-          <FadeIn>
-            <SectionTag>Galería</SectionTag>
-          </FadeIn>
-          <div className="mt-8 flex gap-4 overflow-x-auto snap-x snap-mandatory pb-4 scrollbar-thin scrollbar-thumb-[var(--color-sand)] scrollbar-track-transparent">
-            {proyecto.images.slice(1).map((img, i) => (
-              <div
-                key={img}
-                className="relative flex-shrink-0 w-[85vw] md:w-[60vw] lg:w-[45vw] aspect-[4/3] snap-center overflow-hidden rounded-sm"
-              >
-                <Image
-                  src={img}
-                  alt={`${proyecto.title} — imagen ${i + 2}`}
-                  fill
-                  className="object-cover"
-                  sizes="(max-width: 768px) 85vw, (max-width: 1024px) 60vw, 45vw"
-                />
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
 
       {/* Navegación anterior / siguiente */}
       <section className="border-t border-[var(--color-sand)]/30">
@@ -206,6 +190,6 @@ export default async function ProyectoDetallePage({
       </section>
 
       <Footer />
-    </>
+    </div>
   );
 }

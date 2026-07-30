@@ -24,8 +24,8 @@ export const proyecto = defineType({
       type: "string",
       options: {
         list: [
+          { title: "Proyectos", value: "Proyectos" },
           { title: "Obra", value: "Obra" },
-          { title: "Diseño", value: "Diseño" },
         ],
       },
       validation: (rule) => rule.required(),
@@ -58,12 +58,6 @@ export const proyecto = defineType({
       title: "Duración",
       type: "string",
       description: "Ej: 3 meses",
-    }),
-    defineField({
-      name: "materials",
-      title: "Materiales principales",
-      type: "array",
-      of: [{ type: "string" }],
     }),
     defineField({
       name: "images",
