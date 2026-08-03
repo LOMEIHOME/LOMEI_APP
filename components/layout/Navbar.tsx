@@ -44,11 +44,11 @@ export default function Navbar({ forceScrolled = false }: { forceScrolled?: bool
         </Link>
 
         {/* Centro — monograma "L"
-            FIX pantalla dividida: solo se muestra en lg+ (≥1024px), donde hay
-            espacio real. Por debajo de lg queda oculto y NO choca con los links. */}
+            Solo se muestra en xl+ (≥1280px), donde hay espacio real
+            para el logo centrado sin tapar los links de navegación. */}
         <Link
           href="/"
-          className="hidden lg:block absolute left-1/2 -translate-x-1/2 h-12 aspect-[3/4]"
+          className="hidden xl:block absolute left-1/2 -translate-x-1/2 h-12 aspect-[3/4]"
         >
           <Image
             src={scrolled ? "/images/logos/icon-dark.png" : "/images/logos/icon-white.png"}
