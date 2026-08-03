@@ -1,7 +1,7 @@
 export interface Producto {
   slug: string;
   name: string;
-  category: "Muebles" | "Cojines & Textiles" | "Adornos" | "Jarrones" | "Iluminación" | "Alfombras" | "Acabados" | "Capelos" | "Relojes" | "Florero";
+  category: "Muebles" | "Cojines & Textiles" | "Adornos" | "Jarrones" | "Iluminación" | "Alfombras" | "Acabados" | "Capelos" | "Relojes" | "Florero" | "Macetas" | "Plantas Artificiales";
   price: number;
   description: string;
   dimensions: string;

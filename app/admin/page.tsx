@@ -60,6 +60,8 @@ const CATEGORY_EMOJI: Record<string, string> = {
   Capelos: "\u{1F514}",
   Relojes: "\u231B",
   Florero: "\u{1F338}",
+  Macetas: "🪴",
+  "Plantas Artificiales": "🌿",
 };
 
 function getCategoryEmoji(cat: string): string {
