@@ -34,6 +34,8 @@ export const producto = defineType({
           { title: "Capelos", value: "Capelos" },
           { title: "Relojes", value: "Relojes" },
           { title: "Florero", value: "Florero" },
+          { title: "Macetas", value: "Macetas" },
+          { title: "Plantas Artificiales", value: "Plantas Artificiales" },
         ],
       },
       validation: (rule) => rule.required(),

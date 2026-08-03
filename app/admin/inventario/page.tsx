@@ -14,6 +14,8 @@ const CATEGORIAS = [
   "Capelos",
   "Relojes",
   "Florero",
+  "Macetas",
+  "Plantas Artificiales",
 ];
 
 const EMOJI_MAP: Record<string, string> = {
@@ -27,6 +29,8 @@ const EMOJI_MAP: Record<string, string> = {
   Capelos: "🔔",
   Relojes: "⏳",
   Florero: "🌸",
+  Macetas: "🪴",
+  "Plantas Artificiales": "🌿",
 };
 
 function getCategoryEmoji(cat: string): string {

@@ -15,6 +15,8 @@ const CATEGORIAS = [
   "Capelos",
   "Relojes",
   "Florero",
+  "Macetas",
+  "Plantas Artificiales",
 ];
 
 interface ProductFormProps {

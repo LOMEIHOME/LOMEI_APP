@@ -65,6 +65,8 @@ const EMOJI_MAP: Record<string, string> = {
   Capelos: "🔔",
   Relojes: "⏳",
   Florero: "🌸",
+  Macetas: "🪴",
+  "Plantas Artificiales": "🌿",
 };
 
 /* ──────────────────────────── Helpers ────────────────────────── */
