@@ -1,7 +1,9 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { createClient } from "@/lib/supabase/browser";
 
 const NAV_ITEMS = [
   { label: "Dashboard", href: "/admin", emoji: "📊" },
@@ -9,7 +11,8 @@ const NAV_ITEMS = [
   { label: "Inventario", href: "/admin/inventario", emoji: "📦" },
   { label: "Ventas", href: "/admin/ventas", emoji: "💰" },
   { label: "Órdenes", href: "/admin/ordenes", emoji: "🧾" },
-  { label: "Alertas", href: "/admin/alertas", emoji: "🔔", badge: 3 },
+  { label: "Correlaciones", href: "/admin/correlaciones", emoji: "🔗" },
+  { label: "Alertas", href: "/admin/alertas", emoji: "🔔", hasAlertBadge: true },
 ];
 
 const QUICK_LINKS = [
@@ -24,11 +27,49 @@ interface AdminSidebarProps {
 
 export default function AdminSidebar({ open, onClose }: AdminSidebarProps) {
   const pathname = usePathname();
+  const [alertCount, setAlertCount] = useState(0);
+  const [userEmail, setUserEmail] = useState("");
+
+  useEffect(() => {
+    // Fetch alert count by category thresholds
+    Promise.all([
+      fetch("/api/alertas/categorias").then((r) => r.json()),
+      fetch("/api/alertas/config").then((r) => r.json()),
+    ])
+      .then(([catJson, configJson]) => {
+        const stock: Record<string, { total: number }> = catJson.data || {};
+        const umbrales: Record<string, number> =
+          configJson.data?.umbrales_categoria || {};
+        const count = Object.entries(stock).filter(([cat, info]) => {
+          const umbral = umbrales[cat] || 0;
+          return umbral > 0 && info.total <= umbral;
+        }).length;
+        setAlertCount(count);
+      })
+      .catch(() => {});
+
+    // Fetch user email
+    const supabase = createClient();
+    supabase.auth.getUser().then(({ data }) => {
+      if (data.user?.email) setUserEmail(data.user.email);
+    });
+  }, []);
 
   const isActive = (href: string) => {
     if (href === "/admin") return pathname === "/admin";
     return pathname.startsWith(href);
   };
+
+  const initials = userEmail
+    ? userEmail
+        .split("@")[0]
+        .split(/[._-]/)
+        .slice(0, 2)
+        .map((s) => s[0]?.toUpperCase() || "")
+        .join("")
+    : "—";
+
+  const displayName = userEmail ? userEmail.split("@")[0] : "Cargando...";
 
   return (
     <>
@@ -102,6 +143,7 @@ export default function AdminSidebar({ open, onClose }: AdminSidebarProps) {
           <div className="flex flex-col gap-0.5">
             {NAV_ITEMS.map((item) => {
               const active = isActive(item.href);
+              const badge = item.hasAlertBadge ? alertCount : 0;
               return (
                 <Link
                   key={item.href}
@@ -129,7 +171,7 @@ export default function AdminSidebar({ open, onClose }: AdminSidebarProps) {
                 >
                   <span style={{ fontSize: 16, lineHeight: 1 }}>{item.emoji}</span>
                   <span className="flex-1">{item.label}</span>
-                  {item.badge && (
+                  {badge > 0 && (
                     <span
                       style={{
                         backgroundColor: "#f0c4a8",
@@ -141,7 +183,7 @@ export default function AdminSidebar({ open, onClose }: AdminSidebarProps) {
                         lineHeight: "18px",
                       }}
                     >
-                      {item.badge}
+                      {badge}
                     </span>
                   )}
                 </Link>
@@ -210,14 +252,14 @@ export default function AdminSidebar({ open, onClose }: AdminSidebarProps) {
                 fontWeight: 600,
               }}
             >
-              MA
+              {initials}
             </div>
-            <div className="flex flex-col">
+            <div className="flex flex-col min-w-0">
               <span
-                className="leading-tight"
+                className="leading-tight truncate"
                 style={{ fontSize: 13, fontWeight: 500, color: "#37352f" }}
               >
-                María A.
+                {displayName}
               </span>
               <span
                 className="leading-tight"

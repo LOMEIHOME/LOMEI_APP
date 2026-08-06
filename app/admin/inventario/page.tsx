@@ -1,41 +1,9 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
+import { getCategoryEmoji, CATEGORY_EMOJI } from "@/lib/constants";
 
-const CATEGORIAS = [
-  "Todos",
-  "Muebles",
-  "Cojines & Textiles",
-  "Adornos",
-  "Jarrones",
-  "Iluminación",
-  "Alfombras",
-  "Acabados",
-  "Capelos",
-  "Relojes",
-  "Florero",
-  "Macetas",
-  "Plantas Artificiales",
-];
-
-const EMOJI_MAP: Record<string, string> = {
-  Muebles: "🛋️",
-  "Cojines & Textiles": "🧶",
-  Adornos: "🏺",
-  Iluminación: "💡",
-  Alfombras: "🧵",
-  Acabados: "🪞",
-  Jarrones: "🏺",
-  Capelos: "🔔",
-  Relojes: "⏳",
-  Florero: "🌸",
-  Macetas: "🪴",
-  "Plantas Artificiales": "🌿",
-};
-
-function getCategoryEmoji(cat: string): string {
-  return EMOJI_MAP[cat] || "📦";
-}
+const CATEGORIAS = ["Todos", ...Object.keys(CATEGORY_EMOJI)];
 
 type StockStatus = "en_stock" | "bajo" | "critico" | "agotado";
 

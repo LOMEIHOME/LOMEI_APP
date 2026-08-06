@@ -51,6 +51,20 @@ export async function POST(request: NextRequest) {
   const supabase = await createAdminClient();
   const body = await request.json();
 
+  if (!body.nombre || !body.slug || !body.categoria) {
+    return NextResponse.json(
+      { error: "Nombre, slug y categoría son requeridos" },
+      { status: 400 }
+    );
+  }
+
+  if (body.precio_venta != null && body.precio_venta < 0) {
+    return NextResponse.json(
+      { error: "El precio de venta no puede ser negativo" },
+      { status: 400 }
+    );
+  }
+
   const { data: producto, error } = await supabase
     .from("productos")
     .insert({

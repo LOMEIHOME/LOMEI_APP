@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
+import { getCategoryEmoji, formatFecha } from "@/lib/constants";
 
 /* ──────────────────────────── Types ──────────────────────────── */
 
@@ -54,26 +55,7 @@ const TIPO_DESCRIPTIONS: Record<string, string> = {
   devolucion: "Producto devuelto",
 };
 
-const EMOJI_MAP: Record<string, string> = {
-  Muebles: "🛋️",
-  "Cojines & Textiles": "🧶",
-  Adornos: "🏺",
-  "Iluminación": "💡",
-  Alfombras: "🧵",
-  Acabados: "🪞",
-  Jarrones: "🏺",
-  Capelos: "🔔",
-  Relojes: "⏳",
-  Florero: "🌸",
-  Macetas: "🪴",
-  "Plantas Artificiales": "🌿",
-};
-
 /* ──────────────────────────── Helpers ────────────────────────── */
-
-function getCategoryEmoji(cat: string): string {
-  return EMOJI_MAP[cat] ?? "📦";
-}
 
 function getNotionStatus(cantidad: number, min: number) {
   if (cantidad <= 0)
@@ -86,13 +68,7 @@ function getNotionStatus(cantidad: number, min: number) {
 }
 
 function formatDate(date: string) {
-  return new Date(date).toLocaleDateString("es-MX", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+  return formatFecha(date);
 }
 
 function formatPrice(n: number) {
@@ -267,6 +243,57 @@ export default function ProductoDetallePage() {
           </p>
         </div>
 
+        <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
+          <Link
+            href={`/admin/inventario/${id}/editar`}
+            style={{
+              fontSize: 13,
+              fontWeight: 500,
+              padding: "7px 16px",
+              borderRadius: 8,
+              border: "1px solid #e6e3db",
+              color: "#37352f",
+              textDecoration: "none",
+              backgroundColor: "#fff",
+              transition: "background 0.15s",
+            }}
+            onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#faf9f6")}
+            onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "#fff")}
+          >
+            ✏️ Editar producto
+          </Link>
+          <button
+            onClick={async () => {
+              const action = producto.activo !== false ? "desactivar" : "reactivar";
+              if (!confirm(`¿${action.charAt(0).toUpperCase() + action.slice(1)} este producto?`)) return;
+              if (action === "desactivar") {
+                await fetch(`/api/productos/${id}`, { method: "DELETE" });
+              } else {
+                await fetch(`/api/productos/${id}`, {
+                  method: "PUT",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ activo: true }),
+                });
+              }
+              fetchData();
+            }}
+            style={{
+              fontSize: 13,
+              fontWeight: 500,
+              padding: "7px 16px",
+              borderRadius: 8,
+              border: "1px solid #e6e3db",
+              color: producto.activo !== false ? "#c2410c" : "#16794a",
+              backgroundColor: "#fff",
+              cursor: "pointer",
+              transition: "background 0.15s",
+            }}
+            onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#faf9f6")}
+            onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "#fff")}
+          >
+            {producto.activo !== false ? "🚫 Desactivar" : "✅ Reactivar"}
+          </button>
+        </div>
       </div>
 
       {/* Two-column layout */}

@@ -164,13 +164,13 @@ export default function CatalogoFilterGrid({ productos, categories }: Props) {
                       <Badge>{p.badge}</Badge>
                     </div>
                   )}
-                  {/* Overlay con info */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-[rgba(42,33,24,0.72)] via-[rgba(42,33,24,0.12)] via-50% to-transparent flex items-end p-4 md:p-6">
+                  {/* Overlay — gradiente solo en la parte inferior */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-[rgba(42,33,24,0.92)] from-0% via-[rgba(42,33,24,0.45)] via-35% to-transparent to-55% flex items-end p-3 md:p-6">
                     <div className="flex flex-col gap-0.5">
-                      <p className="text-[10px] md:text-[10.5px] tracking-[0.2em] uppercase text-[var(--color-sand)]">
+                      <p className="text-[9px] md:text-[10.5px] tracking-[0.2em] uppercase text-[var(--color-sand)]">
                         {p.category}
                       </p>
-                      <p className="font-serif text-base md:text-xl tracking-wider text-[var(--color-white)]">
+                      <p className="font-serif text-[13px] md:text-xl tracking-normal md:tracking-wide text-[var(--color-white)] text-left leading-snug">
                         {p.name}
                       </p>
                       <p className="font-serif italic text-sm md:text-base text-[var(--color-sand)]">

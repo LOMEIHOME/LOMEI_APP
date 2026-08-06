@@ -118,9 +118,11 @@ export default function VentasPage() {
   const [periodo, setPeriodo] = useState<Periodo>("mes");
   const [offset, setOffset] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   const fetchData = useCallback(async () => {
     setLoading(true);
+    setError("");
     try {
       const { desde, hasta } = getDateRange(periodo, offset);
       const params = new URLSearchParams({ desde, hasta });
@@ -133,7 +135,7 @@ export default function VentasPage() {
       setData(json.data || []);
       setOrdenes(ordenesJson.data || []);
     } catch {
-      // silenciar errores de red
+      setError("No se pudieron cargar los datos de ventas.");
     }
     setLoading(false);
   }, [periodo, offset]);
@@ -154,6 +156,15 @@ export default function VentasPage() {
 
   /* Valor máximo para escalar las barras del chart */
   const maxVenta = Math.max(...data.map((r) => r.total_ventas), 1);
+
+  if (error) {
+    return (
+      <div style={{ padding: 48, textAlign: "center" }}>
+        <p style={{ fontSize: 14, color: "#c2410c", marginBottom: 12 }}>{error}</p>
+        <button onClick={fetchData} style={{ fontSize: 13, color: "#37352f", textDecoration: "underline", background: "none", border: "none", cursor: "pointer" }}>Reintentar</button>
+      </div>
+    );
+  }
 
   return (
     <div style={{ maxWidth: 1180 }} className="mx-auto">

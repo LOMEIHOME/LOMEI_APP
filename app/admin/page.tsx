@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { getCategoryEmoji } from "@/lib/constants";
 
 interface Kpis {
   productos_activos: number;
@@ -13,18 +13,6 @@ interface Kpis {
   stock_bajo_por_categoria?: Record<string, number>;
 }
 
-interface AlertaItem {
-  id: string;
-  producto_id: string;
-  cantidad: number;
-  stock_minimo: number;
-  productos: {
-    id: string;
-    nombre: string;
-    categoria: string;
-  };
-}
-
 interface TopProducto {
   producto_id: string;
   nombre: string;
@@ -32,14 +20,9 @@ interface TopProducto {
   vendidos: number;
 }
 
-interface Correlacion {
-  a: string;
-  b: string;
-  nombre_a: string;
-  nombre_b: string;
-  cat_a: string;
-  cat_b: string;
-  count: number;
+interface StockCategoria {
+  total: number;
+  productos: number;
 }
 
 const formatPrice = (n: number) =>
@@ -49,24 +32,7 @@ const formatPrice = (n: number) =>
     minimumFractionDigits: 0,
   }).format(n);
 
-const CATEGORY_EMOJI: Record<string, string> = {
-  Muebles: "\u{1F6CB}\uFE0F",
-  "Cojines & Textiles": "\u{1F9F6}",
-  Adornos: "\u{1F3FA}",
-  "Iluminaci\u00f3n": "\u{1F4A1}",
-  Alfombras: "\u{1F9F5}",
-  Acabados: "\u{1FA9E}",
-  Jarrones: "\u{1F3FA}",
-  Capelos: "\u{1F514}",
-  Relojes: "\u231B",
-  Florero: "\u{1F338}",
-  Macetas: "🪴",
-  "Plantas Artificiales": "🌿",
-};
-
-function getCategoryEmoji(cat: string): string {
-  return CATEGORY_EMOJI[cat] || "\u{1F4E6}";
-}
+// CATEGORY_EMOJI y getCategoryEmoji importados de @/lib/constants
 
 function getDateString(): string {
   const now = new Date();
@@ -97,37 +63,38 @@ function getDateString(): string {
 }
 
 export default function AdminDashboardPage() {
-  const router = useRouter();
   const [kpis, setKpis] = useState<Kpis>({
     productos_activos: 0,
     stock_bajo: 0,
     ventas_mes: 0,
     ingresos_mes: 0,
   });
-  const [alertas, setAlertas] = useState<AlertaItem[]>([]);
   const [topProductos, setTopProductos] = useState<TopProducto[]>([]);
-  const [correlaciones, setCorrelaciones] = useState<Correlacion[]>([]);
+  const [stockPorCategoria, setStockPorCategoria] = useState<Record<string, StockCategoria>>({});
+  const [umbrales, setUmbrales] = useState<Record<string, number>>({});
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   const fetchData = useCallback(async () => {
     setLoading(true);
+    setError("");
     try {
-      const [kpisRes, alertasRes, topRes, corrRes] = await Promise.all([
+      const [kpisRes, topRes, catRes, configRes] = await Promise.all([
         fetch("/api/dashboard/kpis"),
-        fetch("/api/inventario?alerta=true"),
         fetch("/api/dashboard/top-productos"),
-        fetch("/api/dashboard/correlacion"),
+        fetch("/api/alertas/categorias"),
+        fetch("/api/alertas/config"),
       ]);
       const kpisJson = await kpisRes.json();
-      const alertasJson = await alertasRes.json();
       const topJson = await topRes.json();
-      const corrJson = await corrRes.json();
+      const catJson = await catRes.json();
+      const configJson = await configRes.json();
       setKpis(kpisJson.data || kpisJson);
-      setAlertas(alertasJson.data || []);
       setTopProductos(topJson.data || []);
-      setCorrelaciones(corrJson.data || []);
+      setStockPorCategoria(catJson.data || {});
+      setUmbrales(configJson.data?.umbrales_categoria || {});
     } catch {
-      // silenciar errores de red
+      setError("No se pudieron cargar los datos.");
     }
     setLoading(false);
   }, []);
@@ -140,6 +107,20 @@ export default function AdminDashboardPage() {
     return (
       <div className="p-12 text-center text-[13px] text-[#9b968c]">
         Cargando...
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="p-12 text-center">
+        <p className="text-[14px] text-[#c2410c] mb-3">{error}</p>
+        <button
+          onClick={fetchData}
+          className="text-[13px] text-[#37352f] underline hover:no-underline"
+        >
+          Reintentar
+        </button>
       </div>
     );
   }
@@ -167,7 +148,7 @@ export default function AdminDashboardPage() {
       </div>
 
       {/* KPI Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-7">
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-7">
         {/* Productos activos */}
         <div className="bg-[#f8f7f4] rounded-xl p-[17px] group relative">
           <div className="text-[19px] mb-2.5">{"\u{1F4E6}"}</div>
@@ -192,32 +173,6 @@ export default function AdminDashboardPage() {
             </div>
           )}
         </div>
-
-        {/* Stock bajo */}
-        <button
-          onClick={() => router.push("/admin/alertas")}
-          className="bg-[#fdf3ec] rounded-xl p-[17px] text-left cursor-pointer hover:bg-[#fceee4] transition-colors"
-        >
-          <div className="text-[19px] mb-2.5">{"\u26A0\uFE0F"}</div>
-          <div className="text-[28px] font-bold text-[#c2410c] leading-none">
-            {kpis.stock_bajo}
-          </div>
-          <div className="text-[12.5px] text-[#b06a44] mt-1">Stock bajo</div>
-          {kpis.stock_bajo_por_categoria && Object.keys(kpis.stock_bajo_por_categoria).length > 0 && (
-            <div className="mt-3 pt-3 border-t border-[#f0c9b4] space-y-1">
-              {Object.entries(kpis.stock_bajo_por_categoria)
-                .sort(([, a], [, b]) => b - a)
-                .map(([cat, count]) => (
-                  <div key={cat} className="flex items-center justify-between text-[11.5px]">
-                    <span className="text-[#b06a44] truncate">
-                      {getCategoryEmoji(cat)} {cat}
-                    </span>
-                    <span className="text-[#c2410c] font-medium ml-2">{count}</span>
-                  </div>
-                ))}
-            </div>
-          )}
-        </button>
 
         {/* Ventas del mes */}
         <div className="bg-[#f8f7f4] rounded-xl p-[17px]">
@@ -244,79 +199,68 @@ export default function AdminDashboardPage() {
 
       {/* Two-column layout — stacks on mobile */}
       <div className="grid grid-cols-1 md:grid-cols-[1.5fr_1fr] gap-5">
-        {/* Left: Necesitan reposicion */}
-        <div>
-          <div className="flex items-center justify-between mb-3">
-            <h2 className="text-[15px] font-bold text-[#37352f]">
-              {"\u26A0\uFE0F"} Necesitan reposición
-            </h2>
-            <Link
-              href="/admin/alertas"
-              className="text-[12.5px] text-[#9b968c] hover:text-[#6b6760] transition-colors"
-            >
-              Ver todas
-            </Link>
-          </div>
-
-          {alertas.length > 0 ? (
+        {/* Left: Stock por categoría */}
+        {Object.keys(stockPorCategoria).length > 0 && (
+          <div>
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="text-[15px] font-bold text-[#37352f]">
+                {"\u{1F4CA}"} Stock por categoría
+              </h2>
+              <Link
+                href="/admin/alertas"
+                className="text-[12.5px] text-[#9b968c] hover:text-[#6b6760] transition-colors"
+              >
+                Configurar umbrales
+              </Link>
+            </div>
             <div className="flex flex-col gap-2">
-              {alertas.slice(0, 6).map((item) => {
-                const isCritical = item.cantidad === 0;
-                const emoji = getCategoryEmoji(item.productos.categoria);
-                return (
-                  <Link
-                    key={item.id}
-                    href={`/admin/inventario/${item.producto_id}`}
-                    className={`flex items-center gap-3 p-3 rounded-xl border transition-colors hover:shadow-sm ${
-                      isCritical
-                        ? "border-[#f0c9b4] bg-white hover:bg-[#fffcfa]"
-                        : "border-[#eeece7] bg-white hover:bg-[#fafaf8]"
-                    }`}
-                  >
-                    {/* Icon */}
+              {Object.entries(stockPorCategoria)
+                .sort(([, a], [, b]) => a.total - b.total)
+                .map(([cat, info]) => {
+                  const umbral = umbrales[cat] || 0;
+                  const bajoPorUmbral = umbral > 0 && info.total <= umbral;
+                  return (
                     <div
-                      className={`w-[38px] h-[38px] rounded-[9px] flex items-center justify-center text-[17px] shrink-0 ${
-                        isCritical ? "bg-[#fdf3ec]" : "bg-[#f3f1ec]"
+                      key={cat}
+                      className={`flex items-center gap-3 p-3 rounded-xl border transition-colors ${
+                        bajoPorUmbral
+                          ? "border-[#f0c9b4] bg-[#fffcfa]"
+                          : "border-[#eeece7] bg-white"
                       }`}
                     >
-                      {emoji}
-                    </div>
-
-                    {/* Name + category */}
-                    <div className="flex-1 min-w-0">
-                      <div className="text-[13.5px] font-medium text-[#37352f] truncate">
-                        {item.productos.nombre}
-                      </div>
-                      <div className="text-[11.5px] text-[#9b968c]">
-                        {item.productos.categoria}
-                      </div>
-                    </div>
-
-                    {/* Stock count */}
-                    <div className="text-right shrink-0">
                       <div
-                        className={`text-[14px] font-semibold ${
-                          isCritical ? "text-[#c2410c]" : "text-[#d97706]"
+                        className={`w-[38px] h-[38px] rounded-[9px] flex items-center justify-center text-[17px] shrink-0 ${
+                          bajoPorUmbral ? "bg-[#fdf3ec]" : "bg-[#f3f1ec]"
                         }`}
                       >
-                        {item.cantidad}
+                        {getCategoryEmoji(cat)}
                       </div>
-                      <div className="text-[11px] text-[#9b968c]">
-                        mín {item.stock_minimo}
+                      <div className="flex-1 min-w-0">
+                        <div className="text-[13px] font-medium text-[#37352f] truncate">
+                          {cat}
+                        </div>
+                        <div className="text-[11px] text-[#9b968c]">
+                          {info.productos} producto{info.productos !== 1 ? "s" : ""}
+                        </div>
+                      </div>
+                      <div className="text-right shrink-0">
+                        <div
+                          className={`text-[14px] font-semibold ${
+                            bajoPorUmbral ? "text-[#c2410c]" : "text-[#37352f]"
+                          }`}
+                        >
+                          {info.total}
+                        </div>
+                        <div className="text-[11px] text-[#9b968c]">
+                          {umbral > 0 ? `mín ${umbral}` : "sin mín"}
+                        </div>
                       </div>
                     </div>
-                  </Link>
-                );
-              })}
+                  );
+                })}
             </div>
-          ) : (
-            <div className="bg-[#f8f7f4] rounded-xl p-6 text-center">
-              <p className="text-[13px] text-[#9b968c]">
-                No hay productos con stock bajo
-              </p>
-            </div>
-          )}
-        </div>
+          </div>
+        )}
 
         {/* Right: Top 5 más vendidos */}
         <div>
@@ -370,39 +314,6 @@ export default function AdminDashboardPage() {
         </div>
       </div>
 
-      {/* Correlación de productos */}
-      {correlaciones.length > 0 && (
-        <div className="mt-7">
-          <h2 className="text-[15px] font-bold text-[#37352f] mb-3">
-            {"\u{1F517}"} Se compran juntos
-          </h2>
-          <div className="flex flex-col gap-2">
-            {correlaciones.slice(0, 8).map((corr) => (
-              <div
-                key={`${corr.a}-${corr.b}`}
-                className="flex items-center gap-3 p-3 rounded-xl border border-[#eeece7] bg-white"
-              >
-                <div className="flex-1 min-w-0">
-                  <div className="text-[13px] text-[#37352f]">
-                    <span className="font-medium">{corr.nombre_a}</span>
-                    <span className="text-[#9b968c] mx-2">+</span>
-                    <span className="font-medium">{corr.nombre_b}</span>
-                  </div>
-                  <div className="text-[11px] text-[#9b968c] mt-0.5">
-                    {corr.cat_a}{corr.cat_a !== corr.cat_b ? ` · ${corr.cat_b}` : ""}
-                  </div>
-                </div>
-                <div className="text-right shrink-0">
-                  <div className="text-[14px] font-semibold text-[#37352f]">
-                    {corr.count}
-                  </div>
-                  <div className="text-[11px] text-[#9b968c]">veces</div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
     </div>
   );
 }
