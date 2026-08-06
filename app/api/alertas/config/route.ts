@@ -37,9 +37,10 @@ export async function PUT(request: NextRequest) {
     telefono_destino,
     frecuencia_horas,
     activo,
+    umbrales_categoria,
   } = body;
 
-  const config = {
+  const config: Record<string, unknown> = {
     notificar_email,
     notificar_whatsapp,
     email_destino,
@@ -47,6 +48,10 @@ export async function PUT(request: NextRequest) {
     frecuencia_horas,
     activo,
   };
+
+  if (umbrales_categoria !== undefined) {
+    config.umbrales_categoria = umbrales_categoria;
+  }
 
   // Intentar obtener configuración existente
   const { data: existing, error: fetchError } = await supabase

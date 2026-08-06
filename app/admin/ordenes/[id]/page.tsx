@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import OrderStatusBadge from "@/components/admin/OrderStatusBadge";
+import { formatFecha } from "@/lib/constants";
 
 interface OrdenItem {
   id: string;
@@ -31,8 +32,7 @@ interface Orden {
 const formatPrice = (n: number) =>
   new Intl.NumberFormat("es-MX", { style: "currency", currency: "MXN", minimumFractionDigits: 0 }).format(n);
 
-const formatDate = (d: string) =>
-  new Date(d).toLocaleDateString("es-MX", { day: "numeric", month: "short", year: "numeric" });
+const formatDate = (d: string) => formatFecha(d);
 
 const ESTADOS: ("pendiente" | "completada" | "cancelada")[] = ["pendiente", "completada", "cancelada"];
 const ESTADO_LABELS: Record<string, string> = {
@@ -82,15 +82,17 @@ export default function OrdenDetallePage() {
   const [orden, setOrden] = useState<Orden | null>(null);
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
+  const [error, setError] = useState("");
 
   const fetchOrden = useCallback(async () => {
     setLoading(true);
+    setError("");
     try {
       const res = await fetch(`/api/ordenes/${id}`);
       const json = await res.json();
       setOrden(json.data || null);
     } catch {
-      // silenciar errores de red
+      setError("No se pudo cargar la orden.");
     }
     setLoading(false);
   }, [id]);
@@ -101,6 +103,8 @@ export default function OrdenDetallePage() {
 
   const handleChangeEstado = async (nuevoEstado: "pendiente" | "completada" | "cancelada") => {
     if (!orden || orden.estado === nuevoEstado) return;
+    const label = ESTADO_LABELS[nuevoEstado] || nuevoEstado;
+    if (!confirm(`¿Cambiar estado de la orden #${orden.numero} a "${label}"?`)) return;
     setUpdating(true);
     try {
       await fetch(`/api/ordenes/${id}`, {
@@ -110,22 +114,24 @@ export default function OrdenDetallePage() {
       });
       await fetchOrden();
     } catch {
-      // silenciar errores
+      setError("No se pudo actualizar el estado.");
     }
     setUpdating(false);
   };
 
   if (loading) {
     return (
-      <div
-        style={{
-          padding: 48,
-          textAlign: "center",
-          fontSize: 14,
-          color: "#9b968c",
-        }}
-      >
+      <div style={{ padding: 48, textAlign: "center", fontSize: 14, color: "#9b968c" }}>
         Cargando...
+      </div>
+    );
+  }
+
+  if (error && !orden) {
+    return (
+      <div style={{ padding: 48, textAlign: "center" }}>
+        <p style={{ fontSize: 14, color: "#c2410c", marginBottom: 12 }}>{error}</p>
+        <button onClick={fetchOrden} style={{ fontSize: 13, color: "#37352f", textDecoration: "underline", background: "none", border: "none", cursor: "pointer" }}>Reintentar</button>
       </div>
     );
   }

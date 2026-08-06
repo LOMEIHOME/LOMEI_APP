@@ -1,19 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { getStockStatus } from "@/components/admin/StatusBadge";
-
-interface AlertaItem {
-  id: string;
-  producto_id: string;
-  cantidad: number;
-  stock_minimo: number;
-  productos: {
-    id: string;
-    nombre: string;
-    categoria: string;
-  };
-}
+import { getCategoryEmoji } from "@/lib/constants";
 
 interface AlertaConfig {
   notificar_email: boolean;
@@ -22,25 +10,13 @@ interface AlertaConfig {
   telefono_destino: string;
   frecuencia_horas: number;
   activo: boolean;
+  umbrales_categoria?: Record<string, number>;
 }
 
-interface AlertaLog {
-  id: string;
-  creado_en: string;
-  productos: { nombre: string } | null;
-  cantidad_actual: number;
-  canal: string;
-  enviado: boolean;
+interface CategoriaStock {
+  total: number;
+  productos: number;
 }
-
-const STATUS_CONFIG: Record<string, { label: string; bg: string; color: string }> = {
-  low: { label: "Bajo", bg: "#fbf3e0", color: "#b7791f" },
-  ok: { label: "En stock", bg: "#e6f4ea", color: "#16794a" },
-  out: { label: "Agotado", bg: "#fde8e8", color: "#c0392b" },
-};
-
-const formatDate = (d: string) =>
-  new Date(d).toLocaleDateString("es-MX", { day: "numeric", month: "short", year: "numeric" });
 
 /* ── Toggle switch component ──────────────────────────────── */
 function Toggle({ checked, onChange }: { checked: boolean; onChange: (v: boolean) => void }) {
@@ -79,7 +55,6 @@ function Toggle({ checked, onChange }: { checked: boolean; onChange: (v: boolean
 }
 
 export default function AlertasPage() {
-  const [alertas, setAlertas] = useState<AlertaItem[]>([]);
   const [config, setConfig] = useState<AlertaConfig>({
     notificar_email: false,
     email_destino: "",
@@ -87,28 +62,31 @@ export default function AlertasPage() {
     telefono_destino: "",
     frecuencia_horas: 24,
     activo: true,
+    umbrales_categoria: {},
   });
-  const [logs, setLogs] = useState<AlertaLog[]>([]);
+  const [stockPorCategoria, setStockPorCategoria] = useState<Record<string, CategoriaStock>>({});
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
+    setError("");
     try {
-      const [alertasRes, configRes, logsRes] = await Promise.all([
-        fetch("/api/inventario?alerta=true"),
+      const [configRes, catRes] = await Promise.all([
         fetch("/api/alertas/config"),
-        fetch("/api/alertas/log"),
+        fetch("/api/alertas/categorias"),
       ]);
-      const alertasJson = await alertasRes.json();
       const configJson = await configRes.json();
-      const logsJson = await logsRes.json();
-      setAlertas(alertasJson.data || []);
-      if (configJson.data) setConfig(configJson.data);
-      setLogs(logsJson.data || []);
+      const catJson = await catRes.json();
+      if (configJson.data) setConfig({
+        ...configJson.data,
+        umbrales_categoria: configJson.data.umbrales_categoria || {},
+      });
+      setStockPorCategoria(catJson.data || {});
     } catch {
-      // silenciar errores de red
+      setError("No se pudieron cargar las alertas.");
     }
     setLoading(false);
   }, []);
@@ -128,15 +106,40 @@ export default function AlertasPage() {
       setSaved(true);
       setTimeout(() => setSaved(false), 3000);
     } catch {
-      // silenciar errores
+      setError("No se pudo guardar la configuración.");
     }
     setSaving(false);
   };
+
+  const umbrales = config.umbrales_categoria || {};
+  const setUmbral = (cat: string, val: number) => {
+    setConfig({
+      ...config,
+      umbrales_categoria: { ...umbrales, [cat]: val },
+    });
+  };
+
+  // Categorías con alerta activa (stock total < umbral)
+  const categoriasConAlerta = Object.entries(stockPorCategoria)
+    .filter(([cat, data]) => {
+      const umbral = umbrales[cat];
+      return umbral != null && umbral > 0 && data.total < umbral;
+    })
+    .sort((a, b) => a[1].total - b[1].total);
 
   if (loading) {
     return (
       <div style={{ padding: 48, textAlign: "center", fontSize: 14, color: "#9b968c" }}>
         Cargando...
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div style={{ padding: 48, textAlign: "center" }}>
+        <p style={{ fontSize: 14, color: "#c2410c", marginBottom: 12 }}>{error}</p>
+        <button onClick={fetchData} style={{ fontSize: 13, color: "#37352f", textDecoration: "underline", background: "none", border: "none", cursor: "pointer" }}>Reintentar</button>
       </div>
     );
   }
@@ -163,6 +166,12 @@ export default function AlertasPage() {
     outline: "none",
   };
 
+  const cardStyle: React.CSSProperties = {
+    border: "1px solid #eeece7",
+    borderRadius: 12,
+    padding: 22,
+  };
+
   return (
     <div style={{ maxWidth: 1180, margin: "0 auto" }}>
       {/* ── Header ────────────────────────────────────────── */}
@@ -171,104 +180,54 @@ export default function AlertasPage() {
           {"🔔 Alertas"}
         </h1>
         <p style={{ fontSize: 14, color: "#8b867c", marginTop: 4 }}>
-          Gesti&oacute;n de alertas y notificaciones de stock
+          Gestión de alertas y notificaciones de stock
         </p>
       </div>
 
-      {/* ── Low stock table ───────────────────────────────── */}
-      <div
-        style={{
-          border: "1px solid #eeece7",
-          borderRadius: 12,
-          overflow: "hidden",
-          marginBottom: 18,
-        }}
-      >
+      {/* ── Alertas por categoría ─────────────────────────── */}
+      {categoriasConAlerta.length > 0 && (
         <div
           style={{
-            padding: "12px 16px",
-            borderBottom: "1px solid #f1efe9",
+            border: "1px solid #eeece7",
+            borderRadius: 12,
+            overflow: "hidden",
+            marginBottom: 18,
           }}
         >
-          <span style={{ fontSize: 14, fontWeight: 700, color: "#37352f" }}>
-            Productos con stock bajo
-          </span>
-        </div>
-
-        {alertas.length > 0 ? (
+          <div style={{ padding: "12px 16px", borderBottom: "1px solid #f1efe9" }}>
+            <span style={{ fontSize: 14, fontWeight: 700, color: "#37352f" }}>
+              Categorías con stock bajo
+            </span>
+          </div>
           <div style={{ overflowX: "auto" }}>
             <table style={{ width: "100%", borderCollapse: "collapse" }}>
               <thead>
                 <tr style={{ backgroundColor: "#f8f7f4" }}>
-                  <th style={thStyle}>Producto</th>
-                  <th style={thStyle}>Categor&iacute;a</th>
-                  <th style={{ ...thStyle, textAlign: "right" }}>Actual</th>
-                  <th style={{ ...thStyle, textAlign: "right" }}>M&iacute;nimo</th>
+                  <th style={thStyle}>Categoría</th>
+                  <th style={{ ...thStyle, textAlign: "right" }}>Stock total</th>
+                  <th style={{ ...thStyle, textAlign: "right" }}>Umbral</th>
+                  <th style={{ ...thStyle, textAlign: "right" }}>Productos</th>
                   <th style={{ ...thStyle, textAlign: "center" }}>Estado</th>
                 </tr>
               </thead>
               <tbody>
-                {alertas.map((item) => {
-                  const status = getStockStatus(item.cantidad, item.stock_minimo);
-                  const statusConf = STATUS_CONFIG[status] || STATUS_CONFIG.low;
-                  const stockColor =
-                    status === "out"
-                      ? "#c2410c"
-                      : status === "low"
-                      ? "#b7791f"
-                      : "#16794a";
-
+                {categoriasConAlerta.map(([cat, data]) => {
+                  const umbral = umbrales[cat] || 0;
+                  const pct = umbral > 0 ? data.total / umbral : 1;
+                  const isCritical = pct < 0.5;
                   return (
-                    <tr
-                      key={item.id}
-                      style={{
-                        borderTop: "1px solid #f1efe9",
-                        cursor: "pointer",
-                        transition: "background-color 0.1s",
-                      }}
-                      onMouseEnter={(e) =>
-                        (e.currentTarget.style.backgroundColor = "#faf9f6")
-                      }
-                      onMouseLeave={(e) =>
-                        (e.currentTarget.style.backgroundColor = "transparent")
-                      }
-                      onClick={() =>
-                        (window.location.href = `/admin/inventario/${item.productos.id}`)
-                      }
-                    >
-                      <td
-                        style={{
-                          padding: "10px 16px",
-                          fontSize: 14,
-                          fontWeight: 500,
-                          color: "#37352f",
-                        }}
-                      >
-                        {item.productos.nombre}
+                    <tr key={cat} style={{ borderTop: "1px solid #f1efe9" }}>
+                      <td style={{ padding: "10px 16px", fontSize: 14, fontWeight: 500, color: "#37352f" }}>
+                        {getCategoryEmoji(cat)} {cat}
                       </td>
-                      <td style={{ padding: "10px 16px", fontSize: 14, color: "#9b968c" }}>
-                        {item.productos.categoria}
+                      <td style={{ padding: "10px 16px", textAlign: "right", fontSize: 14, fontWeight: 600, color: isCritical ? "#c2410c" : "#b7791f" }}>
+                        {data.total}
                       </td>
-                      <td
-                        style={{
-                          padding: "10px 16px",
-                          textAlign: "right",
-                          fontSize: 14,
-                          fontWeight: 600,
-                          color: stockColor,
-                        }}
-                      >
-                        {item.cantidad}
+                      <td style={{ padding: "10px 16px", textAlign: "right", fontSize: 14, color: "#9b968c" }}>
+                        {umbral}
                       </td>
-                      <td
-                        style={{
-                          padding: "10px 16px",
-                          textAlign: "right",
-                          fontSize: 14,
-                          color: "#9b968c",
-                        }}
-                      >
-                        {item.stock_minimo}
+                      <td style={{ padding: "10px 16px", textAlign: "right", fontSize: 14, color: "#9b968c" }}>
+                        {data.productos}
                       </td>
                       <td style={{ padding: "10px 16px", textAlign: "center" }}>
                         <span
@@ -278,12 +237,12 @@ export default function AlertasPage() {
                             borderRadius: 999,
                             fontSize: 12,
                             fontWeight: 500,
-                            backgroundColor: statusConf.bg,
-                            color: statusConf.color,
+                            backgroundColor: isCritical ? "#fdf3ec" : "#fbf3e0",
+                            color: isCritical ? "#c2410c" : "#b7791f",
                             lineHeight: 1,
                           }}
                         >
-                          {statusConf.label}
+                          {isCritical ? "Crítico" : "Bajo"}
                         </span>
                       </td>
                     </tr>
@@ -292,55 +251,129 @@ export default function AlertasPage() {
               </tbody>
             </table>
           </div>
-        ) : (
-          <div style={{ padding: 48, textAlign: "center", fontSize: 14, color: "#9b968c" }}>
-            No hay productos con stock bajo
-          </div>
-        )}
-      </div>
+        </div>
+      )}
 
-      {/* ── Two-column layout: Config + History ───────────── */}
+      {/* ── Two-column layout: Umbrales + Config ────────── */}
       <div
         style={{
           display: "grid",
           gridTemplateColumns: "1fr 1fr",
           gap: 18,
         }}
+        className="alertas-grid"
       >
-        {/* ── Left: Config card ───────────────────────────── */}
-        <div
-          style={{
-            border: "1px solid #eeece7",
-            borderRadius: 12,
-            padding: 22,
-          }}
-        >
+        {/* ── Umbrales por categoría ─────────────────────── */}
+        <div style={cardStyle}>
+          <div style={{ fontSize: 14, fontWeight: 700, color: "#37352f", marginBottom: 6 }}>
+            Umbrales por categoría
+          </div>
+          <div style={{ fontSize: 12, color: "#9b968c", marginBottom: 16 }}>
+            Define el stock mínimo total por categoría. Si el stock total de una categoría baja del umbral, se generará una alerta.
+          </div>
+
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            {Object.entries(stockPorCategoria)
+              .sort(([a], [b]) => a.localeCompare(b))
+              .map(([cat, data]) => {
+                const umbral = umbrales[cat] ?? "";
+                const isLow = typeof umbral === "number" && umbral > 0 && data.total < umbral;
+                return (
+                  <div
+                    key={cat}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 8,
+                      padding: "6px 10px",
+                      borderRadius: 8,
+                      backgroundColor: isLow ? "#fdf3ec" : "transparent",
+                    }}
+                  >
+                    <span style={{ fontSize: 15, width: 22, textAlign: "center" }}>
+                      {getCategoryEmoji(cat)}
+                    </span>
+                    <span
+                      style={{
+                        flex: 1,
+                        fontSize: 13,
+                        fontWeight: 500,
+                        color: "#37352f",
+                        whiteSpace: "nowrap",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                      }}
+                      title={cat}
+                    >
+                      {cat}
+                    </span>
+                    <span style={{ fontSize: 12, color: "#9b968c", minWidth: 24, textAlign: "right" }}>
+                      {data.total}
+                    </span>
+                    <span style={{ fontSize: 11, color: "#c5c0b8" }}>/</span>
+                    <input
+                      type="number"
+                      min={0}
+                      value={umbral}
+                      onChange={(e) => setUmbral(cat, e.target.value === "" ? 0 : parseInt(e.target.value) || 0)}
+                      placeholder="—"
+                      style={{
+                        width: 52,
+                        padding: "4px 6px",
+                        backgroundColor: "#f8f7f4",
+                        border: "1px solid #eeece7",
+                        borderRadius: 6,
+                        fontSize: 13,
+                        color: "#37352f",
+                        textAlign: "center",
+                        outline: "none",
+                      }}
+                    />
+                  </div>
+                );
+              })}
+          </div>
+
+          <div style={{ marginTop: 16, display: "flex", alignItems: "center", gap: 12 }}>
+            <button
+              onClick={handleSaveConfig}
+              disabled={saving}
+              style={{
+                padding: "8px 16px",
+                backgroundColor: "#37352f",
+                color: "#fff",
+                borderRadius: 8,
+                fontSize: 13,
+                fontWeight: 500,
+                border: "none",
+                cursor: saving ? "not-allowed" : "pointer",
+                opacity: saving ? 0.55 : 1,
+              }}
+            >
+              {saving ? "Guardando..." : "Guardar umbrales"}
+            </button>
+            {saved && (
+              <span style={{ fontSize: 12, color: "#16794a", fontWeight: 500 }}>
+                Guardado
+              </span>
+            )}
+          </div>
+        </div>
+
+        {/* ── Config card ────────────────────────────────── */}
+        <div style={cardStyle}>
           <div style={{ fontSize: 14, fontWeight: 700, color: "#37352f", marginBottom: 20 }}>
-            Configuraci&oacute;n de alertas
+            Configuración de alertas
           </div>
 
           {/* Email toggle */}
           <div style={{ marginBottom: 16 }}>
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                gap: 12,
-              }}
-            >
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
               <div>
-                <div style={{ fontSize: 14, fontWeight: 500, color: "#37352f" }}>
-                  Notificaciones por email
-                </div>
-                <div style={{ fontSize: 12, color: "#9b968c", marginTop: 2 }}>
-                  Recibe alertas de stock bajo por correo
-                </div>
+                <div style={{ fontSize: 14, fontWeight: 500, color: "#37352f" }}>Notificaciones por email</div>
+                <div style={{ fontSize: 12, color: "#9b968c", marginTop: 2 }}>Recibe alertas de stock bajo por correo</div>
               </div>
-              <Toggle
-                checked={config.notificar_email}
-                onChange={(v) => setConfig({ ...config, notificar_email: v })}
-              />
+              <Toggle checked={config.notificar_email} onChange={(v) => setConfig({ ...config, notificar_email: v })} />
             </div>
             {config.notificar_email && (
               <input
@@ -355,26 +388,12 @@ export default function AlertasPage() {
 
           {/* WhatsApp toggle */}
           <div style={{ marginBottom: 16 }}>
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                gap: 12,
-              }}
-            >
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
               <div>
-                <div style={{ fontSize: 14, fontWeight: 500, color: "#37352f" }}>
-                  Notificaciones por WhatsApp
-                </div>
-                <div style={{ fontSize: 12, color: "#9b968c", marginTop: 2 }}>
-                  Recibe alertas directamente en tu tel&eacute;fono
-                </div>
+                <div style={{ fontSize: 14, fontWeight: 500, color: "#37352f" }}>Notificaciones por WhatsApp</div>
+                <div style={{ fontSize: 12, color: "#9b968c", marginTop: 2 }}>Recibe alertas directamente en tu teléfono</div>
               </div>
-              <Toggle
-                checked={config.notificar_whatsapp}
-                onChange={(v) => setConfig({ ...config, notificar_whatsapp: v })}
-              />
+              <Toggle checked={config.notificar_whatsapp} onChange={(v) => setConfig({ ...config, notificar_whatsapp: v })} />
             </div>
             {config.notificar_whatsapp && (
               <input
@@ -387,21 +406,13 @@ export default function AlertasPage() {
             )}
           </div>
 
-          {/* Frequency dropdown */}
+          {/* Frequency */}
           <div style={{ marginBottom: 16 }}>
-            <div style={{ fontSize: 14, fontWeight: 500, color: "#37352f", marginBottom: 6 }}>
-              Frecuencia de notificaciones
-            </div>
+            <div style={{ fontSize: 14, fontWeight: 500, color: "#37352f", marginBottom: 6 }}>Frecuencia de notificaciones</div>
             <select
               value={config.frecuencia_horas}
-              onChange={(e) =>
-                setConfig({ ...config, frecuencia_horas: Number(e.target.value) })
-              }
-              style={{
-                ...inputStyle,
-                appearance: "auto" as React.CSSProperties["appearance"],
-                cursor: "pointer",
-              }}
+              onChange={(e) => setConfig({ ...config, frecuencia_horas: Number(e.target.value) })}
+              style={{ ...inputStyle, appearance: "auto" as React.CSSProperties["appearance"], cursor: "pointer" }}
             >
               <option value={6}>Cada 6 horas</option>
               <option value={12}>Cada 12 horas</option>
@@ -410,147 +421,44 @@ export default function AlertasPage() {
             </select>
           </div>
 
-          {/* Alertas activas toggle */}
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              gap: 12,
-              marginBottom: 20,
-            }}
-          >
+          {/* Alertas activas */}
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, marginBottom: 20 }}>
             <div>
-              <div style={{ fontSize: 14, fontWeight: 500, color: "#37352f" }}>
-                Alertas activas
-              </div>
-              <div style={{ fontSize: 12, color: "#9b968c", marginTop: 2 }}>
-                Activar o desactivar todas las alertas
-              </div>
+              <div style={{ fontSize: 14, fontWeight: 500, color: "#37352f" }}>Alertas activas</div>
+              <div style={{ fontSize: 12, color: "#9b968c", marginTop: 2 }}>Activar o desactivar todas las alertas</div>
             </div>
-            <Toggle
-              checked={config.activo}
-              onChange={(v) => setConfig({ ...config, activo: v })}
-            />
+            <Toggle checked={config.activo} onChange={(v) => setConfig({ ...config, activo: v })} />
           </div>
 
-          {/* Save button */}
-          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-            <button
-              onClick={handleSaveConfig}
-              disabled={saving}
-              style={{
-                padding: "9px 18px",
-                backgroundColor: "#37352f",
-                color: "#fff",
-                borderRadius: 8,
-                fontSize: 14,
-                fontWeight: 500,
-                border: "none",
-                cursor: saving ? "not-allowed" : "pointer",
-                opacity: saving ? 0.55 : 1,
-                transition: "opacity 0.15s",
-              }}
-              onMouseEnter={(e) => {
-                if (!saving) e.currentTarget.style.opacity = "0.85";
-              }}
-              onMouseLeave={(e) => {
-                if (!saving) e.currentTarget.style.opacity = "1";
-              }}
-            >
-              {saving ? "Guardando..." : "Guardar configuraci\u00f3n"}
-            </button>
-            {saved && (
-              <span style={{ fontSize: 13, color: "#16794a", fontWeight: 500 }}>
-                Configuraci&oacute;n guardada
-              </span>
-            )}
-          </div>
-        </div>
-
-        {/* ── Right: Alert history ────────────────────────── */}
-        <div
-          style={{
-            border: "1px solid #eeece7",
-            borderRadius: 12,
-            overflow: "hidden",
-            display: "flex",
-            flexDirection: "column",
-          }}
-        >
-          <div
+          <button
+            onClick={handleSaveConfig}
+            disabled={saving}
             style={{
-              padding: "12px 16px",
-              borderBottom: "1px solid #f1efe9",
+              padding: "9px 18px",
+              backgroundColor: "#37352f",
+              color: "#fff",
+              borderRadius: 8,
+              fontSize: 14,
+              fontWeight: 500,
+              border: "none",
+              cursor: saving ? "not-allowed" : "pointer",
+              opacity: saving ? 0.55 : 1,
             }}
           >
-            <span style={{ fontSize: 14, fontWeight: 700, color: "#37352f" }}>
-              Historial de alertas
-            </span>
-          </div>
-
-          {logs.length > 0 ? (
-            <div style={{ flex: 1, overflowY: "auto" }}>
-              {logs.map((log, idx) => (
-                <div
-                  key={log.id}
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                    padding: "12px 16px",
-                    borderTop: idx > 0 ? "1px solid #f1efe9" : "none",
-                    transition: "background-color 0.1s",
-                  }}
-                  onMouseEnter={(e) =>
-                    (e.currentTarget.style.backgroundColor = "#faf9f6")
-                  }
-                  onMouseLeave={(e) =>
-                    (e.currentTarget.style.backgroundColor = "transparent")
-                  }
-                >
-                  <div>
-                    <div style={{ fontSize: 14, fontWeight: 500, color: "#37352f" }}>
-                      {log.productos?.nombre || "Producto"}
-                    </div>
-                    <div
-                      style={{
-                        fontSize: 12,
-                        color: "#9b968c",
-                        marginTop: 3,
-                        display: "flex",
-                        gap: 8,
-                        flexWrap: "wrap",
-                      }}
-                    >
-                      <span>{formatDate(log.creado_en)}</span>
-                      <span>&middot;</span>
-                      <span>{log.canal}</span>
-                      <span>&middot;</span>
-                      <span>Stock: {log.cantidad_actual}</span>
-                    </div>
-                  </div>
-                  <div
-                    style={{
-                      fontSize: 18,
-                      fontWeight: 700,
-                      color: log.enviado ? "#16794a" : "#c0392b",
-                      flexShrink: 0,
-                      marginLeft: 12,
-                    }}
-                  >
-                    {log.enviado ? "\u2713" : "\u2715"}
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div style={{ padding: 48, textAlign: "center", fontSize: 14, color: "#9b968c" }}>
-              Sin alertas registradas
-            </div>
-          )}
+            {saving ? "Guardando..." : "Guardar configuración"}
+          </button>
         </div>
+
       </div>
+
+      {/* Responsive: stack columns on smaller screens */}
+      <style>{`
+        @media (max-width: 768px) {
+          .alertas-grid {
+            grid-template-columns: 1fr !important;
+          }
+        }
+      `}</style>
     </div>
   );
 }

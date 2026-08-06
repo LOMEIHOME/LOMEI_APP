@@ -102,16 +102,6 @@ export default function ServiciosPage() {
                       </p>
                     </FadeIn>
                     <FadeIn delay={0.25}>
-                      <div className="mt-6">
-                        <p className="text-[10px] tracking-[0.2em] uppercase text-[var(--color-warm-gray)] mb-2">
-                          Incluye
-                        </p>
-                        <p className="text-sm leading-relaxed text-[var(--color-dark)]/60">
-                          {servicio.incluye}
-                        </p>
-                      </div>
-                    </FadeIn>
-                    <FadeIn delay={0.3}>
                       {servicio.id === "paisajismo" ? (
                         <a
                           href="https://www.instagram.com/naturhabitat/"

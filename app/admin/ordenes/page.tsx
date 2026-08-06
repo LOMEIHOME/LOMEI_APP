@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import SearchInput from "@/components/admin/SearchInput";
 import OrderStatusBadge from "@/components/admin/OrderStatusBadge";
+import { formatFecha } from "@/lib/constants";
 
 type EstadoFilter = "" | "pendiente" | "completada" | "cancelada";
 
@@ -32,12 +33,12 @@ const ESTADOS: { key: EstadoFilter; label: string }[] = [
 const formatPrice = (n: number) =>
   new Intl.NumberFormat("es-MX", { style: "currency", currency: "MXN", minimumFractionDigits: 0 }).format(n);
 
-const formatDate = (d: string) =>
-  new Date(d).toLocaleDateString("es-MX", { day: "numeric", month: "short", year: "numeric" });
+const formatDate = (d: string) => formatFecha(d, false);
 
 export default function OrdenesPage() {
   const [ordenes, setOrdenes] = useState<Orden[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const [search, setSearch] = useState("");
   const [estado, setEstado] = useState<EstadoFilter>("");
   const [page, setPage] = useState(1);
@@ -46,6 +47,7 @@ export default function OrdenesPage() {
 
   const fetchData = useCallback(async () => {
     setLoading(true);
+    setError("");
     try {
       const params = new URLSearchParams();
       if (estado) params.set("estado", estado);
@@ -57,7 +59,7 @@ export default function OrdenesPage() {
       setOrdenes(json.data || []);
       if (json.pagination) setPagination(json.pagination);
     } catch {
-      // silenciar errores de red
+      setError("No se pudieron cargar las órdenes.");
     }
     setLoading(false);
   }, [estado, search, page]);
@@ -70,6 +72,15 @@ export default function OrdenesPage() {
   useEffect(() => {
     setPage(1);
   }, [estado, search]);
+
+  if (error) {
+    return (
+      <div style={{ padding: 48, textAlign: "center" }}>
+        <p style={{ fontSize: 14, color: "#c2410c", marginBottom: 12 }}>{error}</p>
+        <button onClick={fetchData} style={{ fontSize: 13, color: "#37352f", textDecoration: "underline", background: "none", border: "none", cursor: "pointer" }}>Reintentar</button>
+      </div>
+    );
+  }
 
   return (
     <div style={{ maxWidth: 960, margin: "0 auto" }}>
