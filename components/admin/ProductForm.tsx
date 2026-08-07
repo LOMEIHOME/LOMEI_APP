@@ -6,7 +6,8 @@ import Link from "next/link";
 
 const CATEGORIAS = [
   "Muebles",
-  "Cojines & Textiles",
+  "Cojines",
+  "Textiles",
   "Adornos",
   "Jarrones",
   "Iluminación",

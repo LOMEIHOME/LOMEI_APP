@@ -1,7 +1,7 @@
 export interface Producto {
   slug: string;
   name: string;
-  category: "Muebles" | "Cojines & Textiles" | "Adornos" | "Jarrones" | "Iluminación" | "Alfombras" | "Acabados" | "Capelos" | "Relojes" | "Florero" | "Macetas" | "Plantas Artificiales";
+  category: "Muebles" | "Cojines" | "Textiles" | "Adornos" | "Jarrones" | "Iluminación" | "Alfombras" | "Acabados" | "Capelos" | "Relojes" | "Florero" | "Macetas" | "Plantas Artificiales";
   price: number;
   description: string;
   dimensions: string;
@@ -44,7 +44,7 @@ export const PRODUCTOS: Producto[] = [
   {
     slug: "cojin-terracota",
     name: "Cojín Terracota",
-    category: "Cojines & Textiles",
+    category: "Textiles",
     price: 1200,
     description:
       "Cojín decorativo en tela de algodón con teñido artesanal en tono terracota. Relleno de fibra siliconada. Combina perfectamente con paletas neutras para agregar un punto cálido de color.",
@@ -57,7 +57,7 @@ export const PRODUCTOS: Producto[] = [
   {
     slug: "manta-tejida-crema",
     name: "Manta Tejida Crema",
-    category: "Cojines & Textiles",
+    category: "Textiles",
     price: 2400,
     description:
       "Manta de tejido artesanal en algodón orgánico, tono crema con textura waffle. Perfecta para dar calidez visual y táctil a sillones y camas.",
