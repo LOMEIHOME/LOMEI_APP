@@ -25,7 +25,8 @@ export const producto = defineType({
       options: {
         list: [
           { title: "Muebles", value: "Muebles" },
-          { title: "Cojines & Textiles", value: "Cojines & Textiles" },
+          { title: "Cojines", value: "Cojines" },
+          { title: "Textiles", value: "Textiles" },
           { title: "Adornos", value: "Adornos" },
           { title: "Jarrones", value: "Jarrones" },
           { title: "Iluminación", value: "Iluminación" },

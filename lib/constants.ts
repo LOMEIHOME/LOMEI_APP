@@ -2,7 +2,8 @@
 
 export const CATEGORY_EMOJI: Record<string, string> = {
   Muebles: "🛋️",
-  "Cojines & Textiles": "🧶",
+  Cojines: "🛋️",
+  Textiles: "🧶",
   Adornos: "🏺",
   Iluminación: "💡",
   Alfombras: "🧵",
