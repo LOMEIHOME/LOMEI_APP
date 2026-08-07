@@ -42,10 +42,7 @@ const PROCESO = [
 ];
 
 const SHOWROOM_IMAGES = [
-  { src: "/images/showroom/showroom-main.png", alt: "Vista principal del showroom" },
-  { src: "/images/showroom/showroom-led.png", alt: "Iluminación LED del showroom" },
-  { src: "/images/showroom/sala-recibidor.png", alt: "Sala recibidor del showroom" },
-  { src: "/images/showroom/sala-detalle.png", alt: "Detalle del showroom" },
+  { src: "/images/showroom/showroom-1.png", alt: "Nuestro espacio" },
 ];
 
 function ShowroomCarousel() {
@@ -113,7 +110,7 @@ function ShowroomCarousel() {
               {/* Overlay con número */}
               <div className="absolute inset-0 bg-gradient-to-t from-[rgba(42,33,24,0.72)] via-[rgba(42,33,24,0.12)] via-50% to-transparent flex items-end p-6 md:p-8 lg:p-10">
                 <p className="text-[10px] md:text-[11px] tracking-[0.2em] uppercase text-[var(--color-sand)]">
-                  {num} · {SHOWROOM_IMAGES[active].alt}
+                  {num}
                 </p>
               </div>
 
@@ -189,14 +186,18 @@ export default function NosotrosPage() {
         <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-16 items-center">
           <div className="md:col-span-5">
             <FadeIn>
-              <div className="relative aspect-[3/4] overflow-hidden rounded-sm">
-                <Image
-                  src="/images/showroom/arq-ana-lorena.jpg"
-                  alt="Arq. Ana Lorena Vargas Mejía"
-                  fill
-                  className="object-cover"
-                  sizes="(max-width: 768px) 100vw, 42vw"
-                />
+              <div className="relative aspect-[3/4] overflow-hidden rounded-sm bg-[var(--color-linen)]">
+                <div className="relative w-full h-full py-16">
+                  <div className="relative w-full h-full overflow-hidden">
+                    <Image
+                      src="/images/showroom/arq-ana-lorena.png"
+                      alt="Arq. Ana Lorena Vargas Mejía"
+                      fill
+                      className="object-cover object-[35%_25%]"
+                      sizes="(max-width: 768px) 100vw, 42vw"
+                    />
+                  </div>
+                </div>
               </div>
             </FadeIn>
           </div>
@@ -315,18 +316,18 @@ export default function NosotrosPage() {
               },
               {
                 name: "Próximamente",
-                role: "Arquitectura",
-                desc: "Responsable del desarrollo de planos ejecutivos y coordinación de obra, asegurando que el diseño se materialice con precisión.",
+                role: "Consultor de Obra",
+                desc: "Supervisa y asesora la ejecución en sitio, garantizando que cada detalle constructivo se alinee con el proyecto arquitectónico.",
               },
               {
                 name: "Próximamente",
-                role: "Interiorismo",
-                desc: "Encargado de la selección de materiales, mobiliario y acabados que dan vida a cada ambiente diseñado por el estudio.",
+                role: "Redes Sociales",
+                desc: "Gestiona la comunicación digital del estudio, creando contenido que refleja la identidad y el trabajo de LOMEI HOME.",
               },
               {
                 name: "Próximamente",
-                role: "Gestión de Proyectos",
-                desc: "Coordina tiempos, proveedores y presupuestos para que cada proyecto se entregue en forma y plazo.",
+                role: "Diseño Web",
+                desc: "Desarrolla y mantiene la presencia digital del estudio, asegurando una experiencia coherente con la identidad de la marca.",
               },
             ].map((member, i) => (
               <FadeIn key={i} delay={0.1 * i}>
@@ -334,10 +335,10 @@ export default function NosotrosPage() {
                   <div className="relative aspect-[3/4] overflow-hidden rounded-sm bg-[var(--color-sand)]/20">
                     {member.name === "Arq. Ana Lorena Vargas" ? (
                       <Image
-                        src="/images/showroom/arq-ana-lorena.jpg"
+                        src="/images/showroom/arq-ana-lorena.png"
                         alt={member.name}
                         fill
-                        className="object-cover"
+                        className="object-cover object-[32%_25%]"
                         sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
                       />
                     ) : (

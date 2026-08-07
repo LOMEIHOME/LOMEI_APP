@@ -64,7 +64,7 @@ export default function ProyectosFilterGrid({ proyectos, categories }: Props) {
                 >
                   <div className="relative aspect-[4/3] overflow-hidden rounded-sm">
                     <Image
-                      src={p.images[0]}
+                      src={p.images[0] || "/images/placeholder.png"}
                       alt={p.title}
                       fill
                       className="object-cover transition-transform duration-700 group-hover:scale-105"
