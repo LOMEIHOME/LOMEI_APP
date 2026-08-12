@@ -62,11 +62,6 @@ body::before {
   z-index: 9999;
 }
 
-/* Animaciones sutiles por defecto */
-* {
-  transition-timing-function: ease;
-}
-
 /* Selección de texto */
 ::selection {
   background-color: var(--color-sand);

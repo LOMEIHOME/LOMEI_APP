@@ -36,13 +36,13 @@ function adaptProyecto(p: SanityProyecto): Proyecto {
     description: p.description || "",
     area: p.area || "",
     duration: p.duration || "",
-    images: p.images?.filter((img) => img.asset).map((img) => urlFor(img).width(1200).url()) || [],
+    images: p.images?.filter((img) => img.asset).map((img) => urlFor(img).width(1200).quality(80).auto("format").url()) || [],
     featured: p.featured || false,
   };
 }
 
 function adaptProducto(p: SanityProducto): Producto {
-  const images = p.images?.filter((img) => img.asset).map((img) => urlFor(img).width(1200).url()) || [];
+  const images = p.images?.filter((img) => img.asset).map((img) => urlFor(img).width(800).quality(80).auto("format").url()) || [];
   return {
     slug: p.slug.current,
     name: p.name,

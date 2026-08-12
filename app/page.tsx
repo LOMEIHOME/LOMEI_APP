@@ -1,12 +1,20 @@
+import dynamic from "next/dynamic";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
-import SplashScreen from "@/components/sections/SplashScreen";
 import Hero from "@/components/sections/Hero";
 import AboutPreview from "@/components/sections/AboutPreview";
 import ServicesStrip from "@/components/sections/ServicesStrip";
-import ProjectsGrid from "@/components/sections/ProjectsGrid";
-import CatalogPreview from "@/components/sections/CatalogPreview";
 import { getAllProductos, getAllProyectos } from "@/lib/sanity";
+
+const SplashScreen = dynamic(
+  () => import("@/components/sections/SplashScreen")
+);
+const ProjectsGrid = dynamic(
+  () => import("@/components/sections/ProjectsGrid")
+);
+const CatalogPreview = dynamic(
+  () => import("@/components/sections/CatalogPreview")
+);
 
 export const revalidate = 60;
 
