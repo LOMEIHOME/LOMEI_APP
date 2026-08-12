@@ -5,14 +5,14 @@ import "./globals.css";
 
 const cormorant = Cormorant_Garamond({
   variable: "--font-serif",
-  subsets: ["latin"],
+  subsets: ["latin", "latin-ext"],
   weight: ["300", "400", "500", "600"],
   display: "swap",
 });
 
 const montserrat = Montserrat({
   variable: "--font-sans",
-  subsets: ["latin"],
+  subsets: ["latin", "latin-ext"],
   weight: ["300", "400", "500"],
   display: "swap",
 });
