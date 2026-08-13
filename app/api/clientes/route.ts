@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createAdminClient } from "@/lib/supabase/admin";
+import { createServiceRoleClient } from "@/lib/supabase/admin";
 
 // GET /api/clientes — Listar/buscar clientes
 export async function GET(request: NextRequest) {
-  const supabase = await createAdminClient();
+  const supabase = createServiceRoleClient();
   const { searchParams } = new URL(request.url);
 
   const search = searchParams.get("search");
@@ -47,7 +47,7 @@ export async function GET(request: NextRequest) {
 
 // POST /api/clientes — Crear cliente
 export async function POST(request: NextRequest) {
-  const supabase = await createAdminClient();
+  const supabase = createServiceRoleClient();
   const body = await request.json();
 
   const { nombre, email, telefono, tipo, notas } = body;

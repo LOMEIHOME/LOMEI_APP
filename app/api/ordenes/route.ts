@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createAdminClient } from "@/lib/supabase/admin";
+import { createServiceRoleClient } from "@/lib/supabase/admin";
 import { generarNotaDeVenta, calcularTotales } from "@/lib/ticket";
 import { sendEmail } from "@/lib/email";
 
@@ -7,7 +7,7 @@ const IVA_RATE = 0.16;
 
 // POST /api/ordenes — Crear orden desde checkout
 export async function POST(request: NextRequest) {
-  const supabase = await createAdminClient();
+  const supabase = createServiceRoleClient();
   const body = await request.json();
 
   const { cliente_nombre, cliente_email, cliente_tel, cliente_id, nota, items } = body;
@@ -118,6 +118,12 @@ export async function POST(request: NextRequest) {
     nota,
   });
 
+  // Guardar ticket en la orden
+  await supabase
+    .from("ordenes")
+    .update({ ticket_html: ticketHtml })
+    .eq("id", orden.id);
+
   // Enviar nota de venta por email
   let emailEnviado = false;
   if (process.env.EMAIL_USER && process.env.EMAIL_APP_PASSWORD) {
@@ -150,7 +156,7 @@ export async function POST(request: NextRequest) {
 
 // GET /api/ordenes — Listar órdenes (admin)
 export async function GET(request: NextRequest) {
-  const supabase = await createAdminClient();
+  const supabase = createServiceRoleClient();
   const { searchParams } = new URL(request.url);
 
   const estado = searchParams.get("estado");

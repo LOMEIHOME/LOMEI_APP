@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getAllProductos } from "@/lib/sanity";
-import { createAdminClient } from "@/lib/supabase/admin";
+import { createServiceRoleClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 
 export async function POST() {
@@ -13,7 +13,7 @@ export async function POST() {
     }
 
     const sanityProducts = await getAllProductos();
-    const supabase = await createAdminClient();
+    const supabase = createServiceRoleClient();
 
     // Obtener todos los productos de Supabase
     const { data: supabaseProducts, error: fetchError } = await supabase

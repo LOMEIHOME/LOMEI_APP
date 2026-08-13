@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createAdminClient } from "@/lib/supabase/admin";
+import { createServiceRoleClient } from "@/lib/supabase/admin";
 
 // GET /api/productos — Listar productos con búsqueda, filtro y paginación
 export async function GET(request: NextRequest) {
-  const supabase = await createAdminClient();
+  const supabase = createServiceRoleClient();
   const { searchParams } = new URL(request.url);
 
   const search = searchParams.get("search") || "";
@@ -48,7 +48,7 @@ export async function GET(request: NextRequest) {
 
 // POST /api/productos — Crear producto
 export async function POST(request: NextRequest) {
-  const supabase = await createAdminClient();
+  const supabase = createServiceRoleClient();
   const body = await request.json();
 
   if (!body.nombre || !body.slug || !body.categoria) {

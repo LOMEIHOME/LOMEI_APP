@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createAdminClient } from "@/lib/supabase/admin";
+import { createServiceRoleClient } from "@/lib/supabase/admin";
 
 type Params = { params: Promise<{ id: string }> };
 
 // PUT /api/inventario/[id] — Ajustar stock (crea movimiento automáticamente)
 export async function PUT(request: NextRequest, { params }: Params) {
   const { id } = await params;
-  const supabase = await createAdminClient();
+  const supabase = createServiceRoleClient();
   const body = await request.json() as {
     tipo: string;
     cantidad: number;

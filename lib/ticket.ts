@@ -59,16 +59,52 @@ export function generarNotaDeVenta(data: TicketData): string {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Nota de Venta ${data.folio} — LOMEI HOME</title>
+  <style>
+    @media print {
+      @page {
+        size: A1 portrait;
+        margin: 40mm;
+      }
+      body {
+        background-color: #fff !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+      .ticket-container {
+        max-width: 100% !important;
+        border: none !important;
+        transform-origin: top center;
+      }
+      .ticket-container h1 { font-size: 48px !important; }
+      .ticket-container h2 { font-size: 36px !important; }
+      .ticket-header-sub { font-size: 18px !important; }
+      .ticket-section-label { font-size: 18px !important; }
+      .ticket-emisor-name, .ticket-cliente-name { font-size: 28px !important; }
+      .ticket-emisor-detail, .ticket-cliente-detail { font-size: 24px !important; }
+      .ticket-folio { font-size: 26px !important; }
+      .ticket-table th { font-size: 20px !important; padding: 18px 16px !important; }
+      .ticket-table td { font-size: 28px !important; padding: 22px 16px !important; }
+      .ticket-totals-label { font-size: 26px !important; }
+      .ticket-totals-value { font-size: 26px !important; }
+      .ticket-total-final-label { font-size: 32px !important; }
+      .ticket-total-final-value { font-size: 36px !important; }
+      .ticket-aviso { font-size: 20px !important; }
+      .ticket-footer p { font-size: 20px !important; }
+      .ticket-nota-label { font-size: 18px !important; }
+      .ticket-nota-text { font-size: 24px !important; }
+      .no-print { display: none !important; }
+    }
+  </style>
 </head>
 <body style="margin: 0; padding: 0; background-color: #F5F0E8; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;">
-  <div style="max-width: 600px; margin: 0 auto; background-color: #FAFAF7; border: 1px solid #EDE6D6;">
+  <div class="ticket-container" style="max-width: 600px; margin: 0 auto; background-color: #FAFAF7; border: 1px solid #EDE6D6;">
 
     <!-- Header -->
     <div style="background-color: #2A2118; padding: 30px 32px; text-align: center;">
       <h1 style="margin: 0; font-size: 20px; letter-spacing: 0.15em; color: #FAFAF7; font-weight: 300;">
         LOMEI HOME
       </h1>
-      <p style="margin: 4px 0 0; font-size: 9px; letter-spacing: 0.25em; color: #B5A898; text-transform: uppercase;">
+      <p class="ticket-header-sub" style="margin: 4px 0 0; font-size: 9px; letter-spacing: 0.25em; color: #B5A898; text-transform: uppercase;">
         Arquitectura e Interiorismo
       </p>
     </div>
@@ -83,7 +119,7 @@ export function generarNotaDeVenta(data: TicketData): string {
             </h2>
           </td>
           <td style="text-align: right;">
-            <p style="margin: 0; font-size: 12px; color: #A0845C; font-weight: 500;">
+            <p class="ticket-folio" style="margin: 0; font-size: 12px; color: #A0845C; font-weight: 500;">
               Folio: ${data.folio}
             </p>
           </td>
@@ -96,18 +132,18 @@ export function generarNotaDeVenta(data: TicketData): string {
       <table width="100%" cellpadding="0" cellspacing="0">
         <tr>
           <td style="vertical-align: top; width: 50%;">
-            <p style="margin: 0 0 2px; font-size: 9px; letter-spacing: 0.2em; color: #B5A898; text-transform: uppercase;">Emisor</p>
-            <p style="margin: 0; font-size: 12px; color: #2A2118; font-weight: 500;">LV Arquitectura e Interiorismo</p>
-            <p style="margin: 2px 0 0; font-size: 11px; color: #B5A898;">Querétaro, Qro., México</p>
-            <p style="margin: 2px 0 0; font-size: 11px; color: #B5A898;">Tel: 771 100 90 84</p>
-            <p style="margin: 2px 0 0; font-size: 11px; color: #B5A898;">arqinteriorismolv@gmail.com</p>
+            <p class="ticket-section-label" style="margin: 0 0 2px; font-size: 9px; letter-spacing: 0.2em; color: #B5A898; text-transform: uppercase;">Emisor</p>
+            <p class="ticket-emisor-name" style="margin: 0; font-size: 12px; color: #2A2118; font-weight: 500;">LOMEI HOME</p>
+            <p class="ticket-emisor-detail" style="margin: 2px 0 0; font-size: 11px; color: #B5A898;">Querétaro, Qro., México</p>
+            <p class="ticket-emisor-detail" style="margin: 2px 0 0; font-size: 11px; color: #B5A898;">Tel: 442 487 4466</p>
+            <p class="ticket-emisor-detail" style="margin: 2px 0 0; font-size: 11px; color: #B5A898;">contacto@lomeihome.com</p>
           </td>
           <td style="vertical-align: top; width: 50%; text-align: right;">
-            <p style="margin: 0 0 2px; font-size: 9px; letter-spacing: 0.2em; color: #B5A898; text-transform: uppercase;">Cliente</p>
-            <p style="margin: 0; font-size: 12px; color: #2A2118; font-weight: 500;">${data.cliente_nombre}</p>
-            <p style="margin: 2px 0 0; font-size: 11px; color: #B5A898;">${data.cliente_email}</p>
-            ${data.cliente_tel ? `<p style="margin: 2px 0 0; font-size: 11px; color: #B5A898;">Tel: ${data.cliente_tel}</p>` : ""}
-            <p style="margin: 6px 0 0; font-size: 11px; color: #B5A898;">Fecha: ${data.fecha}</p>
+            <p class="ticket-section-label" style="margin: 0 0 2px; font-size: 9px; letter-spacing: 0.2em; color: #B5A898; text-transform: uppercase;">Cliente</p>
+            <p class="ticket-cliente-name" style="margin: 0; font-size: 12px; color: #2A2118; font-weight: 500;">${data.cliente_nombre}</p>
+            <p class="ticket-cliente-detail" style="margin: 2px 0 0; font-size: 11px; color: #B5A898;">${data.cliente_email}</p>
+            ${data.cliente_tel ? `<p class="ticket-cliente-detail" style="margin: 2px 0 0; font-size: 11px; color: #B5A898;">Tel: ${data.cliente_tel}</p>` : ""}
+            <p class="ticket-cliente-detail" style="margin: 6px 0 0; font-size: 11px; color: #B5A898;">Fecha: ${data.fecha}</p>
           </td>
         </tr>
       </table>
@@ -115,7 +151,7 @@ export function generarNotaDeVenta(data: TicketData): string {
 
     <!-- Tabla de productos -->
     <div style="padding: 20px 32px;">
-      <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse;">
+      <table class="ticket-table" width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse;">
         <thead>
           <tr style="border-bottom: 2px solid #D4C4A0;">
             <th style="padding: 8px; font-size: 9px; letter-spacing: 0.15em; color: #B5A898; text-transform: uppercase; font-weight: 400; text-align: left;">#</th>
@@ -139,16 +175,16 @@ export function generarNotaDeVenta(data: TicketData): string {
           <td style="width: 40%;">
             <table width="100%" cellpadding="0" cellspacing="0">
               <tr>
-                <td style="padding: 6px 0; font-size: 12px; color: #B5A898;">Subtotal</td>
-                <td style="padding: 6px 0; font-size: 12px; color: #2A2118; text-align: right;">${formatearPrecio(data.subtotal)}</td>
+                <td class="ticket-totals-label" style="padding: 6px 0; font-size: 12px; color: #B5A898;">Subtotal</td>
+                <td class="ticket-totals-value" style="padding: 6px 0; font-size: 12px; color: #2A2118; text-align: right;">${formatearPrecio(data.subtotal)}</td>
               </tr>
               <tr>
-                <td style="padding: 6px 0; font-size: 12px; color: #B5A898;">IVA (16%)</td>
-                <td style="padding: 6px 0; font-size: 12px; color: #2A2118; text-align: right;">${formatearPrecio(data.iva)}</td>
+                <td class="ticket-totals-label" style="padding: 6px 0; font-size: 12px; color: #B5A898;">IVA (16%)</td>
+                <td class="ticket-totals-value" style="padding: 6px 0; font-size: 12px; color: #2A2118; text-align: right;">${formatearPrecio(data.iva)}</td>
               </tr>
               <tr style="border-top: 2px solid #D4C4A0;">
-                <td style="padding: 10px 0; font-size: 14px; color: #2A2118; font-weight: 500;">Total MXN</td>
-                <td style="padding: 10px 0; font-size: 16px; color: #A0845C; text-align: right; font-weight: 500;">${formatearPrecio(data.total)}</td>
+                <td class="ticket-total-final-label" style="padding: 10px 0; font-size: 14px; color: #2A2118; font-weight: 500;">Total MXN</td>
+                <td class="ticket-total-final-value" style="padding: 10px 0; font-size: 16px; color: #A0845C; text-align: right; font-weight: 500;">${formatearPrecio(data.total)}</td>
               </tr>
             </table>
           </td>
@@ -159,26 +195,26 @@ export function generarNotaDeVenta(data: TicketData): string {
     ${data.nota ? `
     <!-- Notas -->
     <div style="padding: 0 32px 20px;">
-      <p style="margin: 0 0 4px; font-size: 9px; letter-spacing: 0.2em; color: #B5A898; text-transform: uppercase;">Notas</p>
-      <p style="margin: 0; font-size: 12px; color: #2A2118;">${data.nota}</p>
+      <p class="ticket-nota-label" style="margin: 0 0 4px; font-size: 9px; letter-spacing: 0.2em; color: #B5A898; text-transform: uppercase;">Notas</p>
+      <p class="ticket-nota-text" style="margin: 0; font-size: 12px; color: #2A2118;">${data.nota}</p>
     </div>
     ` : ""}
 
     <!-- Aviso fiscal -->
     <div style="padding: 16px 32px; background-color: #EDE6D6; border-top: 1px solid #D4C4A0;">
-      <p style="margin: 0; font-size: 10px; color: #B5A898; text-align: center; line-height: 1.5;">
+      <p class="ticket-aviso" style="margin: 0; font-size: 10px; color: #B5A898; text-align: center; line-height: 1.5;">
         Este documento es una nota de venta informativa y <strong>no es un Comprobante Fiscal Digital por Internet (CFDI)</strong>.<br>
-        Si requiere factura, solicítela a arqinteriorismolv@gmail.com dentro de los 30 días posteriores a la compra.
+        Si requiere factura, solicítela a contacto@lomeihome.com dentro de los 30 días posteriores a la compra.
       </p>
     </div>
 
     <!-- Footer -->
-    <div style="padding: 20px 32px; text-align: center;">
+    <div class="ticket-footer" style="padding: 20px 32px; text-align: center;">
       <p style="margin: 0; font-size: 10px; letter-spacing: 0.15em; color: #B5A898;">
         LOMEI HOME — Arquitectura e Interiorismo
       </p>
       <p style="margin: 4px 0 0; font-size: 10px; color: #D4C4A0;">
-        Querétaro, México · lomeihome.mx
+        Querétaro, Qro., México · @lomeihome
       </p>
     </div>
 

@@ -26,6 +26,7 @@ interface Orden {
   descuento: number;
   total: number;
   nota: string | null;
+  ticket_html: string | null;
   orden_items: OrdenItem[];
 }
 
@@ -333,6 +334,92 @@ export default function OrdenDetallePage() {
           <p style={{ fontSize: 14, color: "#37352f", margin: 0, lineHeight: 1.6 }}>
             {orden.nota}
           </p>
+        </div>
+      )}
+
+      {/* Ticket */}
+      {orden.ticket_html && (
+        <div
+          style={{
+            border: "1px solid #eeece7",
+            borderRadius: 12,
+            backgroundColor: "#fff",
+            padding: 24,
+            marginBottom: 20,
+          }}
+        >
+          <h3 style={sectionTitle}>Nota de venta</h3>
+          <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+            <button
+              onClick={() => {
+                const w = window.open("", "_blank");
+                if (w) {
+                  w.document.write(orden.ticket_html!);
+                  w.document.close();
+                }
+              }}
+              style={{
+                fontFamily: "inherit",
+                fontSize: 13,
+                fontWeight: 500,
+                color: "#37352f",
+                background: "#fff",
+                border: "1px solid #e6e3db",
+                borderRadius: 8,
+                padding: "9px 18px",
+                cursor: "pointer",
+              }}
+            >
+              👁️ Ver ticket
+            </button>
+            <button
+              onClick={() => {
+                const w = window.open("", "_blank");
+                if (w) {
+                  w.document.write(orden.ticket_html!);
+                  w.document.close();
+                  setTimeout(() => w.print(), 300);
+                }
+              }}
+              style={{
+                fontFamily: "inherit",
+                fontSize: 13,
+                fontWeight: 500,
+                color: "#fff",
+                background: "#37352f",
+                border: "none",
+                borderRadius: 8,
+                padding: "9px 18px",
+                cursor: "pointer",
+              }}
+            >
+              🖨️ Imprimir
+            </button>
+            <button
+              onClick={() => {
+                const blob = new Blob([orden.ticket_html!], { type: "text/html" });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = `ticket-NV-${String(orden.numero).padStart(4, "0")}.html`;
+                a.click();
+                URL.revokeObjectURL(url);
+              }}
+              style={{
+                fontFamily: "inherit",
+                fontSize: 13,
+                fontWeight: 500,
+                color: "#37352f",
+                background: "#fff",
+                border: "1px solid #e6e3db",
+                borderRadius: 8,
+                padding: "9px 18px",
+                cursor: "pointer",
+              }}
+            >
+              💾 Descargar
+            </button>
+          </div>
         </div>
       )}
 

@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
-import { createAdminClient } from "@/lib/supabase/admin";
+import { createServiceRoleClient } from "@/lib/supabase/admin";
 
 // GET /api/alertas/categorias — Stock total por categoría
 export async function GET() {
-  const supabase = await createAdminClient();
+  const supabase = createServiceRoleClient();
 
   // Obtener todos los productos activos con su inventario
   const { data, error } = await supabase

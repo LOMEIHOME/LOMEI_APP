@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createAdminClient } from "@/lib/supabase/admin";
+import { createServiceRoleClient } from "@/lib/supabase/admin";
 
 type Params = { params: Promise<{ id: string }> };
 
 // GET /api/productos/[id]
 export async function GET(_request: NextRequest, { params }: Params) {
   const { id } = await params;
-  const supabase = await createAdminClient();
+  const supabase = createServiceRoleClient();
 
   const { data, error } = await supabase
     .from("productos")
@@ -24,7 +24,7 @@ export async function GET(_request: NextRequest, { params }: Params) {
 // PUT /api/productos/[id]
 export async function PUT(request: NextRequest, { params }: Params) {
   const { id } = await params;
-  const supabase = await createAdminClient();
+  const supabase = createServiceRoleClient();
   const body = await request.json();
 
   const { data, error } = await supabase
@@ -56,7 +56,7 @@ export async function PUT(request: NextRequest, { params }: Params) {
 // DELETE /api/productos/[id] — Soft delete
 export async function DELETE(_request: NextRequest, { params }: Params) {
   const { id } = await params;
-  const supabase = await createAdminClient();
+  const supabase = createServiceRoleClient();
 
   const { data, error } = await supabase
     .from("productos")
