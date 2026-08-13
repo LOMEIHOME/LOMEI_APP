@@ -126,7 +126,7 @@ export async function POST(request: NextRequest) {
 
   // Enviar nota de venta por email
   let emailEnviado = false;
-  if (process.env.EMAIL_USER && process.env.EMAIL_APP_PASSWORD) {
+  if (process.env.EMAIL_USER && process.env.GMAIL_CLIENT_ID && process.env.GMAIL_REFRESH_TOKEN) {
     try {
       await sendEmail({
         to: cliente_email,
