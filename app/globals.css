@@ -97,3 +97,19 @@ body::before {
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
 }
+
+/* Fade-in con CSS (sin JS) — reemplaza framer-motion en páginas estáticas */
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in-up 0.6s cubic-bezier(0.25, 0.1, 0.25, 1) both;
+}

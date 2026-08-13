@@ -60,23 +60,10 @@ export default function ServiciosPage() {
                           src={servicio.imagen}
                           alt={servicio.nombre}
                           fill
-                          className="object-cover"
+                          className={`object-cover ${servicio.id === "paisajismo" ? "object-[center_95%]" : ""}`}
                           sizes="(max-width: 768px) 100vw, 42vw"
                           loading={i < 2 ? "eager" : "lazy"}
                         />
-                        {servicio.id === "paisajismo" && (
-                          <div className="absolute bottom-4 right-4 md:bottom-6 md:right-6 bg-white/85 backdrop-blur-sm rounded-sm p-2.5">
-                            <div className="relative h-12 w-36 md:h-14 md:w-44">
-                              <Image
-                                src="/images/servicios/naturhabitat-logo.png"
-                                alt="Naturhabitat Landscape Studio"
-                                fill
-                                className="object-contain"
-                                sizes="144px"
-                              />
-                            </div>
-                          </div>
-                        )}
                       </div>
                     </FadeIn>
                   </div>

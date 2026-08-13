@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createAdminClient } from "@/lib/supabase/admin";
+import { createServiceRoleClient } from "@/lib/supabase/admin";
 
 // GET /api/clientes/[id]
 export async function GET(
@@ -7,7 +7,7 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
-  const supabase = await createAdminClient();
+  const supabase = createServiceRoleClient();
 
   const { data, error } = await supabase
     .from("clientes")
@@ -28,7 +28,7 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
-  const supabase = await createAdminClient();
+  const supabase = createServiceRoleClient();
   const body = await request.json();
 
   const { nombre, email, telefono, tipo, notas } = body;

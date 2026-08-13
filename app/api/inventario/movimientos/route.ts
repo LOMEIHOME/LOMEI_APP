@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createAdminClient } from "@/lib/supabase/admin";
+import { createServiceRoleClient } from "@/lib/supabase/admin";
 
 // GET /api/inventario/movimientos — Historial de movimientos
 export async function GET(request: NextRequest) {
-  const supabase = await createAdminClient();
+  const supabase = createServiceRoleClient();
   const { searchParams } = new URL(request.url);
 
   const productoId = searchParams.get("producto_id");

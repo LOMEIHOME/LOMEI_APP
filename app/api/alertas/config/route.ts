@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createAdminClient } from "@/lib/supabase/admin";
+import { createServiceRoleClient } from "@/lib/supabase/admin";
 
 export async function GET(request: NextRequest) {
-  const supabase = await createAdminClient();
+  const supabase = createServiceRoleClient();
 
   const { data, error } = await supabase
     .from("alertas_config")
@@ -27,7 +27,7 @@ export async function GET(request: NextRequest) {
 }
 
 export async function PUT(request: NextRequest) {
-  const supabase = await createAdminClient();
+  const supabase = createServiceRoleClient();
   const body = await request.json();
 
   const {

@@ -48,7 +48,7 @@ export default function Navbar({ forceScrolled = false }: { forceScrolled?: bool
             para el logo centrado sin tapar los links de navegación. */}
         <Link
           href="/"
-          className="hidden xl:block absolute left-1/2 -translate-x-1/2 h-12 aspect-[3/4]"
+          className="hidden 2xl:block absolute left-1/2 -translate-x-1/2 h-12 aspect-[3/4]"
         >
           <Image
             src={scrolled ? "/images/logos/icon-dark.png" : "/images/logos/icon-white.png"}

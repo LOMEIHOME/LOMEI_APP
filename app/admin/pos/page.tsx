@@ -308,14 +308,15 @@ export default function PuntoDeVentaPage() {
     }
   };
 
-  // Imprimir ticket
+  // Imprimir ticket (A1)
   const printTicket = () => {
     if (!completedOrder?.ticket_html) return;
     const w = window.open("", "_blank");
     if (w) {
       w.document.write(completedOrder.ticket_html);
       w.document.close();
-      w.onload = () => w.print();
+      // Esperar a que el contenido renderice antes de imprimir
+      setTimeout(() => w.print(), 300);
     }
   };
 

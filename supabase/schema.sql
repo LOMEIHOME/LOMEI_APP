@@ -101,6 +101,8 @@ CREATE TABLE ordenes (
   descuento       NUMERIC(12,2) NOT NULL DEFAULT 0,
   total           NUMERIC(12,2) NOT NULL DEFAULT 0,
   nota            TEXT,
+  ticket_html     TEXT,
+  cliente_id      UUID,
   usuario_id      UUID REFERENCES auth.users(id),
   creado_en       TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   editado_en      TIMESTAMPTZ NOT NULL DEFAULT NOW()
