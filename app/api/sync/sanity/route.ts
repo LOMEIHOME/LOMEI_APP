@@ -18,14 +18,14 @@ export async function POST() {
     // Obtener todos los productos de Supabase
     const { data: supabaseProducts, error: fetchError } = await supabase
       .from("productos")
-      .select("id, slug, nombre, categoria, precio_venta, descripcion, dimensiones, materiales");
+      .select("id, slug, sku, nombre, categoria, precio_venta, descripcion, dimensiones, materiales");
 
     if (fetchError) {
       return NextResponse.json({ error: fetchError.message }, { status: 500 });
     }
 
     const supabaseMap = new Map(
-      (supabaseProducts || []).map((p: { slug: string; [key: string]: unknown }) => [p.slug, p])
+      (supabaseProducts || []).filter((p: { sku: string | null }) => p.sku).map((p: { sku: string; [key: string]: unknown }) => [p.sku, p])
     );
 
     let creados = 0;
@@ -35,6 +35,7 @@ export async function POST() {
     for (const sp of sanityProducts) {
       const existing = supabaseMap.get(sp.slug) as {
         id: string;
+        slug: string;
         nombre: string;
         categoria: string;
         precio_venta: number;
@@ -46,6 +47,7 @@ export async function POST() {
       const mapped = {
         nombre: sp.name,
         slug: sp.slug,
+        sku: sp.slug,
         categoria: sp.category || "Adornos",
         precio_venta: Math.round((sp.price || 0) * 100) / 100,
         descripcion: sp.description || "",
@@ -84,6 +86,7 @@ export async function POST() {
       } else {
         // Producto existente — actualizar solo campos de catálogo
         const needsUpdate =
+          existing.slug !== mapped.slug ||
           existing.nombre !== mapped.nombre ||
           existing.categoria !== mapped.categoria ||
           existing.precio_venta !== mapped.precio_venta ||
@@ -96,6 +99,7 @@ export async function POST() {
             .from("productos")
             .update({
               nombre: mapped.nombre,
+              slug: mapped.slug,
               categoria: mapped.categoria,
               precio_venta: mapped.precio_venta,
               descripcion: mapped.descripcion,

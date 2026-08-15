@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
+import { IVA_RATE } from "@/lib/constants";
 
 /* ──────────────────────────── Types ──────────────────────────── */
 
@@ -36,6 +37,7 @@ interface CompletedOrder {
   total: number;
   ticket_html: string;
   email: string;
+  email_enviado: boolean;
 }
 
 const TIPOS_CLIENTE = [
@@ -45,8 +47,6 @@ const TIPOS_CLIENTE = [
   { value: "arquitecto", label: "Arquitecto" },
   { value: "otro", label: "Otro" },
 ];
-
-const IVA_RATE = 0.16;
 
 const formatPrice = (n: number) =>
   new Intl.NumberFormat("es-MX", {
@@ -104,11 +104,13 @@ export default function PuntoDeVentaPage() {
   const [clienteTel, setClienteTel] = useState("");
   const [clienteTipo, setClienteTipo] = useState("menudeo");
   const [nota, setNota] = useState("");
+  const [enviarTicket, setEnviarTicket] = useState(false);
 
   // Checkout
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
   const [completedOrder, setCompletedOrder] = useState<CompletedOrder | null>(null);
+  const [showConfirm, setShowConfirm] = useState(false);
 
   // Product search with debounce
   useEffect(() => {
@@ -160,6 +162,7 @@ export default function PuntoDeVentaPage() {
 
   // Add product to cart
   const addToCart = useCallback((producto: ProductoResult) => {
+    if (producto.stock <= 0) return;
     setCart((prev) => {
       const existing = prev.find((i) => i.producto_id === producto.id);
       if (existing) {
@@ -219,7 +222,7 @@ export default function PuntoDeVentaPage() {
   const subtotal = Math.round((total / (1 + IVA_RATE)) * 100) / 100;
   const iva = Math.round((total - subtotal) * 100) / 100;
 
-  const canSubmit = cart.length > 0 && clienteNombre.trim() && clienteEmail.trim() && !isSubmitting;
+  const canSubmit = cart.length > 0 && clienteNombre.trim() && (!enviarTicket || clienteEmail.trim()) && !isSubmitting;
 
   // Checkout
   const handleCheckout = async () => {
@@ -261,10 +264,11 @@ export default function PuntoDeVentaPage() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         cliente_nombre: clienteNombre,
-        cliente_email: clienteEmail,
+        cliente_email: clienteEmail || null,
         cliente_tel: clienteTel || null,
         cliente_id: clienteId,
         nota: nota || null,
+        enviar_ticket: enviarTicket,
         items,
       }),
     });
@@ -282,6 +286,7 @@ export default function PuntoDeVentaPage() {
       total: json.data.total,
       ticket_html: json.data.ticket_html,
       email: clienteEmail,
+      email_enviado: json.data.email_enviado ?? false,
     });
     setIsSubmitting(false);
   };
@@ -294,6 +299,7 @@ export default function PuntoDeVentaPage() {
     setClienteTel("");
     setClienteTipo("menudeo");
     setNota("");
+    setEnviarTicket(false);
     setCompletedOrder(null);
     setSubmitError("");
   };
@@ -389,15 +395,17 @@ export default function PuntoDeVentaPage() {
             </p>
             <div
               style={{
-                background: "#f8f7f4",
+                background: completedOrder.email_enviado ? "#eaf3ec" : "#f8f7f4",
                 borderRadius: 8,
                 padding: "12px 16px",
                 fontSize: 13,
-                color: "#6b6760",
+                color: completedOrder.email_enviado ? "#16794a" : "#6b6760",
                 marginBottom: 28,
               }}
             >
-              Ticket enviado a <strong>{completedOrder.email}</strong>
+              {completedOrder.email_enviado
+                ? <>Ticket enviado a <strong>{completedOrder.email}</strong></>
+                : "Venta registrada correctamente"}
             </div>
             <div style={{ display: "flex", gap: 10, justifyContent: "center", flexWrap: "wrap" }}>
               <button
@@ -533,6 +541,11 @@ export default function PuntoDeVentaPage() {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onFocus={() => searchResults.length > 0 && setShowDropdown(true)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && searchResults.length > 0 && searchResults[0].stock > 0) {
+                      addToCart(searchResults[0]);
+                    }
+                  }}
                   placeholder="Buscar por nombre o SKU..."
                   style={{
                     ...inputStyle,
@@ -592,16 +605,18 @@ export default function PuntoDeVentaPage() {
                         }}
                       >
                         <div>
-                          <div style={{ fontSize: 13.5, fontWeight: 500, color: "#37352f" }}>
-                            {p.nombre}
-                          </div>
-                          <div style={{ fontSize: 11.5, color: "#9b968c", marginTop: 1 }}>
-                            {p.categoria}
+                          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                            <span style={{ fontSize: 13.5, fontWeight: 500, color: "#37352f" }}>
+                              {p.nombre}
+                            </span>
                             {p.sku && (
-                              <span style={{ fontFamily: "monospace", marginLeft: 6 }}>
+                              <span style={{ fontSize: 11, fontFamily: "monospace", color: "#6b6760", background: "#f4f2ec", borderRadius: 4, padding: "1px 6px" }}>
                                 {p.sku}
                               </span>
                             )}
+                          </div>
+                          <div style={{ fontSize: 11.5, color: "#9b968c", marginTop: 1 }}>
+                            {p.categoria}
                           </div>
                         </div>
                         <div style={{ textAlign: "right", flexShrink: 0 }}>
@@ -635,10 +650,27 @@ export default function PuntoDeVentaPage() {
               overflow: "hidden",
             }}
           >
-            <div style={{ padding: "16px 20px", borderBottom: "1px solid #eeece7" }}>
+            <div style={{ padding: "16px 20px", borderBottom: "1px solid #eeece7", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <div style={sectionHeader as React.CSSProperties}>
                 Carrito ({cart.length} {cart.length === 1 ? "producto" : "productos"})
               </div>
+              {cart.length > 0 && (
+                <button
+                  onClick={() => setCart([])}
+                  style={{
+                    fontFamily: "inherit",
+                    fontSize: 11,
+                    fontWeight: 500,
+                    color: "#c2410c",
+                    background: "none",
+                    border: "none",
+                    cursor: "pointer",
+                    padding: "2px 6px",
+                  }}
+                >
+                  Vaciar
+                </button>
+              )}
             </div>
 
             {cart.length === 0 ? (
@@ -889,11 +921,10 @@ export default function PuntoDeVentaPage() {
               </div>
               <div>
                 <div style={{ fontSize: 12, color: "#6b6760", marginBottom: 5 }}>
-                  Email <span style={{ color: "#c2410c" }}>*</span>
+                  Email {enviarTicket && <span style={{ color: "#c2410c" }}>*</span>}
                 </div>
                 <input
                   type="email"
-                  required
                   value={clienteEmail}
                   onChange={(e) => setClienteEmail(e.target.value)}
                   placeholder="cliente@email.com"
@@ -939,6 +970,27 @@ export default function PuntoDeVentaPage() {
                   placeholder="Observaciones de la venta..."
                   style={inputStyle}
                 />
+              </div>
+              <div style={{ gridColumn: "span 2" }}>
+                <label
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 8,
+                    fontSize: 13,
+                    color: "#6b6760",
+                    cursor: "pointer",
+                    userSelect: "none",
+                  }}
+                >
+                  <input
+                    type="checkbox"
+                    checked={enviarTicket}
+                    onChange={(e) => setEnviarTicket(e.target.checked)}
+                    style={{ width: 16, height: 16, accentColor: "#37352f", cursor: "pointer" }}
+                  />
+                  Enviar ticket por correo al cliente
+                </label>
               </div>
             </div>
           </div>
@@ -1086,7 +1138,7 @@ export default function PuntoDeVentaPage() {
           {/* Checkout button */}
           <div style={{ padding: "0 20px 20px" }}>
             <button
-              onClick={handleCheckout}
+              onClick={() => setShowConfirm(true)}
               disabled={!canSubmit}
               style={{
                 width: "100%",
@@ -1102,11 +1154,104 @@ export default function PuntoDeVentaPage() {
                 transition: "background 0.15s",
               }}
             >
-              {isSubmitting ? "Procesando..." : `🛒 Cobrar ${cart.length > 0 ? formatPrice(total) : ""}`}
+              {`🛒 Cobrar ${cart.length > 0 ? formatPrice(total) : ""}`}
             </button>
           </div>
         </div>
       </div>
+
+      {/* Modal de confirmación */}
+      {showConfirm && (
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: "rgba(0,0,0,0.35)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 100,
+          }}
+          onClick={() => !isSubmitting && setShowConfirm(false)}
+        >
+          <div
+            style={{
+              background: "#fff",
+              borderRadius: 16,
+              padding: "32px 36px",
+              maxWidth: 400,
+              width: "90%",
+              textAlign: "center",
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div style={{ fontSize: 36, marginBottom: 12 }}>🛒</div>
+            <h3 style={{ fontSize: 18, fontWeight: 700, color: "#37352f", margin: "0 0 8px" }}>
+              Confirmar venta
+            </h3>
+            <p style={{ fontSize: 14, color: "#6b6760", margin: "0 0 4px" }}>
+              Cliente: <strong>{clienteNombre}</strong>
+            </p>
+            <p style={{ fontSize: 24, fontWeight: 700, color: "#37352f", margin: "12px 0 20px", fontVariantNumeric: "tabular-nums" }}>
+              {formatPrice(total)}
+            </p>
+            <p style={{ fontSize: 12, color: "#9b968c", margin: "0 0 20px" }}>
+              {cart.length} {cart.length === 1 ? "producto" : "productos"}
+            </p>
+
+            {submitError && (
+              <div style={{ padding: "8px 12px", marginBottom: 16, borderRadius: 8, background: "#fdf3ec", fontSize: 12.5, color: "#c2410c" }}>
+                {submitError}
+              </div>
+            )}
+
+            <div style={{ display: "flex", gap: 10 }}>
+              <button
+                onClick={() => { setShowConfirm(false); setSubmitError(""); }}
+                disabled={isSubmitting}
+                style={{
+                  flex: 1,
+                  fontFamily: "inherit",
+                  fontSize: 14,
+                  fontWeight: 500,
+                  color: "#37352f",
+                  background: "#fff",
+                  border: "1px solid #e6e3db",
+                  borderRadius: 8,
+                  padding: "11px 0",
+                  cursor: "pointer",
+                }}
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={async () => {
+                  await handleCheckout();
+                  if (!submitError) setShowConfirm(false);
+                }}
+                disabled={isSubmitting}
+                style={{
+                  flex: 1,
+                  fontFamily: "inherit",
+                  fontSize: 14,
+                  fontWeight: 600,
+                  color: "#fff",
+                  background: isSubmitting ? "#c4bfb6" : "#37352f",
+                  border: "none",
+                  borderRadius: 8,
+                  padding: "11px 0",
+                  cursor: isSubmitting ? "not-allowed" : "pointer",
+                }}
+              >
+                {isSubmitting ? "Procesando..." : "Confirmar"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <style>{`
         @media (max-width: 820px) {

@@ -1,9 +1,54 @@
+"use client";
+
+import { useState } from "react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import SectionTag from "@/components/ui/SectionTag";
 import FadeIn from "@/components/sections/FadeIn";
 
 export default function ContactoPage() {
+  const [nombre, setNombre] = useState("");
+  const [email, setEmail] = useState("");
+  const [telefono, setTelefono] = useState("");
+  const [mensaje, setMensaje] = useState("");
+  const [sending, setSending] = useState(false);
+  const [sent, setSent] = useState(false);
+  const [error, setError] = useState("");
+
+  const canSubmit = nombre.trim() && email.trim() && mensaje.trim() && !sending;
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!canSubmit) return;
+
+    setSending(true);
+    setError("");
+
+    try {
+      const res = await fetch("/api/contacto", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          nombre: nombre.trim(),
+          email: email.trim(),
+          telefono: telefono.trim() || null,
+          mensaje: mensaje.trim(),
+        }),
+      });
+
+      if (!res.ok) {
+        const json = await res.json();
+        throw new Error(json.error || "Error al enviar");
+      }
+
+      setSent(true);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Error al enviar el mensaje");
+    } finally {
+      setSending(false);
+    }
+  };
+
   return (
     <>
       <Navbar forceScrolled />
@@ -80,40 +125,86 @@ export default function ContactoPage() {
             </div>
           </FadeIn>
 
-          {/* Placeholder para formulario */}
+          {/* Formulario */}
           <FadeIn delay={0.15}>
             <div className="bg-[var(--color-linen)] rounded-sm p-6 md:p-10">
               <h2 className="font-serif text-xl md:text-2xl tracking-wider text-[var(--color-dark)] mb-6">
                 Envíanos un mensaje
               </h2>
-              <form className="flex flex-col gap-4">
-                <input
-                  type="text"
-                  placeholder="Nombre"
-                  className="w-full px-4 py-3 bg-[var(--color-white)] border border-[var(--color-sand)]/50 rounded-sm text-sm text-[var(--color-dark)] placeholder:text-[var(--color-warm-gray)] focus:outline-none focus:border-[var(--color-camel)]/60 transition-colors"
-                />
-                <input
-                  type="email"
-                  placeholder="Email"
-                  className="w-full px-4 py-3 bg-[var(--color-white)] border border-[var(--color-sand)]/50 rounded-sm text-sm text-[var(--color-dark)] placeholder:text-[var(--color-warm-gray)] focus:outline-none focus:border-[var(--color-camel)]/60 transition-colors"
-                />
-                <input
-                  type="tel"
-                  placeholder="Teléfono"
-                  className="w-full px-4 py-3 bg-[var(--color-white)] border border-[var(--color-sand)]/50 rounded-sm text-sm text-[var(--color-dark)] placeholder:text-[var(--color-warm-gray)] focus:outline-none focus:border-[var(--color-camel)]/60 transition-colors"
-                />
-                <textarea
-                  placeholder="Cuéntanos sobre tu proyecto"
-                  rows={4}
-                  className="w-full px-4 py-3 bg-[var(--color-white)] border border-[var(--color-sand)]/50 rounded-sm text-sm text-[var(--color-dark)] placeholder:text-[var(--color-warm-gray)] focus:outline-none focus:border-[var(--color-camel)]/60 transition-colors resize-none"
-                />
-                <button
-                  type="submit"
-                  className="w-full py-3.5 bg-[var(--color-dark)] text-[var(--color-white)] text-[11px] tracking-[0.2em] uppercase rounded-sm hover:bg-[var(--color-camel)] transition-colors duration-300 cursor-pointer mt-2"
-                >
-                  Enviar mensaje
-                </button>
-              </form>
+
+              {sent ? (
+                <div className="text-center py-8">
+                  <p className="text-2xl mb-3">✓</p>
+                  <p className="text-base text-[var(--color-dark)] font-medium mb-2">
+                    Mensaje enviado
+                  </p>
+                  <p className="text-sm text-[var(--color-warm-gray)]">
+                    Te responderemos lo antes posible.
+                  </p>
+                  <button
+                    onClick={() => {
+                      setSent(false);
+                      setNombre("");
+                      setEmail("");
+                      setTelefono("");
+                      setMensaje("");
+                    }}
+                    className="mt-6 text-[11px] tracking-[0.2em] uppercase text-[var(--color-camel)] border-b border-[var(--color-camel)]/40 pb-1 hover:border-[var(--color-camel)] transition-colors duration-400 cursor-pointer"
+                  >
+                    Enviar otro mensaje
+                  </button>
+                </div>
+              ) : (
+                <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+                  <input
+                    type="text"
+                    placeholder="Nombre *"
+                    required
+                    value={nombre}
+                    onChange={(e) => setNombre(e.target.value)}
+                    className="w-full px-4 py-3 bg-[var(--color-white)] border border-[var(--color-sand)]/50 rounded-sm text-sm text-[var(--color-dark)] placeholder:text-[var(--color-warm-gray)] focus:outline-none focus:border-[var(--color-camel)]/60 transition-colors"
+                  />
+                  <input
+                    type="email"
+                    placeholder="Email *"
+                    required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="w-full px-4 py-3 bg-[var(--color-white)] border border-[var(--color-sand)]/50 rounded-sm text-sm text-[var(--color-dark)] placeholder:text-[var(--color-warm-gray)] focus:outline-none focus:border-[var(--color-camel)]/60 transition-colors"
+                  />
+                  <input
+                    type="tel"
+                    placeholder="Teléfono"
+                    value={telefono}
+                    onChange={(e) => setTelefono(e.target.value)}
+                    className="w-full px-4 py-3 bg-[var(--color-white)] border border-[var(--color-sand)]/50 rounded-sm text-sm text-[var(--color-dark)] placeholder:text-[var(--color-warm-gray)] focus:outline-none focus:border-[var(--color-camel)]/60 transition-colors"
+                  />
+                  <textarea
+                    placeholder="Cuéntanos sobre tu proyecto *"
+                    rows={4}
+                    required
+                    value={mensaje}
+                    onChange={(e) => setMensaje(e.target.value)}
+                    className="w-full px-4 py-3 bg-[var(--color-white)] border border-[var(--color-sand)]/50 rounded-sm text-sm text-[var(--color-dark)] placeholder:text-[var(--color-warm-gray)] focus:outline-none focus:border-[var(--color-camel)]/60 transition-colors resize-none"
+                  />
+
+                  {error && (
+                    <p className="text-sm text-red-600">{error}</p>
+                  )}
+
+                  <button
+                    type="submit"
+                    disabled={!canSubmit}
+                    className="w-full py-3.5 text-[var(--color-white)] text-[11px] tracking-[0.2em] uppercase rounded-sm transition-colors duration-300 mt-2"
+                    style={{
+                      backgroundColor: canSubmit ? "var(--color-dark)" : "var(--color-warm-gray)",
+                      cursor: canSubmit ? "pointer" : "not-allowed",
+                    }}
+                  >
+                    {sending ? "Enviando..." : "Enviar mensaje"}
+                  </button>
+                </form>
+              )}
             </div>
           </FadeIn>
         </div>
@@ -136,7 +227,7 @@ export default function ContactoPage() {
               />
             </div>
             <a
-              href="https://maps.app.goo.gl/6bmwrHxR4wjyNE8S8"
+              href="https://share.google/B9fBb1NxDTQ24VloD"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-block mt-4 text-[11px] tracking-[0.2em] uppercase text-[var(--color-camel)] border-b border-[var(--color-camel)]/40 pb-1 hover:border-[var(--color-camel)] transition-colors duration-400"

@@ -47,7 +47,7 @@ export default function SplashScreen() {
           key="splash"
           initial={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
+          transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
           className="fixed inset-0 z-50 flex flex-col items-center justify-center"
         >
           {/* Foto de fondo — showroom */}

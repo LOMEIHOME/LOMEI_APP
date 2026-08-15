@@ -131,13 +131,13 @@ export default function CatalogoFilterGrid({ productos, categories }: Props) {
       )}
 
       {/* Grid de productos — 1 col móvil, 2 tablet, 3 desktop */}
-      <AnimatePresence mode="popLayout">
+      <AnimatePresence mode="wait">
         <motion.div
           key={active + query}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.25 }}
+          transition={{ duration: 0.15 }}
           className="grid grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6"
         >
           {filtered.map((p, i) => (

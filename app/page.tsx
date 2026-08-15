@@ -16,7 +16,7 @@ const CatalogPreview = dynamic(
   () => import("@/components/sections/CatalogPreview")
 );
 
-export const revalidate = 60;
+export const revalidate = 3600;
 
 export default async function HomePage() {
   const [allProductos, allProyectos] = await Promise.all([
@@ -24,12 +24,14 @@ export default async function HomePage() {
     getAllProyectos(),
   ]);
 
-  // Priorizar productos con imagen real (no placeholder)
-  const productos = [...allProductos].sort((a, b) => {
-    const aHasImg = a.images[0] && !a.images[0].includes("placeholder") ? 1 : 0;
-    const bHasImg = b.images[0] && !b.images[0].includes("placeholder") ? 1 : 0;
-    return bHasImg - aHasImg;
-  });
+  // Priorizar productos con imagen real, tomar solo 4 para el preview
+  const productos = [...allProductos]
+    .sort((a, b) => {
+      const aHasImg = a.images[0] && !a.images[0].includes("placeholder") ? 1 : 0;
+      const bHasImg = b.images[0] && !b.images[0].includes("placeholder") ? 1 : 0;
+      return bHasImg - aHasImg;
+    })
+    .slice(0, 4);
 
   // Proyectos destacados para el carrusel (featured primero, máx 5)
   const featuredProyectos = allProyectos

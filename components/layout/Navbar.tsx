@@ -19,10 +19,14 @@ export default function Navbar({ forceScrolled = false }: { forceScrolled?: bool
   const pathname = usePathname();
 
   useEffect(() => {
-    const onScroll = () => setScrolled(forceScrolled || window.scrollY > 50);
+    if (forceScrolled) return;
+    const onScroll = () => {
+      const shouldBeScrolled = window.scrollY > 50;
+      setScrolled((prev) => (prev === shouldBeScrolled ? prev : shouldBeScrolled));
+    };
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
-  }, []);
+  }, [forceScrolled]);
 
   return (
     <nav

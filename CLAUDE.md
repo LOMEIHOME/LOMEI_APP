@@ -314,7 +314,12 @@ LOMEI_APP/
 │   └── migrations/             ← Migraciones SQL
 ├── scripts/
 │   ├── seed-supabase.mjs       ← Seed de productos en Supabase
-│   └── seed-proyectos-sanity.mjs ← Seed de 16 proyectos en Sanity
+│   ├── seed-velas.mjs          ← Seed de 44 velas Yolt en Sanity + Supabase
+│   ├── seed-aromas.mjs         ← Seed de 27 aromas Mandaland en Sanity + Supabase
+│   ├── seed-proyectos-sanity.mjs ← Seed de 16 proyectos en Sanity
+│   ├── update-cojines-stock.mjs ← Actualización masiva de stock de cojines
+│   ├── backup-db.mjs           ← Respaldo de BD a JSON (productos, inventario, clientes)
+│   └── restore-db.mjs         ← Restaurar BD desde respaldo JSON
 ├── public/images/              ← Logos, proyectos (16 carpetas), showroom
 ├── CLAUDE.md                   ← Este archivo
 └── package.json
@@ -379,6 +384,10 @@ font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 | Capelos | 🔔 |
 | Relojes | ⏳ |
 | Florero | 🌸 |
+| Macetas | 🪴 |
+| Plantas Artificiales | 🌿 |
+| Velas | 🕯️ |
+| Aromas | 🌿 |
 
 ### Páginas del admin
 
@@ -428,7 +437,7 @@ Objetivo: sitio público funcional con identidad de LOMEI HOME
 - [x] Integración con Sanity CMS (schemas + queries + studio)
 - [x] Logo oficial integrado (Navbar, Footer, Hero)
 - [x] 16 proyectos con ~80 imágenes en Sanity CDN
-- [x] ~135 productos en Sanity CMS
+- [x] ~248 productos en Sanity CMS (decorativos, velas, aromas)
 - [x] Deploy en Vercel + dominio lomeihome.com
 - [x] Responsive design en todas las páginas (max-w-[85rem] estándar)
 
@@ -438,8 +447,16 @@ Objetivo: sitio público funcional con identidad de LOMEI HOME
 - [x] Punto de Venta (POS) — búsqueda, carrito, registro cliente, checkout, ticket por email
 - [x] Dashboard con KPIs, top 5 vendidos, alertas de reposición
 - [x] Sistema de alertas de stock bajo con configuración
-- [x] Seed de ~135 productos en Supabase desde catálogo Sanity
+- [x] Seed de ~248 productos en Supabase (decorativos + 44 velas Yolt + 27 aromas Mandaland)
 - [x] Tabla de clientes con tipos (menudeo, mayorista, diseñador, arquitecto)
+- [x] POS: validación de stock en backend, modal de confirmación, email opcional, vaciar carrito
+- [x] POS: validación de precios contra BD (anti-manipulación), HTML escapado en tickets
+- [x] Inventario: columna "Valor" (precio × stock), colores de stock simplificados
+- [x] Contacto: formulario funcional con envío de email
+- [x] Nosotros: sección de colaboraciones (Yolt Candle Studio + Naturhabitat)
+- [x] Scripts de respaldo y restauración de BD
+- [x] IVA_RATE centralizado en lib/constants.ts
+- [x] Badges de productos: "Nuevo", "Disponible", "Yolt", "Lomei & Yolt"
 
 ### Fase 2 — Tienda en línea (pendiente, $7,500 MXN)
 - [ ] Carrito de compras
@@ -480,4 +497,4 @@ Mantenimiento: Básico $400 · Recomendado $700 · Premium $1,000 (mensual, apar
 
 ---
 
-*Última actualización: 29 junio 2026 — Luis Fonseca / LOMEI HOME*
+*Última actualización: 15 agosto 2026 — Luis Fonseca / LOMEI HOME*
