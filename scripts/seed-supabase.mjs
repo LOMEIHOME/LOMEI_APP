@@ -1,7 +1,8 @@
 /**
  * Seed Supabase con productos desde Sanity CMS
- * Inserta cada producto en la tabla `productos` y crea un registro
- * en `inventario` con cantidad = 1
+ * 1. Limpia tablas: movimientos, inventario, orden_items, alertas_log, productos
+ * 2. Inserta cada producto con SKU = slug de Sanity
+ * 3. Crea inventario con cantidad = 1
  *
  * Uso: node scripts/seed-supabase.mjs
  */
@@ -44,7 +45,38 @@ async function supabaseRequest(path, method, body) {
   return text ? JSON.parse(text) : null;
 }
 
+async function supabaseDelete(table) {
+  // Eliminar todos los registros usando filtro que matchea todo
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}?id=neq.00000000-0000-0000-0000-000000000000`, {
+    method: "DELETE",
+    headers: {
+      apikey: SUPABASE_KEY,
+      Authorization: `Bearer ${SUPABASE_KEY}`,
+      "Content-Type": "application/json",
+      Prefer: "return=minimal",
+    },
+  });
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`Error limpiando ${table}: ${res.status} — ${text}`);
+  }
+}
+
 async function main() {
+  // ── Paso 1: Limpiar tablas (orden importa por FK) ──
+  console.log("Limpiando base de datos...");
+  const tablesToClean = ["alertas_log", "movimientos", "orden_items", "inventario", "ordenes", "productos"];
+  for (const table of tablesToClean) {
+    try {
+      await supabaseDelete(table);
+      console.log(`  ✓ ${table} limpia`);
+    } catch (err) {
+      console.log(`  ⚠ ${table}: ${err.message}`);
+    }
+  }
+  console.log("");
+
+  // ── Paso 2: Obtener productos de Sanity ──
   console.log("Obteniendo productos de Sanity...");
   const sanityProducts = await fetchSanityProducts();
   console.log(`Encontrados: ${sanityProducts.length} productos\n`);
@@ -62,10 +94,11 @@ async function main() {
     }
 
     try {
-      // Insertar producto
+      // Insertar producto con SKU = slug de Sanity
       const [producto] = await supabaseRequest("productos", "POST", {
         nombre: p.name,
         slug,
+        sku: slug,
         categoria: p.category || "Adornos",
         precio_venta: Math.round((p.price || 0) * 100) / 100,
         descripcion: p.description || "",
@@ -82,7 +115,7 @@ async function main() {
         stock_minimo: 2,
       });
 
-      console.log(`✓ ${p.name}`);
+      console.log(`✓ ${p.name} (SKU: ${slug})`);
       created++;
     } catch (err) {
       if (err.message.includes("duplicate") || err.message.includes("23505")) {

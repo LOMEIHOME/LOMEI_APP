@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServiceRoleClient } from "@/lib/supabase/admin";
 import { generarNotaDeVenta, calcularTotales } from "@/lib/ticket";
-
-const IVA_RATE = 0.16;
+import { IVA_RATE } from "@/lib/constants";
 
 export async function GET(
   request: NextRequest,

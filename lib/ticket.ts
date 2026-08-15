@@ -1,6 +1,8 @@
 // Generador de nota de venta según estándares mexicanos
 // No es CFDI — es una nota de venta informativa
 
+import { IVA_RATE } from "@/lib/constants";
+
 interface TicketItem {
   nombre: string;
   cantidad: number;
@@ -21,7 +23,14 @@ interface TicketData {
   nota?: string;
 }
 
-const IVA_RATE = 0.16;
+function escapeHtml(text: string): string {
+  return text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
 
 export function calcularTotales(items: TicketItem[]) {
   // El precio ya incluye IVA — calcular hacia atrás
@@ -45,7 +54,7 @@ export function generarNotaDeVenta(data: TicketData): string {
       (item, i) => `
     <tr>
       <td style="padding: 10px 8px; border-bottom: 1px solid #EDE6D6; font-size: 13px; color: #2A2118;">${i + 1}</td>
-      <td style="padding: 10px 8px; border-bottom: 1px solid #EDE6D6; font-size: 13px; color: #2A2118;">${item.nombre}</td>
+      <td style="padding: 10px 8px; border-bottom: 1px solid #EDE6D6; font-size: 13px; color: #2A2118;">${escapeHtml(item.nombre)}</td>
       <td style="padding: 10px 8px; border-bottom: 1px solid #EDE6D6; font-size: 13px; color: #2A2118; text-align: center;">${item.cantidad}</td>
       <td style="padding: 10px 8px; border-bottom: 1px solid #EDE6D6; font-size: 13px; color: #2A2118; text-align: right;">${formatearPrecio(item.precio_unitario)}</td>
       <td style="padding: 10px 8px; border-bottom: 1px solid #EDE6D6; font-size: 13px; color: #2A2118; text-align: right; font-weight: 500;">${formatearPrecio(item.subtotal)}</td>
@@ -62,8 +71,8 @@ export function generarNotaDeVenta(data: TicketData): string {
   <style>
     @media print {
       @page {
-        size: A1 portrait;
-        margin: 40mm;
+        size: A4 portrait;
+        margin: 15mm;
       }
       body {
         background-color: #fff !important;
@@ -73,25 +82,7 @@ export function generarNotaDeVenta(data: TicketData): string {
       .ticket-container {
         max-width: 100% !important;
         border: none !important;
-        transform-origin: top center;
       }
-      .ticket-container h1 { font-size: 48px !important; }
-      .ticket-container h2 { font-size: 36px !important; }
-      .ticket-header-sub { font-size: 18px !important; }
-      .ticket-section-label { font-size: 18px !important; }
-      .ticket-emisor-name, .ticket-cliente-name { font-size: 28px !important; }
-      .ticket-emisor-detail, .ticket-cliente-detail { font-size: 24px !important; }
-      .ticket-folio { font-size: 26px !important; }
-      .ticket-table th { font-size: 20px !important; padding: 18px 16px !important; }
-      .ticket-table td { font-size: 28px !important; padding: 22px 16px !important; }
-      .ticket-totals-label { font-size: 26px !important; }
-      .ticket-totals-value { font-size: 26px !important; }
-      .ticket-total-final-label { font-size: 32px !important; }
-      .ticket-total-final-value { font-size: 36px !important; }
-      .ticket-aviso { font-size: 20px !important; }
-      .ticket-footer p { font-size: 20px !important; }
-      .ticket-nota-label { font-size: 18px !important; }
-      .ticket-nota-text { font-size: 24px !important; }
       .no-print { display: none !important; }
     }
   </style>
@@ -140,9 +131,9 @@ export function generarNotaDeVenta(data: TicketData): string {
           </td>
           <td style="vertical-align: top; width: 50%; text-align: right;">
             <p class="ticket-section-label" style="margin: 0 0 2px; font-size: 9px; letter-spacing: 0.2em; color: #B5A898; text-transform: uppercase;">Cliente</p>
-            <p class="ticket-cliente-name" style="margin: 0; font-size: 12px; color: #2A2118; font-weight: 500;">${data.cliente_nombre}</p>
-            <p class="ticket-cliente-detail" style="margin: 2px 0 0; font-size: 11px; color: #B5A898;">${data.cliente_email}</p>
-            ${data.cliente_tel ? `<p class="ticket-cliente-detail" style="margin: 2px 0 0; font-size: 11px; color: #B5A898;">Tel: ${data.cliente_tel}</p>` : ""}
+            <p class="ticket-cliente-name" style="margin: 0; font-size: 12px; color: #2A2118; font-weight: 500;">${escapeHtml(data.cliente_nombre)}</p>
+            <p class="ticket-cliente-detail" style="margin: 2px 0 0; font-size: 11px; color: #B5A898;">${escapeHtml(data.cliente_email || "")}</p>
+            ${data.cliente_tel ? `<p class="ticket-cliente-detail" style="margin: 2px 0 0; font-size: 11px; color: #B5A898;">Tel: ${escapeHtml(data.cliente_tel)}</p>` : ""}
             <p class="ticket-cliente-detail" style="margin: 6px 0 0; font-size: 11px; color: #B5A898;">Fecha: ${data.fecha}</p>
           </td>
         </tr>
@@ -196,7 +187,7 @@ export function generarNotaDeVenta(data: TicketData): string {
     <!-- Notas -->
     <div style="padding: 0 32px 20px;">
       <p class="ticket-nota-label" style="margin: 0 0 4px; font-size: 9px; letter-spacing: 0.2em; color: #B5A898; text-transform: uppercase;">Notas</p>
-      <p class="ticket-nota-text" style="margin: 0; font-size: 12px; color: #2A2118;">${data.nota}</p>
+      <p class="ticket-nota-text" style="margin: 0; font-size: 12px; color: #2A2118;">${escapeHtml(data.nota || "")}</p>
     </div>
     ` : ""}
 

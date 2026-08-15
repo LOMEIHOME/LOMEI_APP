@@ -5,21 +5,12 @@ import { getCategoryEmoji, CATEGORY_EMOJI } from "@/lib/constants";
 
 const CATEGORIAS = ["Todos", ...Object.keys(CATEGORY_EMOJI)];
 
-type StockStatus = "en_stock" | "bajo" | "critico" | "agotado";
-
-function getStockStatus(cantidad: number, stockMinimo: number): StockStatus {
-  if (cantidad === 0) return "agotado";
-  if (cantidad <= Math.floor(stockMinimo * 0.5)) return "critico";
-  if (cantidad <= stockMinimo) return "bajo";
-  return "en_stock";
+function getStockColor(cantidad: number): string {
+  if (cantidad === 0) return "#c2410c";
+  if (cantidad === 1) return "#b7791f";
+  return "#37352f";
 }
 
-const STATUS_CONFIG: Record<StockStatus, { label: string; bg: string; color: string }> = {
-  en_stock: { label: "En stock", bg: "#eaf3ec", color: "#16794a" },
-  bajo: { label: "Bajo", bg: "#fbf3e0", color: "#b7791f" },
-  critico: { label: "Crítico", bg: "#fdf3ec", color: "#c2410c" },
-  agotado: { label: "Agotado", bg: "#f1efe9", color: "#8a857c" },
-};
 
 interface InventarioItem {
   id: string;
@@ -70,9 +61,12 @@ export default function InventarioPage() {
     fetchData();
   }, [fetchData]);
 
-  const lowStockCount = items.filter(
-    (item) => item.cantidad > 0 && item.cantidad <= item.stock_minimo
-  ).length;
+  const agotadosCount = items.filter((item) => item.cantidad === 0).length;
+
+  const totalInventoryValue = items.reduce(
+    (sum, item) => sum + item.cantidad * item.productos.precio_venta,
+    0
+  );
 
   const formatPrice = (price: number) =>
     new Intl.NumberFormat("es-MX", {
@@ -90,7 +84,7 @@ export default function InventarioPage() {
             📦 Inventario
           </h1>
           <p style={{ fontSize: 14, color: "#8b867c", marginTop: 4 }}>
-            {items.length} productos · {lowStockCount} con stock bajo
+            {items.length} productos{agotadosCount > 0 ? ` · ${agotadosCount} agotados` : ""} · {formatPrice(totalInventoryValue)} en inventario
           </p>
         </div>
         <button
@@ -299,7 +293,7 @@ export default function InventarioPage() {
                   </th>
                   <th
                     style={{
-                      textAlign: "left",
+                      textAlign: "right",
                       padding: "10px 16px",
                       fontSize: 11,
                       fontWeight: 600,
@@ -308,23 +302,14 @@ export default function InventarioPage() {
                       color: "#9b968c",
                     }}
                   >
-                    Estado
+                    Valor
                   </th>
                 </tr>
               </thead>
               <tbody>
                 {items.map((item) => {
-                  const status = getStockStatus(item.cantidad, item.stock_minimo);
-                  const statusConf = STATUS_CONFIG[status];
                   const emoji = getCategoryEmoji(item.productos.categoria);
-                  const stockColor =
-                    status === "en_stock"
-                      ? "#16794a"
-                      : status === "bajo"
-                      ? "#b7791f"
-                      : status === "critico"
-                      ? "#c2410c"
-                      : "#8a857c";
+                  const stockColor = getStockColor(item.cantidad);
 
                   return (
                     <tr
@@ -397,9 +382,6 @@ export default function InventarioPage() {
                         <span style={{ fontSize: 14, fontWeight: 600, color: stockColor }}>
                           {item.cantidad}
                         </span>
-                        <span style={{ fontSize: 12, color: "#9b968c" }}>
-                          /{item.stock_minimo}
-                        </span>
                       </td>
 
                       {/* Precio */}
@@ -407,22 +389,9 @@ export default function InventarioPage() {
                         {formatPrice(item.productos.precio_venta)}
                       </td>
 
-                      {/* Estado */}
-                      <td style={{ padding: "10px 16px" }}>
-                        <span
-                          style={{
-                            display: "inline-block",
-                            padding: "4px 10px",
-                            borderRadius: 999,
-                            fontSize: 12,
-                            fontWeight: 500,
-                            backgroundColor: statusConf.bg,
-                            color: statusConf.color,
-                            lineHeight: 1,
-                          }}
-                        >
-                          {statusConf.label}
-                        </span>
+                      {/* Valor (precio × stock) */}
+                      <td style={{ padding: "10px 16px", fontSize: 14, fontWeight: 500, color: "#37352f", textAlign: "right", fontVariantNumeric: "tabular-nums" }}>
+                        {item.cantidad > 0 ? formatPrice(item.cantidad * item.productos.precio_venta) : <span style={{ color: "#9b968c" }}>—</span>}
                       </td>
                     </tr>
                   );

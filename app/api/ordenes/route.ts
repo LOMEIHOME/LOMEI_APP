@@ -3,31 +3,100 @@ import { createServiceRoleClient } from "@/lib/supabase/admin";
 import { generarNotaDeVenta, calcularTotales } from "@/lib/ticket";
 import { sendEmail } from "@/lib/email";
 
-const IVA_RATE = 0.16;
-
 // POST /api/ordenes — Crear orden desde checkout
 export async function POST(request: NextRequest) {
   const supabase = createServiceRoleClient();
   const body = await request.json();
 
-  const { cliente_nombre, cliente_email, cliente_tel, cliente_id, nota, items } = body;
+  const { cliente_nombre, cliente_email, cliente_tel, cliente_id, nota, enviar_ticket, items } = body;
 
-  if (!cliente_nombre || !cliente_email || !items?.length) {
+  if (!cliente_nombre?.trim() || !items?.length) {
     return NextResponse.json(
-      { error: "Nombre, email y al menos un producto son requeridos" },
+      { error: "Nombre y al menos un producto son requeridos" },
       { status: 400 }
     );
   }
 
-  // Calcular totales
-  const orderItems = items.map(
-    (item: { slug: string; nombre: string; cantidad: number; precio_unitario: number }) => ({
+  if (enviar_ticket && !cliente_email?.trim()) {
+    return NextResponse.json(
+      { error: "El email es requerido para enviar el ticket" },
+      { status: 400 }
+    );
+  }
+
+  // Validar cada item: cantidades positivas y enteras
+  for (const item of items) {
+    if (!item.cantidad || item.cantidad < 1 || !Number.isInteger(item.cantidad)) {
+      return NextResponse.json(
+        { error: `Cantidad inválida para "${item.nombre}"` },
+        { status: 400 }
+      );
+    }
+    if (!Number.isFinite(item.precio_unitario) || item.precio_unitario <= 0) {
+      return NextResponse.json(
+        { error: `Precio inválido para "${item.nombre}"` },
+        { status: 400 }
+      );
+    }
+  }
+
+  // Validar stock y precio de cada producto contra la BD
+  const productosValidados: { id: string; slug: string; nombre: string; invId: string; invCantidad: number; cantidadSolicitada: number; precio_unitario: number }[] = [];
+
+  for (const item of items) {
+    const { data: producto } = await supabase
+      .from("productos")
+      .select("id, nombre, precio_venta")
+      .eq("slug", item.slug)
+      .eq("activo", true)
+      .single();
+
+    if (!producto) {
+      return NextResponse.json(
+        { error: `Producto "${item.nombre}" no encontrado o inactivo` },
+        { status: 400 }
+      );
+    }
+
+    // Validar que el precio no fue manipulado
+    if (Math.abs(producto.precio_venta - item.precio_unitario) > 0.01) {
+      return NextResponse.json(
+        { error: `El precio de "${item.nombre}" cambió. Recarga la página e intenta de nuevo.` },
+        { status: 400 }
+      );
+    }
+
+    const { data: inv } = await supabase
+      .from("inventario")
+      .select("id, cantidad")
+      .eq("producto_id", producto.id)
+      .single();
+
+    if (!inv || (inv.cantidad as number) < item.cantidad) {
+      return NextResponse.json(
+        { error: `Stock insuficiente para "${item.nombre}" (disponible: ${inv?.cantidad ?? 0})` },
+        { status: 400 }
+      );
+    }
+
+    productosValidados.push({
+      id: producto.id,
+      slug: item.slug,
       nombre: item.nombre,
-      cantidad: item.cantidad,
-      precio_unitario: item.precio_unitario,
-      subtotal: item.cantidad * item.precio_unitario,
-    })
-  );
+      invId: inv.id,
+      invCantidad: inv.cantidad as number,
+      cantidadSolicitada: item.cantidad,
+      precio_unitario: producto.precio_venta, // Usar precio de la BD, no del frontend
+    });
+  }
+
+  // Calcular totales con precios validados de la BD
+  const orderItems = productosValidados.map((pv) => ({
+    nombre: pv.nombre,
+    cantidad: pv.cantidadSolicitada,
+    precio_unitario: pv.precio_unitario,
+    subtotal: pv.cantidadSolicitada * pv.precio_unitario,
+  }));
 
   const { subtotal, iva, total } = calcularTotales(orderItems);
 
@@ -52,49 +121,30 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: ordenError.message }, { status: 400 });
   }
 
-  // Crear items de la orden
-  // Buscar producto_id por slug o crear items sin referencia a producto de inventario
-  for (const item of items) {
-    // Intentar encontrar el producto en la tabla de productos (inventario)
-    const { data: producto } = await supabase
-      .from("productos")
-      .select("id")
-      .eq("slug", item.slug)
-      .single();
-
+  // Crear items de la orden y deducir stock (ya validado arriba)
+  for (const pv of productosValidados) {
     await supabase.from("orden_items").insert({
       orden_id: orden.id,
-      producto_id: producto?.id || null,
-      cantidad: item.cantidad,
-      precio_unitario: item.precio_unitario,
-      subtotal: item.cantidad * item.precio_unitario,
+      producto_id: pv.id,
+      cantidad: pv.cantidadSolicitada,
+      precio_unitario: pv.precio_unitario,
+      subtotal: pv.cantidadSolicitada * pv.precio_unitario,
     });
 
-    // Si existe en inventario, deducir stock
-    if (producto?.id) {
-      const { data: inv } = await supabase
-        .from("inventario")
-        .select("id, cantidad")
-        .eq("producto_id", producto.id)
-        .single();
+    const nuevaCantidad = pv.invCantidad - pv.cantidadSolicitada;
+    await supabase
+      .from("inventario")
+      .update({ cantidad: nuevaCantidad })
+      .eq("id", pv.invId);
 
-      if (inv) {
-        const nuevaCantidad = Math.max(0, (inv.cantidad as number) - item.cantidad);
-        await supabase
-          .from("inventario")
-          .update({ cantidad: nuevaCantidad })
-          .eq("id", inv.id);
-
-        await supabase.from("movimientos").insert({
-          producto_id: producto.id,
-          tipo: "salida",
-          cantidad: item.cantidad,
-          cantidad_antes: inv.cantidad,
-          cantidad_despues: nuevaCantidad,
-          nota: `Venta — Orden #${orden.numero}`,
-        });
-      }
-    }
+    await supabase.from("movimientos").insert({
+      producto_id: pv.id,
+      tipo: "salida",
+      cantidad: pv.cantidadSolicitada,
+      cantidad_antes: pv.invCantidad,
+      cantidad_despues: nuevaCantidad,
+      nota: `Venta — Orden #${orden.numero}`,
+    });
   }
 
   // Generar nota de venta
@@ -124,9 +174,9 @@ export async function POST(request: NextRequest) {
     .update({ ticket_html: ticketHtml })
     .eq("id", orden.id);
 
-  // Enviar nota de venta por email
+  // Enviar nota de venta por email (solo si se solicitó)
   let emailEnviado = false;
-  if (process.env.EMAIL_USER && process.env.GMAIL_CLIENT_ID && process.env.GMAIL_REFRESH_TOKEN) {
+  if (enviar_ticket && cliente_email && process.env.EMAIL_USER && process.env.GMAIL_CLIENT_ID && process.env.GMAIL_REFRESH_TOKEN) {
     try {
       await sendEmail({
         to: cliente_email,

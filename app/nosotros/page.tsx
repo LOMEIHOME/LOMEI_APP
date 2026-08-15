@@ -255,6 +255,90 @@ export default function NosotrosPage() {
         </div>
       </section>
 
+      {/* Colaboraciones */}
+      <section className="bg-[var(--color-cream)] py-16 md:py-24 lg:py-32">
+        <div className="max-w-[85rem] mx-auto px-6 md:px-10 lg:px-16">
+          <div className="animate-fade-in">
+            <SectionTag className="!text-[11px] !text-[var(--color-oak)]">
+              Alianzas
+            </SectionTag>
+          </div>
+          <div className="animate-fade-in [animation-delay:100ms]">
+            <h2 className="mt-4 font-serif text-2xl md:text-3xl lg:text-[2.625rem] tracking-wider text-[var(--color-dark)]">
+              Quienes nos acompañan
+            </h2>
+          </div>
+          <div className="animate-fade-in [animation-delay:200ms]">
+            <p className="mt-4 text-[15px] leading-relaxed text-[var(--color-dark)]/70 max-w-2xl">
+              Colaboramos con marcas y estudios que comparten nuestra visión de
+              crear espacios con carácter y calidad excepcional.
+            </p>
+          </div>
+
+          <div className="mt-10 md:mt-16 lg:mt-20 grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8 md:gap-12">
+            {/* Yolt */}
+            <div className="animate-fade-in [animation-delay:150ms] border border-[var(--color-sand)]/40 rounded-sm p-6 sm:p-8 md:p-10 lg:p-12 flex flex-col items-center text-center">
+              <div className="w-full max-w-[180px] sm:max-w-[220px] md:max-w-[260px] h-[80px] sm:h-[90px] md:h-[100px] relative flex items-center justify-center mb-6 md:mb-8">
+                <Image
+                  src="/images/logos/yolt.png"
+                  alt="Yolt Candle Studio"
+                  width={260}
+                  height={87}
+                  className="object-contain w-full h-full"
+                  sizes="(max-width: 640px) 180px, (max-width: 768px) 220px, 260px"
+                />
+              </div>
+              <p className="text-[10px] sm:text-[11px] tracking-[0.25em] uppercase text-[var(--color-oak)] mb-2 sm:mb-3">
+                Socio Comercial
+              </p>
+              <p className="text-[14px] sm:text-[15px] leading-relaxed text-[var(--color-dark)]/70">
+                Velas artesanales con aromas únicos, elaboradas a mano.
+                Juntos creamos atmósferas que complementan cada espacio con
+                calidez y personalidad.
+              </p>
+              <a
+                href="https://www.instagram.com/yolt.mx/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-4 sm:mt-6 text-[10px] sm:text-[11px] tracking-[0.2em] uppercase text-[var(--color-camel)] border-b border-[var(--color-camel)]/40 pb-0.5 hover:border-[var(--color-camel)] transition-colors duration-400"
+              >
+                @yolt.mx
+              </a>
+            </div>
+
+            {/* Naturhabitat */}
+            <div className="animate-fade-in [animation-delay:300ms] border border-[var(--color-sand)]/40 rounded-sm p-6 sm:p-8 md:p-10 lg:p-12 flex flex-col items-center text-center">
+              <div className="w-full max-w-[200px] sm:max-w-[240px] md:max-w-[280px] h-[80px] sm:h-[90px] md:h-[100px] relative flex items-center justify-center mb-6 md:mb-8">
+                <Image
+                  src="/images/logos/naturhabitat.png"
+                  alt="Naturhabitat Landscape Studio"
+                  width={280}
+                  height={93}
+                  className="object-contain w-full h-full"
+                  sizes="(max-width: 640px) 200px, (max-width: 768px) 240px, 280px"
+                />
+              </div>
+              <p className="text-[10px] sm:text-[11px] tracking-[0.25em] uppercase text-[var(--color-oak)] mb-2 sm:mb-3">
+                Paisajismo
+              </p>
+              <p className="text-[14px] sm:text-[15px] leading-relaxed text-[var(--color-dark)]/70">
+                Diseño de paisaje que conecta la arquitectura con la
+                naturaleza. Cada jardín y espacio exterior se integra como
+                una extensión viva del proyecto.
+              </p>
+              <a
+                href="https://www.instagram.com/naturhabitat/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-4 sm:mt-6 text-[10px] sm:text-[11px] tracking-[0.2em] uppercase text-[var(--color-camel)] border-b border-[var(--color-camel)]/40 pb-0.5 hover:border-[var(--color-camel)] transition-colors duration-400"
+              >
+                @naturhabitat
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <Footer />
     </>
   );

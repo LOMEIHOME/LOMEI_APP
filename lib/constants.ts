@@ -1,5 +1,8 @@
 // Constantes compartidas del admin panel
 
+/** Tasa de IVA vigente en México */
+export const IVA_RATE = 0.16;
+
 export const CATEGORY_EMOJI: Record<string, string> = {
   Muebles: "🛋️",
   Cojines: "🛋️",
@@ -14,6 +17,8 @@ export const CATEGORY_EMOJI: Record<string, string> = {
   Florero: "🌸",
   Macetas: "🪴",
   "Plantas Artificiales": "🌿",
+  Velas: "🕯️",
+  Aromas: "🌿",
 };
 
 export function getCategoryEmoji(cat: string): string {

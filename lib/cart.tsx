@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useContext, useState, useEffect, useCallback } from "react";
+import { IVA_RATE } from "@/lib/constants";
 
 export interface CartItem {
   slug: string;
@@ -25,7 +26,6 @@ interface CartContextType {
 const CartContext = createContext<CartContextType | null>(null);
 
 const STORAGE_KEY = "lomei-cart";
-const IVA_RATE = 0.16;
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
