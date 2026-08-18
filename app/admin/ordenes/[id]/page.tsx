@@ -11,6 +11,7 @@ interface OrdenItem {
   productos: { nombre: string } | null;
   cantidad: number;
   precio_unitario: number;
+  descuento: number;
   subtotal: number;
 }
 
@@ -279,6 +280,9 @@ export default function OrdenDetallePage() {
                 <th className="hidden sm:table-cell" style={{ ...thStyle, textAlign: "right" }}>
                   P. unitario
                 </th>
+                <th className="hidden sm:table-cell" style={{ ...thStyle, textAlign: "center" }}>
+                  Dto.
+                </th>
                 <th style={{ ...thStyle, textAlign: "right" }}>Subtotal</th>
               </tr>
             </thead>
@@ -302,6 +306,12 @@ export default function OrdenDetallePage() {
                     style={{ padding: "12px 16px", textAlign: "right", color: "#9b968c", fontSize: 13 }}
                   >
                     {formatPrice(item.precio_unitario)}
+                  </td>
+                  <td
+                    className="hidden sm:table-cell"
+                    style={{ padding: "12px 16px", textAlign: "center", color: item.descuento > 0 ? "#16794a" : "#9b968c", fontSize: 13 }}
+                  >
+                    {item.descuento > 0 ? `${item.descuento}%` : "—"}
                   </td>
                   <td
                     style={{
