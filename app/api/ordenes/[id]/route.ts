@@ -72,6 +72,7 @@ function regenerarTicket(orden: Record<string, unknown>): string {
       nombre: prod?.nombre || "Producto",
       cantidad: item.cantidad as number,
       precio_unitario: item.precio_unitario as number,
+      descuento: (item.descuento as number) || 0,
       subtotal: item.subtotal as number,
     };
   });
@@ -95,6 +96,7 @@ function regenerarTicket(orden: Record<string, unknown>): string {
     cliente_tel: (orden.cliente_tel as string) || undefined,
     items,
     subtotal,
+    descuento: (orden.descuento as number) || 0,
     iva,
     total,
     nota: (orden.nota as string) || undefined,

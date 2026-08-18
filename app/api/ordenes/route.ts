@@ -38,10 +38,18 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
+    // Validar descuento (porcentaje 0-100)
+    const desc = item.descuento ?? 0;
+    if (!Number.isFinite(desc) || desc < 0 || desc > 100) {
+      return NextResponse.json(
+        { error: `Descuento inválido para "${item.nombre}"` },
+        { status: 400 }
+      );
+    }
   }
 
   // Validar stock y precio de cada producto contra la BD
-  const productosValidados: { id: string; slug: string; nombre: string; invId: string; invCantidad: number; cantidadSolicitada: number; precio_unitario: number }[] = [];
+  const productosValidados: { id: string; slug: string; nombre: string; invId: string; invCantidad: number; cantidadSolicitada: number; precio_unitario: number; descuento: number }[] = [];
 
   for (const item of items) {
     const { data: producto } = await supabase
@@ -87,16 +95,22 @@ export async function POST(request: NextRequest) {
       invCantidad: inv.cantidad as number,
       cantidadSolicitada: item.cantidad,
       precio_unitario: producto.precio_venta, // Usar precio de la BD, no del frontend
+      descuento: item.descuento ?? 0,
     });
   }
 
-  // Calcular totales con precios validados de la BD
-  const orderItems = productosValidados.map((pv) => ({
-    nombre: pv.nombre,
-    cantidad: pv.cantidadSolicitada,
-    precio_unitario: pv.precio_unitario,
-    subtotal: pv.cantidadSolicitada * pv.precio_unitario,
-  }));
+  // Calcular totales con precios validados de la BD (aplicando descuentos)
+  const orderItems = productosValidados.map((pv) => {
+    const base = pv.cantidadSolicitada * pv.precio_unitario;
+    const descuentoMonto = pv.descuento > 0 ? Math.round(base * (pv.descuento / 100) * 100) / 100 : 0;
+    return {
+      nombre: pv.nombre,
+      cantidad: pv.cantidadSolicitada,
+      precio_unitario: pv.precio_unitario,
+      descuento: pv.descuento,
+      subtotal: base - descuentoMonto,
+    };
+  });
 
   const { subtotal, iva, total } = calcularTotales(orderItems);
 
@@ -110,7 +124,10 @@ export async function POST(request: NextRequest) {
       cliente_id: cliente_id || null,
       estado: "completada",
       subtotal,
-      descuento: 0,
+      descuento: orderItems.reduce((s, oi) => {
+        const base = oi.cantidad * oi.precio_unitario;
+        return s + (base - oi.subtotal);
+      }, 0),
       total,
       nota: nota || null,
     })
@@ -123,12 +140,15 @@ export async function POST(request: NextRequest) {
 
   // Crear items de la orden y deducir stock (ya validado arriba)
   for (const pv of productosValidados) {
+    const base = pv.cantidadSolicitada * pv.precio_unitario;
+    const descMonto = pv.descuento > 0 ? Math.round(base * (pv.descuento / 100) * 100) / 100 : 0;
     await supabase.from("orden_items").insert({
       orden_id: orden.id,
       producto_id: pv.id,
       cantidad: pv.cantidadSolicitada,
       precio_unitario: pv.precio_unitario,
-      subtotal: pv.cantidadSolicitada * pv.precio_unitario,
+      descuento: pv.descuento,
+      subtotal: base - descMonto,
     });
 
     const nuevaCantidad = pv.invCantidad - pv.cantidadSolicitada;
@@ -155,6 +175,11 @@ export async function POST(request: NextRequest) {
     year: "numeric",
   });
 
+  const totalDescuento = orderItems.reduce((s, oi) => {
+    const base = oi.cantidad * oi.precio_unitario;
+    return s + (base - oi.subtotal);
+  }, 0);
+
   const ticketHtml = generarNotaDeVenta({
     folio,
     fecha,
@@ -163,6 +188,7 @@ export async function POST(request: NextRequest) {
     cliente_tel,
     items: orderItems,
     subtotal,
+    descuento: totalDescuento,
     iva,
     total,
     nota,

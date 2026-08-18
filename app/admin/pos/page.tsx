@@ -22,6 +22,7 @@ interface CartItem {
   precio_unitario: number;
   cantidad: number;
   stock_disponible: number;
+  descuento: number; // porcentaje 0-100
 }
 
 interface ClienteExistente {
@@ -182,6 +183,7 @@ export default function PuntoDeVentaPage() {
           precio_unitario: producto.precio_venta,
           cantidad: 1,
           stock_disponible: producto.stock,
+          descuento: 0,
         },
       ];
     });
@@ -207,6 +209,15 @@ export default function PuntoDeVentaPage() {
     setCart((prev) => prev.filter((i) => i.producto_id !== productoId));
   };
 
+  const updateDiscount = (productoId: string, value: number) => {
+    const clamped = Math.min(100, Math.max(0, value));
+    setCart((prev) =>
+      prev.map((i) =>
+        i.producto_id === productoId ? { ...i, descuento: clamped } : i
+      )
+    );
+  };
+
   // Select existing client
   const selectClient = (c: ClienteExistente) => {
     setClienteNombre(c.nombre);
@@ -217,8 +228,19 @@ export default function PuntoDeVentaPage() {
     setShowClientDropdown(false);
   };
 
+  // Helpers para precio con descuento
+  const lineTotal = (i: CartItem) => {
+    const base = i.precio_unitario * i.cantidad;
+    return i.descuento > 0 ? Math.round(base * (1 - i.descuento / 100) * 100) / 100 : base;
+  };
+
   // Totals — el precio ya incluye IVA, calcular hacia atrás
-  const total = cart.reduce((s, i) => s + i.precio_unitario * i.cantidad, 0);
+  const totalSinDescuento = cart.reduce((s, i) => s + i.precio_unitario * i.cantidad, 0);
+  const totalDescuento = cart.reduce((s, i) => {
+    const base = i.precio_unitario * i.cantidad;
+    return s + (i.descuento > 0 ? Math.round(base * (i.descuento / 100) * 100) / 100 : 0);
+  }, 0);
+  const total = totalSinDescuento - totalDescuento;
   const subtotal = Math.round((total / (1 + IVA_RATE)) * 100) / 100;
   const iva = Math.round((total - subtotal) * 100) / 100;
 
@@ -257,6 +279,7 @@ export default function PuntoDeVentaPage() {
       nombre: i.nombre,
       cantidad: i.cantidad,
       precio_unitario: i.precio_unitario,
+      descuento: i.descuento,
     }));
 
     const res = await fetch("/api/ordenes", {
@@ -686,17 +709,19 @@ export default function PuntoDeVentaPage() {
               </div>
             ) : (
               <div>
-                {cart.map((item, i) => (
+                {cart.map((item, i) => {
+                  const base = item.precio_unitario * item.cantidad;
+                  const discounted = lineTotal(item);
+                  const hasDiscount = item.descuento > 0;
+                  return (
                   <div
                     key={item.producto_id}
                     style={{
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "space-between",
                       padding: "12px 20px",
                       borderBottom: i < cart.length - 1 ? "1px solid #f4f2ec" : "none",
                     }}
                   >
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div
                         style={{
@@ -798,12 +823,17 @@ export default function PuntoDeVentaPage() {
                         style={{
                           fontSize: 14,
                           fontWeight: 600,
-                          color: "#37352f",
+                          color: hasDiscount ? "#16794a" : "#37352f",
                           fontVariantNumeric: "tabular-nums",
                           minWidth: 80,
                         }}
                       >
-                        {formatPrice(item.precio_unitario * item.cantidad)}
+                        {hasDiscount && (
+                          <span style={{ fontSize: 11, color: "#9b968c", textDecoration: "line-through", marginRight: 4 }}>
+                            {formatPrice(base)}
+                          </span>
+                        )}
+                        {formatPrice(discounted)}
                       </span>
                       <button
                         onClick={() => removeFromCart(item.producto_id)}
@@ -821,8 +851,56 @@ export default function PuntoDeVentaPage() {
                         ✕
                       </button>
                     </div>
+                    </div>
+
+                    {/* Discount input */}
+                    <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 6 }}>
+                      <span style={{ fontSize: 11, color: "#9b968c" }}>Dto:</span>
+                      <input
+                        type="number"
+                        min={0}
+                        max={100}
+                        value={item.descuento || ""}
+                        onChange={(e) => updateDiscount(item.producto_id, parseFloat(e.target.value) || 0)}
+                        placeholder="0"
+                        style={{
+                          width: 52,
+                          fontSize: 12,
+                          fontFamily: "inherit",
+                          color: "#37352f",
+                          border: "1px solid #e6e3db",
+                          borderRadius: 6,
+                          padding: "3px 6px",
+                          background: "#f8f7f4",
+                          outline: "none",
+                          textAlign: "center",
+                        }}
+                      />
+                      <span style={{ fontSize: 11, color: "#9b968c" }}>%</span>
+                      {[10, 15, 20].map((pct) => (
+                        <button
+                          key={pct}
+                          type="button"
+                          onClick={() => updateDiscount(item.producto_id, pct)}
+                          style={{
+                            fontSize: 10,
+                            fontFamily: "inherit",
+                            fontWeight: 500,
+                            color: item.descuento === pct ? "#fff" : "#6b6760",
+                            background: item.descuento === pct ? "#37352f" : "#f4f2ec",
+                            border: "none",
+                            borderRadius: 4,
+                            padding: "2px 7px",
+                            cursor: "pointer",
+                          }}
+                        >
+                          {pct}%
+                        </button>
+                      ))}
+                    </div>
                   </div>
-                ))}
+                  );
+                })}
               </div>
             )}
           </div>
@@ -1039,15 +1117,18 @@ export default function PuntoDeVentaPage() {
                       {item.cantidad > 1 && (
                         <span style={{ color: "#9b968c" }}> ×{item.cantidad}</span>
                       )}
+                      {item.descuento > 0 && (
+                        <span style={{ color: "#16794a", fontSize: 11 }}> -{item.descuento}%</span>
+                      )}
                     </span>
                     <span
                       style={{
-                        color: "#37352f",
+                        color: item.descuento > 0 ? "#16794a" : "#37352f",
                         fontWeight: 500,
                         fontVariantNumeric: "tabular-nums",
                       }}
                     >
-                      {formatPrice(item.precio_unitario * item.cantidad)}
+                      {formatPrice(lineTotal(item))}
                     </span>
                   </div>
                 ))}
@@ -1077,6 +1158,22 @@ export default function PuntoDeVentaPage() {
                   {formatPrice(subtotal)}
                 </span>
               </div>
+              {totalDescuento > 0 && (
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    fontSize: 13,
+                    color: "#16794a",
+                    marginBottom: 6,
+                  }}
+                >
+                  <span>Descuento</span>
+                  <span style={{ fontVariantNumeric: "tabular-nums" }}>
+                    −{formatPrice(totalDescuento)}
+                  </span>
+                </div>
+              )}
               <div
                 style={{
                   display: "flex",

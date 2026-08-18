@@ -7,6 +7,7 @@ interface TicketItem {
   nombre: string;
   cantidad: number;
   precio_unitario: number;
+  descuento?: number; // porcentaje 0-100
   subtotal: number;
 }
 
@@ -18,6 +19,7 @@ interface TicketData {
   cliente_tel?: string;
   items: TicketItem[];
   subtotal: number;
+  descuento?: number;
   iva: number;
   total: number;
   nota?: string;
@@ -49,6 +51,8 @@ export function formatearPrecio(precio: number): string {
 }
 
 export function generarNotaDeVenta(data: TicketData): string {
+  const hasAnyDiscount = data.items.some((item) => item.descuento && item.descuento > 0);
+
   const itemsHtml = data.items
     .map(
       (item, i) => `
@@ -57,6 +61,7 @@ export function generarNotaDeVenta(data: TicketData): string {
       <td style="padding: 10px 8px; border-bottom: 1px solid #EDE6D6; font-size: 13px; color: #2A2118;">${escapeHtml(item.nombre)}</td>
       <td style="padding: 10px 8px; border-bottom: 1px solid #EDE6D6; font-size: 13px; color: #2A2118; text-align: center;">${item.cantidad}</td>
       <td style="padding: 10px 8px; border-bottom: 1px solid #EDE6D6; font-size: 13px; color: #2A2118; text-align: right;">${formatearPrecio(item.precio_unitario)}</td>
+      ${hasAnyDiscount ? `<td style="padding: 10px 8px; border-bottom: 1px solid #EDE6D6; font-size: 13px; color: ${item.descuento && item.descuento > 0 ? '#16794a' : '#2A2118'}; text-align: center;">${item.descuento && item.descuento > 0 ? `${item.descuento}%` : '—'}</td>` : ''}
       <td style="padding: 10px 8px; border-bottom: 1px solid #EDE6D6; font-size: 13px; color: #2A2118; text-align: right; font-weight: 500;">${formatearPrecio(item.subtotal)}</td>
     </tr>`
     )
@@ -149,6 +154,7 @@ export function generarNotaDeVenta(data: TicketData): string {
             <th style="padding: 8px; font-size: 9px; letter-spacing: 0.15em; color: #B5A898; text-transform: uppercase; font-weight: 400; text-align: left;">Producto</th>
             <th style="padding: 8px; font-size: 9px; letter-spacing: 0.15em; color: #B5A898; text-transform: uppercase; font-weight: 400; text-align: center;">Cant.</th>
             <th style="padding: 8px; font-size: 9px; letter-spacing: 0.15em; color: #B5A898; text-transform: uppercase; font-weight: 400; text-align: right;">P. Unit.</th>
+            ${hasAnyDiscount ? '<th style="padding: 8px; font-size: 9px; letter-spacing: 0.15em; color: #B5A898; text-transform: uppercase; font-weight: 400; text-align: center;">Dto.</th>' : ''}
             <th style="padding: 8px; font-size: 9px; letter-spacing: 0.15em; color: #B5A898; text-transform: uppercase; font-weight: 400; text-align: right;">Importe</th>
           </tr>
         </thead>
@@ -169,6 +175,10 @@ export function generarNotaDeVenta(data: TicketData): string {
                 <td class="ticket-totals-label" style="padding: 6px 0; font-size: 12px; color: #B5A898;">Subtotal</td>
                 <td class="ticket-totals-value" style="padding: 6px 0; font-size: 12px; color: #2A2118; text-align: right;">${formatearPrecio(data.subtotal)}</td>
               </tr>
+              ${data.descuento && data.descuento > 0 ? `<tr>
+                <td class="ticket-totals-label" style="padding: 6px 0; font-size: 12px; color: #16794a;">Descuento</td>
+                <td class="ticket-totals-value" style="padding: 6px 0; font-size: 12px; color: #16794a; text-align: right;">−${formatearPrecio(data.descuento)}</td>
+              </tr>` : ''}
               <tr>
                 <td class="ticket-totals-label" style="padding: 6px 0; font-size: 12px; color: #B5A898;">IVA (16%)</td>
                 <td class="ticket-totals-value" style="padding: 6px 0; font-size: 12px; color: #2A2118; text-align: right;">${formatearPrecio(data.iva)}</td>

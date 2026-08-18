@@ -117,6 +117,7 @@ CREATE TABLE orden_items (
   producto_id     UUID NOT NULL REFERENCES productos(id),
   cantidad        INTEGER NOT NULL CHECK (cantidad > 0),
   precio_unitario NUMERIC(12,2) NOT NULL,
+  descuento       NUMERIC(5,2) NOT NULL DEFAULT 0 CHECK (descuento >= 0 AND descuento <= 100),
   subtotal        NUMERIC(12,2) NOT NULL
 );
 
