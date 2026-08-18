@@ -10,6 +10,7 @@ const NAV_ITEMS = [
   { label: "Punto de Venta", href: "/admin/pos", emoji: "🛒" },
   { label: "Inventario", href: "/admin/inventario", emoji: "📦" },
   { label: "Ventas", href: "/admin/ventas", emoji: "💰" },
+  { label: "Reportes", href: "/admin/reportes", emoji: "📋" },
   { label: "Órdenes", href: "/admin/ordenes", emoji: "🧾" },
   { label: "Correlaciones", href: "/admin/correlaciones", emoji: "🔗" },
   { label: "Alertas", href: "/admin/alertas", emoji: "🔔", hasAlertBadge: true },

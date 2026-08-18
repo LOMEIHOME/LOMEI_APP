@@ -243,57 +243,6 @@ export default function ProductoDetallePage() {
           </p>
         </div>
 
-        <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
-          <Link
-            href={`/admin/inventario/${id}/editar`}
-            style={{
-              fontSize: 13,
-              fontWeight: 500,
-              padding: "7px 16px",
-              borderRadius: 8,
-              border: "1px solid #e6e3db",
-              color: "#37352f",
-              textDecoration: "none",
-              backgroundColor: "#fff",
-              transition: "background 0.15s",
-            }}
-            onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#faf9f6")}
-            onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "#fff")}
-          >
-            ✏️ Editar producto
-          </Link>
-          <button
-            onClick={async () => {
-              const action = producto.activo !== false ? "desactivar" : "reactivar";
-              if (!confirm(`¿${action.charAt(0).toUpperCase() + action.slice(1)} este producto?`)) return;
-              if (action === "desactivar") {
-                await fetch(`/api/productos/${id}`, { method: "DELETE" });
-              } else {
-                await fetch(`/api/productos/${id}`, {
-                  method: "PUT",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({ activo: true }),
-                });
-              }
-              fetchData();
-            }}
-            style={{
-              fontSize: 13,
-              fontWeight: 500,
-              padding: "7px 16px",
-              borderRadius: 8,
-              border: "1px solid #e6e3db",
-              color: producto.activo !== false ? "#c2410c" : "#16794a",
-              backgroundColor: "#fff",
-              cursor: "pointer",
-              transition: "background 0.15s",
-            }}
-            onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#faf9f6")}
-            onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "#fff")}
-          >
-            {producto.activo !== false ? "🚫 Desactivar" : "✅ Reactivar"}
-          </button>
-        </div>
       </div>
 
       {/* Two-column layout */}

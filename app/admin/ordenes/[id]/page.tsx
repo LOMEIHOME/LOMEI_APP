@@ -8,7 +8,8 @@ import { formatFecha } from "@/lib/constants";
 
 interface OrdenItem {
   id: string;
-  productos: { nombre: string } | null;
+  producto_id: string;
+  productos: { nombre: string; sku: string | null } | null;
   cantidad: number;
   precio_unitario: number;
   descuento: number;
@@ -36,18 +37,6 @@ const formatPrice = (n: number) =>
 
 const formatDate = (d: string) => formatFecha(d);
 
-const ESTADOS: ("pendiente" | "completada" | "cancelada")[] = ["pendiente", "completada", "cancelada"];
-const ESTADO_LABELS: Record<string, string> = {
-  pendiente: "Pendiente",
-  completada: "Completada",
-  cancelada: "Cancelada",
-};
-
-const ESTADO_BTN_COLORS: Record<string, { bg: string; color: string; border: string }> = {
-  completada: { bg: "#eaf3ec", color: "#16794a", border: "#c8e6cc" },
-  pendiente: { bg: "#fbf3e0", color: "#b7791f", border: "#f0deb0" },
-  cancelada: { bg: "#f1efe9", color: "#8a857c", border: "#e0ddd5" },
-};
 
 /* ---- Shared style helpers ---- */
 const thStyle: React.CSSProperties = {
@@ -83,7 +72,6 @@ export default function OrdenDetallePage() {
 
   const [orden, setOrden] = useState<Orden | null>(null);
   const [loading, setLoading] = useState(true);
-  const [updating, setUpdating] = useState(false);
   const [error, setError] = useState("");
 
   const fetchOrden = useCallback(async () => {
@@ -103,22 +91,24 @@ export default function OrdenDetallePage() {
     fetchOrden();
   }, [fetchOrden]);
 
-  const handleChangeEstado = async (nuevoEstado: "pendiente" | "completada" | "cancelada") => {
-    if (!orden || orden.estado === nuevoEstado) return;
-    const label = ESTADO_LABELS[nuevoEstado] || nuevoEstado;
-    if (!confirm(`¿Cambiar estado de la orden #${orden.numero} a "${label}"?`)) return;
-    setUpdating(true);
+  const [cancellingItem, setCancellingItem] = useState<string | null>(null);
+
+  const handleCancelItem = async (item: OrdenItem) => {
+    const nombre = item.productos?.nombre || "este artículo";
+    if (!confirm(`¿Cancelar "${nombre}" (×${item.cantidad}) y devolver al inventario?`)) return;
+    setCancellingItem(item.id);
     try {
-      await fetch(`/api/ordenes/${id}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ estado: nuevoEstado }),
-      });
-      await fetchOrden();
+      const res = await fetch(`/api/ordenes/${id}/items/${item.id}`, { method: "DELETE" });
+      if (!res.ok) {
+        const json = await res.json();
+        setError(json.error || "No se pudo cancelar el artículo");
+      } else {
+        await fetchOrden();
+      }
     } catch {
-      setError("No se pudo actualizar el estado.");
+      setError("Error al cancelar el artículo");
     }
-    setUpdating(false);
+    setCancellingItem(null);
   };
 
   if (loading) {
@@ -276,6 +266,7 @@ export default function OrdenDetallePage() {
             <thead>
               <tr style={{ backgroundColor: "#f8f7f4" }}>
                 <th style={{ ...thStyle, textAlign: "left" }}>Producto</th>
+                <th className="hidden sm:table-cell" style={thStyle}>SKU</th>
                 <th style={{ ...thStyle, textAlign: "right" }}>Cant.</th>
                 <th className="hidden sm:table-cell" style={{ ...thStyle, textAlign: "right" }}>
                   P. unitario
@@ -284,6 +275,9 @@ export default function OrdenDetallePage() {
                   Dto.
                 </th>
                 <th style={{ ...thStyle, textAlign: "right" }}>Subtotal</th>
+                {orden.estado !== "cancelada" && (
+                  <th style={{ ...thStyle, textAlign: "center", width: 60 }}></th>
+                )}
               </tr>
             </thead>
             <tbody>
@@ -297,6 +291,17 @@ export default function OrdenDetallePage() {
                 >
                   <td style={{ padding: "12px 16px", color: "#37352f" }}>
                     {item.productos?.nombre || "Producto eliminado"}
+                  </td>
+                  <td
+                    className="hidden sm:table-cell"
+                    style={{
+                      padding: "12px 16px",
+                      fontFamily: "ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, monospace",
+                      fontSize: 12,
+                      color: "#6b6760",
+                    }}
+                  >
+                    {item.productos?.sku || "—"}
                   </td>
                   <td style={{ padding: "12px 16px", textAlign: "right", color: "#37352f" }}>
                     {item.cantidad}
@@ -323,6 +328,29 @@ export default function OrdenDetallePage() {
                   >
                     {formatPrice(item.subtotal)}
                   </td>
+                  {orden.estado !== "cancelada" && (
+                    <td style={{ padding: "12px 8px", textAlign: "center" }}>
+                      <button
+                        onClick={() => handleCancelItem(item)}
+                        disabled={cancellingItem === item.id}
+                        title="Cancelar artículo y devolver al inventario"
+                        style={{
+                          fontFamily: "inherit",
+                          fontSize: 11,
+                          fontWeight: 500,
+                          color: "#c2410c",
+                          background: cancellingItem === item.id ? "#f1efe9" : "none",
+                          border: "1px solid #e6e3db",
+                          borderRadius: 6,
+                          padding: "4px 8px",
+                          cursor: cancellingItem === item.id ? "not-allowed" : "pointer",
+                          opacity: cancellingItem === item.id ? 0.5 : 1,
+                        }}
+                      >
+                        {cancellingItem === item.id ? "..." : "✕"}
+                      </button>
+                    </td>
+                  )}
                 </tr>
               ))}
             </tbody>
@@ -433,46 +461,6 @@ export default function OrdenDetallePage() {
         </div>
       )}
 
-      {/* Cambiar estado */}
-      <div
-        style={{
-          border: "1px solid #eeece7",
-          borderRadius: 12,
-          backgroundColor: "#fff",
-          padding: 24,
-        }}
-      >
-        <h3 style={sectionTitle}>Cambiar estado</h3>
-        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-          {ESTADOS.map((e) => {
-            const isCurrent = orden.estado === e;
-            const colors = ESTADO_BTN_COLORS[e];
-            return (
-              <button
-                key={e}
-                onClick={() => handleChangeEstado(e)}
-                disabled={isCurrent || updating}
-                style={{
-                  padding: "8px 18px",
-                  fontSize: 13,
-                  fontWeight: 500,
-                  borderRadius: 8,
-                  border: isCurrent
-                    ? `2px solid ${colors.color}`
-                    : `1px solid ${colors.border}`,
-                  backgroundColor: colors.bg,
-                  color: colors.color,
-                  cursor: isCurrent || updating ? "default" : "pointer",
-                  opacity: updating && !isCurrent ? 0.5 : 1,
-                  transition: "all 0.15s ease",
-                }}
-              >
-                {ESTADO_LABELS[e]}
-              </button>
-            );
-          })}
-        </div>
-      </div>
     </div>
   );
 }

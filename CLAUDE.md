@@ -282,6 +282,7 @@ LOMEI_APP/
 │   │   ├── inventario/         ← CRUD productos (Supabase)
 │   │   ├── ordenes/            ← Lista + detalle órdenes (Supabase)
 │   │   ├── ventas/page.tsx     ← Resumen de ventas (Supabase)
+│   │   ├── reportes/page.tsx   ← Reporte de ventas detallado + export Excel (Supabase)
 │   │   └── alertas/page.tsx    ← Alertas de stock (Supabase)
 │   └── api/
 │       ├── dashboard/kpis/     ← KPIs del dashboard
@@ -292,6 +293,7 @@ LOMEI_APP/
 │       ├── clientes/           ← CRUD clientes
 │       ├── pos/productos/      ← Búsqueda ligera para POS
 │       ├── ventas/resumen/     ← Datos de ventas
+│       ├── reportes/ventas/   ← Reporte detallado de ventas (filtros de fecha)
 │       ├── alertas/            ← Config + log de alertas
 │       └── contacto/           ← Formulario de contacto
 ├── components/
@@ -397,12 +399,12 @@ font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 /admin/pos            ← Punto de Venta (POS) — buscar productos, carrito, datos cliente, checkout
 /admin/inventario     ← Lista con búsqueda, chips de categoría, tabla
 /admin/inventario/[id]       ← Detalle de producto + ajuste de stock + historial
-/admin/inventario/[id]/editar ← Formulario de edición (ProductForm)
 /admin/inventario/nuevo       ← Formulario de creación (ProductForm)
 /admin/inventario/movimientos ← Historial global de movimientos
 /admin/ordenes        ← Lista de órdenes con filtros de estado
-/admin/ordenes/[id]   ← Detalle de orden + cambio de estado
+/admin/ordenes/[id]   ← Detalle de orden + cancelación de artículos + ticket
 /admin/ventas         ← Resumen de ventas con gráfica y KPIs
+/admin/reportes       ← Reporte de ventas detallado + filtros de fecha + export Excel
 /admin/alertas        ← Alertas de stock bajo + configuración
 ```
 
@@ -457,6 +459,14 @@ Objetivo: sitio público funcional con identidad de LOMEI HOME
 - [x] Scripts de respaldo y restauración de BD
 - [x] IVA_RATE centralizado en lib/constants.ts
 - [x] Badges de productos: "Nuevo", "Disponible", "Yolt", "Lomei & Yolt"
+- [x] Reporte de ventas detallado con filtros de fecha y exportación a Excel (xlsx)
+- [x] Cancelación de artículos individuales en órdenes con restauración de inventario
+- [x] Auto-cancelación de orden cuando se cancelan todos los artículos
+- [x] Cancelación de orden completa restaura stock de todos los artículos
+- [x] Búsqueda en inventario por nombre, SKU y categoría (fix referencedTable)
+- [x] SKU visible en detalle de orden
+- [x] Slug discreto en detalle de producto del catálogo
+- [x] Logo Navbar redirige al splash screen
 
 ### Fase 2 — Tienda en línea (pendiente, $7,500 MXN)
 - [ ] Carrito de compras
@@ -497,4 +507,4 @@ Mantenimiento: Básico $400 · Recomendado $700 · Premium $1,000 (mensual, apar
 
 ---
 
-*Última actualización: 15 agosto 2026 — Luis Fonseca / LOMEI HOME*
+*Última actualización: 17 agosto 2026 — Luis Fonseca / LOMEI HOME*

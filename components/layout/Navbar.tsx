@@ -40,6 +40,7 @@ export default function Navbar({ forceScrolled = false }: { forceScrolled?: bool
         {/* Izquierda — wordmark */}
         <Link
           href="/"
+          onClick={() => sessionStorage.removeItem("lomei-splash-seen")}
           className={`text-[13px] md:text-[14px] tracking-[0.25em] uppercase font-normal transition-colors duration-500 ${
             scrolled ? "text-[var(--color-dark)]" : "text-[var(--color-white)]"
           }`}
