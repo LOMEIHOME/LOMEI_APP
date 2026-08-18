@@ -12,7 +12,7 @@ export async function GET(
 
   const { data: orden, error } = await supabase
     .from("ordenes")
-    .select("*, orden_items(*, productos(nombre, categoria))")
+    .select("*, orden_items(*, productos(nombre, sku, categoria))")
     .eq("id", id)
     .single();
 
@@ -48,6 +48,46 @@ export async function PATCH(
       { error: `Estado inválido. Debe ser uno de: ${estadosValidos.join(", ")}` },
       { status: 400 }
     );
+  }
+
+  // Obtener estado actual de la orden
+  const { data: ordenActual } = await supabase
+    .from("ordenes")
+    .select("estado")
+    .eq("id", id)
+    .single();
+
+  // Si se cancela una orden completada, restaurar todo el stock
+  if (estado === "cancelada" && ordenActual?.estado === "completada") {
+    const { data: items } = await supabase
+      .from("orden_items")
+      .select("producto_id, cantidad")
+      .eq("orden_id", id);
+
+    for (const item of items || []) {
+      const { data: inv } = await supabase
+        .from("inventario")
+        .select("id, cantidad")
+        .eq("producto_id", item.producto_id)
+        .single();
+
+      if (inv) {
+        const nuevaCantidad = (inv.cantidad as number) + item.cantidad;
+        await supabase
+          .from("inventario")
+          .update({ cantidad: nuevaCantidad })
+          .eq("id", inv.id);
+
+        await supabase.from("movimientos").insert({
+          producto_id: item.producto_id,
+          tipo: "entrada",
+          cantidad: item.cantidad,
+          cantidad_antes: inv.cantidad,
+          cantidad_despues: nuevaCantidad,
+          nota: `Orden cancelada — restauración de stock`,
+        });
+      }
+    }
   }
 
   const { data: updated, error } = await supabase

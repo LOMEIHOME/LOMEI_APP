@@ -18,7 +18,8 @@ export async function GET(request: NextRequest) {
 
   if (search) {
     query = query.or(
-      `productos.nombre.ilike.%${search}%,productos.sku.ilike.%${search}%`,
+      `nombre.ilike.%${search}%,sku.ilike.%${search}%,categoria.ilike.%${search}%`,
+      { referencedTable: "productos" }
     );
   }
   if (categoria) {

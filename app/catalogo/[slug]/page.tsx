@@ -71,6 +71,9 @@ export default async function ProductoDetallePage({
                 <p className="mt-3 font-serif text-xl md:text-2xl text-[var(--color-oak)]">
                   {formatPrice(producto.price)}
                 </p>
+                <p className="mt-1 text-[10px] tracking-[0.15em] uppercase text-[var(--color-sand)]">
+                  {producto.slug}
+                </p>
               </FadeIn>
 
               <FadeIn delay={0.2}>
