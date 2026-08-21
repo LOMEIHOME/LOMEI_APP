@@ -44,24 +44,35 @@ const EQUIPO = [
     role: "Directora Creativa",
     desc: "Fundadora de LOMEI HOME. Lidera cada proyecto desde el concepto hasta la entrega, cuidando que cada espacio refleje la esencia del cliente.",
     hasPhoto: true,
+    photo: "/images/showroom/arq-ana-lorena-nueva.png",
   },
   {
-    name: "Próximamente",
+    name: "Cecilia Franco Mejía",
+    role: "Cofundadora · Finanzas y Ventas",
+    desc: "Con formación en matemáticas, aporta visión analítica y estratégica al estudio. Gestiona finanzas, ventas y análisis del negocio.",
+    hasPhoto: true,
+    photo: "/images/showroom/cecilia-franco.png",
+  },
+  {
+    name: "Mario Emilio Cadena Fuentes",
     role: "Consultor de Obra",
     desc: "Supervisa y asesora la ejecución en sitio, garantizando que cada detalle constructivo se alinee con el proyecto arquitectónico.",
-    hasPhoto: false,
+    hasPhoto: true,
+    photo: "/images/showroom/mario-cadena.png",
   },
   {
-    name: "Próximamente",
-    role: "Redes Sociales",
+    name: "Sabami Rodríguez Sánchez de la Barquera",
+    role: "Community Manager",
     desc: "Gestiona la comunicación digital del estudio, creando contenido que refleja la identidad y el trabajo de LOMEI HOME.",
-    hasPhoto: false,
+    hasPhoto: true,
+    photo: "/images/showroom/sabami-rodriguez.png",
   },
   {
-    name: "Próximamente",
+    name: "Luis Fonseca Gutiérrez",
     role: "Diseño Web",
     desc: "Desarrolla y mantiene la presencia digital del estudio, asegurando una experiencia coherente con la identidad de la marca.",
-    hasPhoto: false,
+    hasPhoto: true,
+    photo: "/images/showroom/luis-fonseca.png",
   },
 ];
 
@@ -94,18 +105,14 @@ export default function NosotrosPage() {
         <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-16 items-center">
           <div className="md:col-span-5 animate-fade-in">
             <div className="relative aspect-[3/4] overflow-hidden rounded-sm bg-[var(--color-linen)]">
-              <div className="relative w-full h-full py-16">
-                <div className="relative w-full h-full overflow-hidden">
-                  <Image
-                    src="/images/showroom/arq-ana-lorena.webp"
-                    alt="Arq. Ana Lorena Vargas Mejía"
-                    fill
-                    priority
-                    className="object-cover object-[35%_25%]"
-                    sizes="(max-width: 768px) 100vw, 42vw"
-                  />
-                </div>
-              </div>
+              <Image
+                src="/images/showroom/arq-ana-lorena-nueva.png"
+                alt="Arq. Ana Lorena Vargas Mejía"
+                fill
+                priority
+                className="object-cover object-[50%_20%]"
+                sizes="(max-width: 768px) 100vw, 42vw"
+              />
             </div>
           </div>
           <div className="md:col-span-7">
@@ -146,6 +153,48 @@ export default function NosotrosPage() {
                   vivirse.&rdquo;
                 </p>
               </blockquote>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Cecilia Franco Mejía */}
+      <section className="max-w-[85rem] mx-auto px-6 md:px-10 lg:px-16 pb-16 md:pb-24 lg:pb-32">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-16 items-center">
+          <div className="md:col-span-7 order-2 md:order-1">
+            <div className="animate-fade-in">
+              <h2 className="mt-4 font-serif text-2xl md:text-3xl lg:text-[2.75rem] tracking-wider text-[var(--color-dark)] leading-tight">
+                Cecilia Franco Mejía
+              </h2>
+              <p className="mt-2 text-[11px] tracking-[0.2em] uppercase text-[var(--color-oak)]">
+                Cofundadora · Finanzas, Ventas y Análisis
+              </p>
+            </div>
+            <div className="animate-fade-in [animation-delay:100ms]">
+              <p className="mt-7 text-[15px] leading-relaxed text-[var(--color-dark)]/75">
+                Con formación en matemáticas y experiencia en el sector
+                educativo, investigación y energético, Cecilia aporta a LOMEI
+                HOME una visión analítica y estratégica que complementa la
+                dirección creativa del estudio.
+              </p>
+            </div>
+            <div className="animate-fade-in [animation-delay:200ms]">
+              <p className="mt-4 text-[15px] leading-relaxed text-[var(--color-dark)]/75">
+                Se encarga de las finanzas, ventas y análisis del negocio,
+                asegurando que cada decisión operativa esté respaldada por datos
+                y que el crecimiento del estudio sea sólido y sostenible.
+              </p>
+            </div>
+          </div>
+          <div className="md:col-span-5 order-1 md:order-2 animate-fade-in">
+            <div className="relative aspect-[3/4] overflow-hidden rounded-sm bg-[var(--color-linen)]">
+              <Image
+                src="/images/showroom/cecilia-franco.png"
+                alt="Cecilia Franco Mejía"
+                fill
+                className="object-cover object-[50%_20%]"
+                sizes="(max-width: 768px) 100vw, 42vw"
+              />
             </div>
           </div>
         </div>
@@ -216,20 +265,20 @@ export default function NosotrosPage() {
             </p>
           </div>
 
-          <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-10">
+          <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8 md:gap-10">
             {EQUIPO.map((member, i) => (
               <div
                 key={i}
-                className="animate-fade-in"
+                className="animate-fade-in flex flex-col"
                 style={{ animationDelay: `${100 * i}ms` }}
               >
                 <div className="relative aspect-[3/4] overflow-hidden rounded-sm bg-[var(--color-sand)]/20">
-                  {member.hasPhoto ? (
+                  {member.hasPhoto && member.photo ? (
                     <Image
-                      src="/images/showroom/arq-ana-lorena.webp"
+                      src={member.photo}
                       alt={member.name}
                       fill
-                      className="object-cover object-[32%_25%]"
+                      className="object-cover object-[50%_20%]"
                       sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
                     />
                   ) : (
@@ -240,10 +289,12 @@ export default function NosotrosPage() {
                     </div>
                   )}
                 </div>
-                <h3 className="mt-5 font-serif text-xl tracking-[0.05em] text-[var(--color-dark)]">
-                  {member.name}
-                </h3>
-                <p className="mt-1 text-[11px] tracking-[0.2em] uppercase text-[var(--color-oak)]">
+                <div className="mt-5 min-h-[3.5rem]">
+                  <h3 className="font-serif text-xl tracking-[0.05em] text-[var(--color-dark)] leading-tight">
+                    {member.name}
+                  </h3>
+                </div>
+                <p className="text-[11px] tracking-[0.2em] uppercase text-[var(--color-oak)]">
                   {member.role}
                 </p>
                 <p className="mt-3 text-[13px] leading-relaxed text-[var(--color-dark)]/68">

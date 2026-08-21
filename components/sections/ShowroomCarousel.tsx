@@ -6,6 +6,12 @@ import SectionTag from "@/components/ui/SectionTag";
 
 const SHOWROOM_IMAGES = [
   { src: "/images/showroom/showroom-1.png", alt: "Nuestro espacio" },
+  { src: "/images/showroom/showroom-materiales.jpg", alt: "Materiales y textiles del showroom" },
+  { src: "/images/showroom/showroom-sala-lateral.jpg", alt: "Sala del showroom — vista lateral" },
+  { src: "/images/showroom/showroom-sala-frontal.jpg", alt: "Sala del showroom — vista frontal" },
+  { src: "/images/showroom/showroom-repisero.jpg", alt: "Mueble repisero con adornos" },
+  { src: "/images/showroom/showroom-adornos.jpg", alt: "Adornos y detalles decorativos" },
+  { src: "/images/showroom/showroom-detalles.jpg", alt: "Floreros, velas y accesorios" },
 ];
 
 export default function ShowroomCarousel() {
@@ -22,7 +28,7 @@ export default function ShowroomCarousel() {
 
   useEffect(() => {
     if (paused) return;
-    const timer = setInterval(next, 3000);
+    const timer = setInterval(next, 5000);
     return () => clearInterval(timer);
   }, [paused, next]);
 
@@ -48,7 +54,7 @@ export default function ShowroomCarousel() {
           onMouseEnter={() => setPaused(true)}
           onMouseLeave={() => setPaused(false)}
         >
-          <div className="relative aspect-[16/9] md:aspect-[16/7] overflow-hidden rounded-sm">
+          <div className="relative aspect-[4/3] md:aspect-[16/9] overflow-hidden rounded-sm">
             {SHOWROOM_IMAGES.map((img, i) => (
               <Image
                 key={img.src}
