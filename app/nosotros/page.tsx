@@ -54,7 +54,7 @@ const EQUIPO = [
     photo: "/images/showroom/cecilia-franco.png",
   },
   {
-    name: "Mario Emilio Cadena Fuentes",
+    name: "Arq. Mario Emilio Cadena Fuentes",
     role: "Consultor de Obra",
     desc: "Supervisa y asesora la ejecución en sitio, garantizando que cada detalle constructivo se alinee con el proyecto arquitectónico.",
     hasPhoto: true,
