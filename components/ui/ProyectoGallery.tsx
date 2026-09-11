@@ -53,6 +53,7 @@ export default function ProyectoGallery({ images, title }: ProyectoGalleryProps)
               src={img}
               alt={`${title} — imagen ${i + 1}`}
               fill
+              unoptimized
               className={`object-cover transition-opacity duration-500 ${
                 i === activeIndex ? "opacity-100" : "opacity-0"
               }`}
@@ -111,6 +112,7 @@ export default function ProyectoGallery({ images, title }: ProyectoGalleryProps)
                   src={img}
                   alt={`${title} — miniatura ${i + 1}`}
                   fill
+                  unoptimized
                   className="object-cover"
                   sizes="72px"
                 />

@@ -22,6 +22,7 @@ export default function ProductGallery({ images, name, badge }: ProductGalleryPr
             src={images[activeIndex]}
             alt={name}
             fill
+            unoptimized
             className="object-cover transition-opacity duration-500"
             priority
             sizes="(max-width: 768px) 100vw, 58vw"
@@ -48,6 +49,7 @@ export default function ProductGallery({ images, name, badge }: ProductGalleryPr
                   src={img}
                   alt={`${name} — vista ${i + 1}`}
                   fill
+                  unoptimized
                   className="object-cover"
                   sizes="80px"
                 />

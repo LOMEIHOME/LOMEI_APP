@@ -83,6 +83,7 @@ export default function ProjectsGrid({ proyectos }: Props) {
                   src={p.image}
                   alt={p.title}
                   fill
+                  unoptimized
                   className={`object-cover transition-opacity duration-700 ease-in-out ${
                     i === active ? "opacity-100" : "opacity-0"
                   }`}

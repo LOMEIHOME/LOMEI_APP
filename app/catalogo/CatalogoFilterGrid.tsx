@@ -156,6 +156,7 @@ export default function CatalogoFilterGrid({ productos, categories }: Props) {
                     src={p.images[0]}
                     alt={p.name}
                     fill
+                    unoptimized
                     className="object-cover md:scale-[0.97] transition-transform duration-700 group-hover:scale-105"
                     sizes="(max-width: 1024px) 50vw, 33vw"
                   />
