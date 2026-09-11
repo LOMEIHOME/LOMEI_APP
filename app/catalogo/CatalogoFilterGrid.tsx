@@ -157,7 +157,7 @@ export default function CatalogoFilterGrid({ productos, categories }: Props) {
                     alt={p.name}
                     fill
                     className="object-cover md:scale-[0.97] transition-transform duration-700 group-hover:scale-105"
-                    sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    sizes="(max-width: 1024px) 50vw, 33vw"
                   />
                   {p.badge && (
                     <div className="absolute top-2 left-2 md:top-3 md:left-3">
