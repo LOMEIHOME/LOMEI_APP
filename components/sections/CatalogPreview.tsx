@@ -54,6 +54,7 @@ export default function CatalogPreview({ productos }: Props) {
                     src={p.images[0]}
                     alt={p.name}
                     fill
+                    unoptimized
                     className="object-cover transition-transform duration-700 group-hover:scale-105"
                     sizes="(max-width: 768px) 50vw, 25vw"
                   />
