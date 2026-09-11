@@ -59,6 +59,7 @@ export default function Navbar({ forceScrolled = false }: { forceScrolled?: bool
             src={scrolled ? "/images/logos/icon-dark.png" : "/images/logos/icon-white.png"}
             alt="LOMEI HOME"
             fill
+            unoptimized
             className="object-contain transition-opacity duration-500"
             sizes="48px"
             priority
