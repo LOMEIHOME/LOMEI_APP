@@ -74,6 +74,7 @@ export default function AdminDashboardPage() {
   const [umbrales, setUmbrales] = useState<Record<string, number>>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [exporting, setExporting] = useState(false);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -102,6 +103,53 @@ export default function AdminDashboardPage() {
   useEffect(() => {
     fetchData();
   }, [fetchData]);
+
+  const exportInventarioExcel = async () => {
+    setExporting(true);
+    try {
+      const res = await fetch("/api/inventario");
+      const json = await res.json();
+      const items = json.data || [];
+
+      const XLSX = await import("xlsx");
+      const wsData = [
+        ["SKU", "Producto", "Categoría", "Precio Venta", "Stock", "Valor"],
+        ...items.map((i: { productos: { sku: string; nombre: string; categoria: string; precio_venta: number }; cantidad: number }) => [
+          i.productos.sku,
+          i.productos.nombre,
+          i.productos.categoria,
+          i.productos.precio_venta,
+          i.cantidad,
+          i.productos.precio_venta * i.cantidad,
+        ]),
+        [],
+        [
+          "",
+          "",
+          "TOTAL",
+          "",
+          items.reduce((s: number, i: { cantidad: number }) => s + i.cantidad, 0),
+          items.reduce((s: number, i: { productos: { precio_venta: number }; cantidad: number }) => s + i.productos.precio_venta * i.cantidad, 0),
+        ],
+      ];
+      const ws = XLSX.utils.aoa_to_sheet(wsData);
+      ws["!cols"] = [
+        { wch: 14 },
+        { wch: 45 },
+        { wch: 20 },
+        { wch: 14 },
+        { wch: 10 },
+        { wch: 14 },
+      ];
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Inventario");
+      const hoy = new Date().toISOString().slice(0, 10);
+      XLSX.writeFile(wb, `Inventario_LOMEI_${hoy}.xlsx`);
+    } catch {
+      alert("Error al exportar el inventario.");
+    }
+    setExporting(false);
+  };
 
   if (loading) {
     return (
@@ -138,13 +186,23 @@ export default function AdminDashboardPage() {
           </h1>
           <p className="mt-1 text-[13px] sm:text-[14px] text-[#8b867c]">{getDateString()}</p>
         </div>
-        <Link
-          href="/admin/inventario/nuevo"
-          className="flex items-center justify-center gap-1.5 bg-[#37352f] text-white text-[13px] font-medium rounded-lg px-4 py-2.5 hover:bg-[#2c2a26] transition-colors shrink-0 w-full sm:w-auto"
-        >
-          <span className="text-[15px] leading-none">{"\uFF0B"}</span>
-          Nuevo producto
-        </Link>
+        <div className="flex gap-2 w-full sm:w-auto">
+          <button
+            onClick={exportInventarioExcel}
+            disabled={exporting}
+            className="flex items-center justify-center gap-1.5 border border-[#e6e3db] bg-white text-[#37352f] text-[13px] font-medium rounded-lg px-4 py-2.5 hover:bg-[#faf9f6] transition-colors shrink-0 w-full sm:w-auto disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <span className="text-[15px] leading-none">{"\u{1F4E5}"}</span>
+            {exporting ? "Descargando..." : "Descargar inventario"}
+          </button>
+          <Link
+            href="/admin/inventario/nuevo"
+            className="flex items-center justify-center gap-1.5 bg-[#37352f] text-white text-[13px] font-medium rounded-lg px-4 py-2.5 hover:bg-[#2c2a26] transition-colors shrink-0 w-full sm:w-auto"
+          >
+            <span className="text-[15px] leading-none">{"\uFF0B"}</span>
+            Nuevo producto
+          </Link>
+        </div>
       </div>
 
       {/* KPI Cards */}
