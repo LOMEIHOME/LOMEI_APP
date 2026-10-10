@@ -390,6 +390,7 @@ font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 | Plantas Artificiales | 🌿 |
 | Velas | 🕯️ |
 | Aromas | 🌿 |
+| Servicios | 🔧 |
 
 ### Páginas del admin
 
@@ -468,6 +469,17 @@ Objetivo: sitio público funcional con identidad de LOMEI HOME
 - [x] Slug discreto en detalle de producto del catálogo
 - [x] Logo Navbar redirige al splash screen
 
+### Mejoras POS (completada — octubre 2026)
+- [x] Venta por mililitro en fragancias: campo `venta_por_ml` en productos, POS pide cantidad en ml, ticket muestra "X ml" y "$/ml", inventario descuenta en ml
+- [x] Toggle `venta_por_ml` en detalle de producto (`/admin/inventario/[id]`) para categoría Aromas
+- [x] Método de pago: selector Efectivo/Tarjeta en modal de confirmación del POS, input opcional para número de transacción, visible en ticket y detalle de orden
+- [x] Servicios como categoría: precio libre ingresado en el POS, sin manejo de inventario ni validación de precio contra BD
+- [x] 8 servicios pre-cargados en BD (SVC-001 a SVC-008): Interiorismo, Asesoría, Custom Design, Styling, Proyecto Obra, Fabricación de Muebles, Ejecutivo, Paisajismo — precio placeholder $1, precio real se define en POS
+- [x] Servicios visibles en lista de inventario con pill "Servicio" y detalle informativo (sin stock)
+- [x] Sanity sync protegido: nunca sobrescribe productos con categoría "Servicios"
+- [x] Migración SQL: columnas `venta_por_ml` (productos), `metodo_pago` y `num_transaccion` (ordenes), cambio de INTEGER a NUMERIC(12,2) en cantidad (inventario, orden_items, movimientos)
+- Archivos principales: `app/admin/pos/page.tsx`, `app/api/ordenes/route.ts`, `lib/ticket.ts`, `components/admin/ProductForm.tsx`
+
 ### Fase 2 — Tienda en línea (pendiente, $7,500 MXN)
 - [ ] Carrito de compras
 - [ ] Checkout con Stripe
@@ -507,4 +519,4 @@ Mantenimiento: Básico $400 · Recomendado $700 · Premium $1,000 (mensual, apar
 
 ---
 
-*Última actualización: 17 agosto 2026 — Luis Fonseca / LOMEI HOME*
+*Última actualización: 10 octubre 2026 — Luis Fonseca / LOMEI HOME*
