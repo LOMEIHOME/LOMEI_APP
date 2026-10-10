@@ -79,6 +79,7 @@ export async function POST(request: NextRequest) {
       materiales: body.materiales || [],
       acabados: body.acabados || [],
       imagen_url: body.imagen_url || null,
+      venta_por_ml: body.venta_por_ml ?? false,
     })
     .select()
     .single();
@@ -87,28 +88,30 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: error.message }, { status: 400 });
   }
 
-  // Crear registro de inventario automáticamente
-  const { error: invError } = await supabase.from("inventario").insert({
-    producto_id: producto.id,
-    cantidad: body.cantidad_inicial || 0,
-    ubicacion: body.ubicacion || "Showroom",
-    stock_minimo: body.stock_minimo || 2,
-  });
-
-  if (invError) {
-    return NextResponse.json({ error: invError.message }, { status: 400 });
-  }
-
-  // Registrar movimiento inicial si hay stock
-  if (body.cantidad_inicial && body.cantidad_inicial > 0) {
-    await supabase.from("movimientos").insert({
+  // Crear registro de inventario automáticamente (no aplica a servicios)
+  if (body.categoria !== "Servicios") {
+    const { error: invError } = await supabase.from("inventario").insert({
       producto_id: producto.id,
-      tipo: "entrada",
-      cantidad: body.cantidad_inicial,
-      cantidad_antes: 0,
-      cantidad_despues: body.cantidad_inicial,
-      nota: "Stock inicial al crear producto",
+      cantidad: body.cantidad_inicial || 0,
+      ubicacion: body.ubicacion || "Showroom",
+      stock_minimo: body.stock_minimo || 2,
     });
+
+    if (invError) {
+      return NextResponse.json({ error: invError.message }, { status: 400 });
+    }
+
+    // Registrar movimiento inicial si hay stock
+    if (body.cantidad_inicial && body.cantidad_inicial > 0) {
+      await supabase.from("movimientos").insert({
+        producto_id: producto.id,
+        tipo: "entrada",
+        cantidad: body.cantidad_inicial,
+        cantidad_antes: 0,
+        cantidad_despues: body.cantidad_inicial,
+        nota: "Stock inicial al crear producto",
+      });
+    }
   }
 
   return NextResponse.json({ data: producto }, { status: 201 });

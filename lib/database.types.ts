@@ -42,6 +42,7 @@ export type Database = {
           materiales: string[] | null;
           acabados: string[] | null;
           imagen_url: string | null;
+          venta_por_ml: boolean;
           activo: boolean;
           creado_en: string;
           editado_en: string;
@@ -59,6 +60,7 @@ export type Database = {
           materiales?: string[] | null;
           acabados?: string[] | null;
           imagen_url?: string | null;
+          venta_por_ml?: boolean;
           activo?: boolean;
           creado_en?: string;
           editado_en?: string;
@@ -76,6 +78,7 @@ export type Database = {
           materiales?: string[] | null;
           acabados?: string[] | null;
           imagen_url?: string | null;
+          venta_por_ml?: boolean;
           activo?: boolean;
           creado_en?: string;
           editado_en?: string;
@@ -154,6 +157,8 @@ export type Database = {
           descuento: number;
           total: number;
           nota: string | null;
+          metodo_pago: string;
+          num_transaccion: string | null;
           usuario_id: string | null;
           creado_en: string;
           editado_en: string;
@@ -169,6 +174,8 @@ export type Database = {
           descuento?: number;
           total?: number;
           nota?: string | null;
+          metodo_pago?: string;
+          num_transaccion?: string | null;
           usuario_id?: string | null;
           creado_en?: string;
           editado_en?: string;
@@ -184,6 +191,8 @@ export type Database = {
           descuento?: number;
           total?: number;
           nota?: string | null;
+          metodo_pago?: string;
+          num_transaccion?: string | null;
           usuario_id?: string | null;
           creado_en?: string;
           editado_en?: string;

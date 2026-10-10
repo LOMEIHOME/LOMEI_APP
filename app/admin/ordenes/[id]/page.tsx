@@ -9,7 +9,7 @@ import { formatFecha } from "@/lib/constants";
 interface OrdenItem {
   id: string;
   producto_id: string;
-  productos: { nombre: string; sku: string | null } | null;
+  productos: { nombre: string; sku: string | null; venta_por_ml?: boolean } | null;
   cantidad: number;
   precio_unitario: number;
   descuento: number;
@@ -29,6 +29,8 @@ interface Orden {
   total: number;
   nota: string | null;
   ticket_html: string | null;
+  metodo_pago: string;
+  num_transaccion: string | null;
   orden_items: OrdenItem[];
 }
 
@@ -247,6 +249,20 @@ export default function OrdenDetallePage() {
               <span style={{ fontSize: 14, fontWeight: 700, color: "#37352f" }}>Total</span>
               <span style={{ fontSize: 14, fontWeight: 700, color: "#37352f" }}>{formatPrice(orden.total)}</span>
             </div>
+            <div style={{ display: "flex", justifyContent: "space-between", marginTop: 10, paddingTop: 10, borderTop: "1px solid #eeece7" }}>
+              <span style={{ fontSize: 13, color: "#9b968c" }}>Método de pago</span>
+              <span style={{ fontSize: 14, color: "#37352f" }}>
+                {orden.metodo_pago === "tarjeta" ? "💳 Tarjeta" : "💵 Efectivo"}
+              </span>
+            </div>
+            {orden.num_transaccion && (
+              <div style={{ display: "flex", justifyContent: "space-between", marginTop: 6 }}>
+                <span style={{ fontSize: 13, color: "#9b968c" }}>No. transacción</span>
+                <span style={{ fontSize: 13, color: "#37352f", fontFamily: "ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, monospace" }}>
+                  {orden.num_transaccion}
+                </span>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -304,7 +320,7 @@ export default function OrdenDetallePage() {
                     {item.productos?.sku || "—"}
                   </td>
                   <td style={{ padding: "12px 16px", textAlign: "right", color: "#37352f" }}>
-                    {item.cantidad}
+                    {item.cantidad}{item.productos?.venta_por_ml ? ' ml' : ''}
                   </td>
                   <td
                     className="hidden sm:table-cell"

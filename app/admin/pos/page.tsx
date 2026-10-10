@@ -13,6 +13,7 @@ interface ProductoResult {
   categoria: string;
   precio_venta: number;
   stock: number;
+  venta_por_ml: boolean;
 }
 
 interface CartItem {
@@ -23,6 +24,8 @@ interface CartItem {
   cantidad: number;
   stock_disponible: number;
   descuento: number; // porcentaje 0-100
+  venta_por_ml: boolean;
+  es_servicio: boolean;
 }
 
 interface ClienteExistente {
@@ -113,6 +116,18 @@ export default function PuntoDeVentaPage() {
   const [completedOrder, setCompletedOrder] = useState<CompletedOrder | null>(null);
   const [showConfirm, setShowConfirm] = useState(false);
 
+  // Método de pago
+  const [metodoPago, setMetodoPago] = useState<"efectivo" | "tarjeta">("efectivo");
+  const [numTransaccion, setNumTransaccion] = useState("");
+
+  // Mini-modal para cantidad en ml
+  const [mlInputProduct, setMlInputProduct] = useState<ProductoResult | null>(null);
+  const [mlAmount, setMlAmount] = useState("");
+
+  // Mini-modal para precio de servicio
+  const [servicioInputProduct, setServicioInputProduct] = useState<ProductoResult | null>(null);
+  const [servicioPrecio, setServicioPrecio] = useState("");
+
   // Product search with debounce
   useEffect(() => {
     if (!searchQuery.trim()) {
@@ -163,7 +178,29 @@ export default function PuntoDeVentaPage() {
 
   // Add product to cart
   const addToCart = useCallback((producto: ProductoResult) => {
-    if (producto.stock <= 0) return;
+    const esServicio = producto.categoria === "Servicios";
+
+    // Servicios no necesitan stock
+    if (!esServicio && producto.stock <= 0) return;
+
+    // Servicios: abrir modal para ingresar precio
+    if (esServicio) {
+      setServicioInputProduct(producto);
+      setServicioPrecio("");
+      setSearchQuery("");
+      setShowDropdown(false);
+      return;
+    }
+
+    // Productos por ml: abrir mini-modal para pedir cantidad
+    if (producto.venta_por_ml) {
+      setMlInputProduct(producto);
+      setMlAmount("");
+      setSearchQuery("");
+      setShowDropdown(false);
+      return;
+    }
+
     setCart((prev) => {
       const existing = prev.find((i) => i.producto_id === producto.id);
       if (existing) {
@@ -184,12 +221,82 @@ export default function PuntoDeVentaPage() {
           cantidad: 1,
           stock_disponible: producto.stock,
           descuento: 0,
+          venta_por_ml: false,
+          es_servicio: false,
         },
       ];
     });
     setSearchQuery("");
     setShowDropdown(false);
   }, []);
+
+  // Confirmar cantidad en ml y agregar al carrito
+  const confirmMlAdd = () => {
+    if (!mlInputProduct) return;
+    const ml = parseFloat(mlAmount);
+    if (!ml || ml < 0.1 || ml > mlInputProduct.stock) return;
+    setCart((prev) => {
+      const existing = prev.find((i) => i.producto_id === mlInputProduct.id);
+      if (existing) {
+        const newQty = Math.round((existing.cantidad + ml) * 100) / 100;
+        if (newQty > mlInputProduct.stock) return prev;
+        return prev.map((i) =>
+          i.producto_id === mlInputProduct.id ? { ...i, cantidad: newQty } : i
+        );
+      }
+      return [
+        ...prev,
+        {
+          producto_id: mlInputProduct.id,
+          slug: mlInputProduct.slug,
+          nombre: mlInputProduct.nombre,
+          precio_unitario: mlInputProduct.precio_venta,
+          cantidad: ml,
+          stock_disponible: mlInputProduct.stock,
+          descuento: 0,
+          venta_por_ml: true,
+          es_servicio: false,
+        },
+      ];
+    });
+    setMlInputProduct(null);
+    setMlAmount("");
+  };
+
+  // Confirmar servicio con precio personalizado
+  const confirmServicioAdd = () => {
+    if (!servicioInputProduct) return;
+    const precio = parseFloat(servicioPrecio);
+    if (!precio || precio <= 0) return;
+    setCart((prev) => [
+      ...prev,
+      {
+        producto_id: servicioInputProduct.id,
+        slug: servicioInputProduct.slug,
+        nombre: servicioInputProduct.nombre,
+        precio_unitario: precio,
+        cantidad: 1,
+        stock_disponible: 9999,
+        descuento: 0,
+        venta_por_ml: false,
+        es_servicio: true,
+      },
+    ]);
+    setServicioInputProduct(null);
+    setServicioPrecio("");
+  };
+
+  // Actualizar precio de un servicio en el carrito
+  const updateServicePrice = (productoId: string, newPrice: number) => {
+    if (!Number.isFinite(newPrice) || newPrice < 0) return;
+    setCart((prev) =>
+      prev.map((i) =>
+        i.producto_id === productoId && i.es_servicio
+          ? { ...i, precio_unitario: Math.round(newPrice * 100) / 100 }
+          : i
+      )
+    );
+  };
 
   const updateQty = (productoId: string, delta: number) => {
     setCart((prev) =>
@@ -200,6 +307,19 @@ export default function PuntoDeVentaPage() {
           if (newQty <= 0) return null;
           if (newQty > i.stock_disponible) return i;
           return { ...i, cantidad: newQty };
+        })
+        .filter(Boolean) as CartItem[]
+    );
+  };
+
+  const updateQtyDirect = (productoId: string, newQty: number) => {
+    setCart((prev) =>
+      prev
+        .map((i) => {
+          if (i.producto_id !== productoId) return i;
+          if (newQty <= 0) return null;
+          if (newQty > i.stock_disponible) return i;
+          return { ...i, cantidad: Math.round(newQty * 100) / 100 };
         })
         .filter(Boolean) as CartItem[]
     );
@@ -280,6 +400,7 @@ export default function PuntoDeVentaPage() {
       cantidad: i.cantidad,
       precio_unitario: i.precio_unitario,
       descuento: i.descuento,
+      venta_por_ml: i.venta_por_ml,
     }));
 
     const res = await fetch("/api/ordenes", {
@@ -292,6 +413,8 @@ export default function PuntoDeVentaPage() {
         cliente_id: clienteId,
         nota: nota || null,
         enviar_ticket: enviarTicket,
+        metodo_pago: metodoPago,
+        num_transaccion: metodoPago === "tarjeta" ? (numTransaccion || null) : null,
         items,
       }),
     });
@@ -325,6 +448,8 @@ export default function PuntoDeVentaPage() {
     setEnviarTicket(false);
     setCompletedOrder(null);
     setSubmitError("");
+    setMetodoPago("efectivo");
+    setNumTransaccion("");
   };
 
   // Open ticket in new window
@@ -616,12 +741,12 @@ export default function PuntoDeVentaPage() {
                           justifyContent: "space-between",
                           alignItems: "center",
                           padding: "10px 14px",
-                          cursor: p.stock > 0 ? "pointer" : "not-allowed",
+                          cursor: p.categoria === "Servicios" || p.stock > 0 ? "pointer" : "not-allowed",
                           borderBottom: "1px solid #f4f2ec",
-                          opacity: p.stock > 0 ? 1 : 0.4,
+                          opacity: p.categoria === "Servicios" || p.stock > 0 ? 1 : 0.4,
                         }}
                         onMouseEnter={(e) => {
-                          if (p.stock > 0) e.currentTarget.style.background = "#faf9f6";
+                          if (p.categoria === "Servicios" || p.stock > 0) e.currentTarget.style.background = "#faf9f6";
                         }}
                         onMouseLeave={(e) => {
                           e.currentTarget.style.background = "transparent";
@@ -643,6 +768,12 @@ export default function PuntoDeVentaPage() {
                           </div>
                         </div>
                         <div style={{ textAlign: "right", flexShrink: 0 }}>
+                          {p.categoria === "Servicios" ? (
+                            <div style={{ fontSize: 12, color: "#A0845C", fontWeight: 500 }}>
+                              Precio variable
+                            </div>
+                          ) : (
+                          <>
                           <div style={{ fontSize: 13.5, fontWeight: 600, color: "#37352f" }}>
                             {formatPrice(p.precio_venta)}
                           </div>
@@ -653,8 +784,10 @@ export default function PuntoDeVentaPage() {
                               marginTop: 1,
                             }}
                           >
-                            {p.stock > 0 ? `${p.stock} disponibles` : "Agotado"}
+                            {p.stock > 0 ? `${p.stock}${p.venta_por_ml ? ' ml' : ''} disponibles` : "Agotado"}
                           </div>
+                          </>
+                          )}
                         </div>
                       </div>
                     ))
@@ -735,12 +868,62 @@ export default function PuntoDeVentaPage() {
                       >
                         {item.nombre}
                       </div>
-                      <div style={{ fontSize: 12, color: "#9b968c", marginTop: 1 }}>
-                        {formatPrice(item.precio_unitario)} c/u
-                      </div>
+                      {item.es_servicio ? (
+                        <div style={{ display: "flex", alignItems: "center", gap: 4, marginTop: 2 }}>
+                          <span style={{ fontSize: 12, color: "#9b968c" }}>$</span>
+                          <input
+                            type="number"
+                            min="0"
+                            step="0.01"
+                            value={item.precio_unitario}
+                            onChange={(e) => updateServicePrice(item.producto_id, parseFloat(e.target.value) || 0)}
+                            style={{
+                              width: 90,
+                              fontSize: 12,
+                              fontFamily: "inherit",
+                              color: "#37352f",
+                              border: "1px solid #e6e3db",
+                              borderRadius: 5,
+                              padding: "2px 6px",
+                              background: "#f8f7f4",
+                              outline: "none",
+                            }}
+                          />
+                        </div>
+                      ) : (
+                        <div style={{ fontSize: 12, color: "#9b968c", marginTop: 1 }}>
+                          {formatPrice(item.precio_unitario)}{item.venta_por_ml ? '/ml' : ' c/u'}
+                        </div>
+                      )}
                     </div>
 
                     {/* Quantity controls */}
+                    {item.venta_por_ml ? (
+                      <div style={{ display: "flex", alignItems: "center", gap: 6, marginLeft: 12 }}>
+                        <input
+                          type="number"
+                          step="0.1"
+                          min="0.1"
+                          max={item.stock_disponible}
+                          value={item.cantidad}
+                          onChange={(e) => updateQtyDirect(item.producto_id, parseFloat(e.target.value) || 0)}
+                          style={{
+                            width: 70,
+                            fontSize: 13,
+                            fontFamily: "inherit",
+                            fontWeight: 600,
+                            color: "#37352f",
+                            textAlign: "center",
+                            border: "1px solid #e6e3db",
+                            borderRadius: 6,
+                            padding: "5px 8px",
+                            background: "#f8f7f4",
+                            outline: "none",
+                          }}
+                        />
+                        <span style={{ fontSize: 12, color: "#9b968c" }}>ml</span>
+                      </div>
+                    ) : (
                     <div
                       style={{
                         display: "flex",
@@ -808,6 +991,7 @@ export default function PuntoDeVentaPage() {
                         +
                       </button>
                     </div>
+                    )}
 
                     {/* Line total + remove */}
                     <div
@@ -1114,9 +1298,11 @@ export default function PuntoDeVentaPage() {
                   >
                     <span style={{ color: "#6b6760" }}>
                       {item.nombre}
-                      {item.cantidad > 1 && (
+                      {item.venta_por_ml ? (
+                        <span style={{ color: "#9b968c" }}> — {item.cantidad} ml</span>
+                      ) : item.cantidad > 1 ? (
                         <span style={{ color: "#9b968c" }}> ×{item.cantidad}</span>
-                      )}
+                      ) : null}
                       {item.descuento > 0 && (
                         <span style={{ color: "#16794a", fontSize: 11 }}> -{item.descuento}%</span>
                       )}
@@ -1299,6 +1485,47 @@ export default function PuntoDeVentaPage() {
               {cart.length} {cart.length === 1 ? "producto" : "productos"}
             </p>
 
+            {/* Método de pago */}
+            <div style={{ textAlign: "left", marginBottom: 20 }}>
+              <div style={{ fontSize: 11, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.12em", color: "#b3ada1", marginBottom: 10 }}>
+                Método de pago
+              </div>
+              <div style={{ display: "flex", gap: 8 }}>
+                {(["efectivo", "tarjeta"] as const).map((m) => (
+                  <button
+                    key={m}
+                    type="button"
+                    onClick={() => { setMetodoPago(m); if (m === "efectivo") setNumTransaccion(""); }}
+                    style={{
+                      flex: 1,
+                      fontFamily: "inherit",
+                      fontSize: 13,
+                      fontWeight: 500,
+                      color: metodoPago === m ? "#fff" : "#37352f",
+                      background: metodoPago === m ? "#37352f" : "#fff",
+                      border: `1px solid ${metodoPago === m ? "#37352f" : "#e6e3db"}`,
+                      borderRadius: 8,
+                      padding: "10px 0",
+                      cursor: "pointer",
+                    }}
+                  >
+                    {m === "efectivo" ? "💵 Efectivo" : "💳 Tarjeta"}
+                  </button>
+                ))}
+              </div>
+              {metodoPago === "tarjeta" && (
+                <div style={{ marginTop: 10 }}>
+                  <input
+                    type="text"
+                    value={numTransaccion}
+                    onChange={(e) => setNumTransaccion(e.target.value)}
+                    placeholder="No. de transacción (opcional)"
+                    style={{ ...inputStyle, fontSize: 12.5 }}
+                  />
+                </div>
+              )}
+            </div>
+
             {submitError && (
               <div style={{ padding: "8px 12px", marginBottom: 16, borderRadius: 8, background: "#fdf3ec", fontSize: 12.5, color: "#c2410c" }}>
                 {submitError}
@@ -1344,6 +1571,183 @@ export default function PuntoDeVentaPage() {
                 }}
               >
                 {isSubmitting ? "Procesando..." : "Confirmar"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Mini-modal para cantidad en ml */}
+      {mlInputProduct && (
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: "rgba(0,0,0,0.35)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 100,
+          }}
+          onClick={() => setMlInputProduct(null)}
+        >
+          <div
+            style={{
+              background: "#fff",
+              borderRadius: 16,
+              padding: "28px 32px",
+              maxWidth: 340,
+              width: "90%",
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div style={{ fontSize: 11, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.12em", color: "#b3ada1", marginBottom: 12 }}>
+              Cantidad en mililitros
+            </div>
+            <p style={{ fontSize: 14, fontWeight: 500, color: "#37352f", margin: "0 0 4px" }}>
+              {mlInputProduct.nombre}
+            </p>
+            <p style={{ fontSize: 12, color: "#9b968c", margin: "0 0 16px" }}>
+              Disponibles: {mlInputProduct.stock} ml · {formatPrice(mlInputProduct.precio_venta)}/ml
+            </p>
+            <input
+              type="number"
+              step="0.1"
+              min="0.1"
+              max={mlInputProduct.stock}
+              value={mlAmount}
+              onChange={(e) => setMlAmount(e.target.value)}
+              onKeyDown={(e) => { if (e.key === "Enter") confirmMlAdd(); }}
+              placeholder="Ej: 50"
+              autoFocus
+              style={{ ...inputStyle, fontSize: 18, textAlign: "center", fontWeight: 600, marginBottom: 16 }}
+            />
+            <div style={{ display: "flex", gap: 10 }}>
+              <button
+                onClick={() => setMlInputProduct(null)}
+                style={{
+                  flex: 1,
+                  fontFamily: "inherit",
+                  fontSize: 14,
+                  fontWeight: 500,
+                  color: "#37352f",
+                  background: "#fff",
+                  border: "1px solid #e6e3db",
+                  borderRadius: 8,
+                  padding: "11px 0",
+                  cursor: "pointer",
+                }}
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={confirmMlAdd}
+                disabled={!mlAmount || parseFloat(mlAmount) < 0.1 || parseFloat(mlAmount) > mlInputProduct.stock}
+                style={{
+                  flex: 1,
+                  fontFamily: "inherit",
+                  fontSize: 14,
+                  fontWeight: 600,
+                  color: "#fff",
+                  background: mlAmount && parseFloat(mlAmount) >= 0.1 && parseFloat(mlAmount) <= mlInputProduct.stock ? "#37352f" : "#c4bfb6",
+                  border: "none",
+                  borderRadius: 8,
+                  padding: "11px 0",
+                  cursor: mlAmount && parseFloat(mlAmount) >= 0.1 ? "pointer" : "not-allowed",
+                }}
+              >
+                Agregar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Mini-modal para precio de servicio */}
+      {servicioInputProduct && (
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: "rgba(0,0,0,0.35)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 100,
+          }}
+          onClick={() => setServicioInputProduct(null)}
+        >
+          <div
+            style={{
+              background: "#fff",
+              borderRadius: 16,
+              padding: "28px 32px",
+              maxWidth: 340,
+              width: "90%",
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div style={{ fontSize: 11, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.12em", color: "#b3ada1", marginBottom: 12 }}>
+              Precio del servicio
+            </div>
+            <p style={{ fontSize: 14, fontWeight: 500, color: "#37352f", margin: "0 0 16px" }}>
+              {servicioInputProduct.nombre}
+            </p>
+            <div style={{ position: "relative", marginBottom: 16 }}>
+              <span style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", fontSize: 18, color: "#9b968c" }}>$</span>
+              <input
+                type="number"
+                step="0.01"
+                min="0.01"
+                value={servicioPrecio}
+                onChange={(e) => setServicioPrecio(e.target.value)}
+                onKeyDown={(e) => { if (e.key === "Enter") confirmServicioAdd(); }}
+                placeholder="0.00"
+                autoFocus
+                style={{ ...inputStyle, fontSize: 18, textAlign: "center", fontWeight: 600, paddingLeft: 28 }}
+              />
+            </div>
+            <div style={{ display: "flex", gap: 10 }}>
+              <button
+                onClick={() => setServicioInputProduct(null)}
+                style={{
+                  flex: 1,
+                  fontFamily: "inherit",
+                  fontSize: 14,
+                  fontWeight: 500,
+                  color: "#37352f",
+                  background: "#fff",
+                  border: "1px solid #e6e3db",
+                  borderRadius: 8,
+                  padding: "11px 0",
+                  cursor: "pointer",
+                }}
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={confirmServicioAdd}
+                disabled={!servicioPrecio || parseFloat(servicioPrecio) <= 0}
+                style={{
+                  flex: 1,
+                  fontFamily: "inherit",
+                  fontSize: 14,
+                  fontWeight: 600,
+                  color: "#fff",
+                  background: servicioPrecio && parseFloat(servicioPrecio) > 0 ? "#37352f" : "#c4bfb6",
+                  border: "none",
+                  borderRadius: 8,
+                  padding: "11px 0",
+                  cursor: servicioPrecio && parseFloat(servicioPrecio) > 0 ? "pointer" : "not-allowed",
+                }}
+              >
+                Agregar
               </button>
             </div>
           </div>

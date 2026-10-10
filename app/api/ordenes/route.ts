@@ -8,7 +8,7 @@ export async function POST(request: NextRequest) {
   const supabase = createServiceRoleClient();
   const body = await request.json();
 
-  const { cliente_nombre, cliente_email, cliente_tel, cliente_id, nota, enviar_ticket, items } = body;
+  const { cliente_nombre, cliente_email, cliente_tel, cliente_id, nota, enviar_ticket, metodo_pago, num_transaccion, items } = body;
 
   if (!cliente_nombre?.trim() || !items?.length) {
     return NextResponse.json(
@@ -24,9 +24,18 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  // Validar cada item: cantidades positivas y enteras
+  // Validar método de pago
+  const metodoPago = metodo_pago || "efectivo";
+  if (!["efectivo", "tarjeta"].includes(metodoPago)) {
+    return NextResponse.json(
+      { error: "Método de pago inválido" },
+      { status: 400 }
+    );
+  }
+
+  // Validar cada item: cantidades positivas, precios y descuentos
   for (const item of items) {
-    if (!item.cantidad || item.cantidad < 1 || !Number.isInteger(item.cantidad)) {
+    if (!Number.isFinite(item.cantidad) || item.cantidad <= 0) {
       return NextResponse.json(
         { error: `Cantidad inválida para "${item.nombre}"` },
         { status: 400 }
@@ -49,12 +58,12 @@ export async function POST(request: NextRequest) {
   }
 
   // Validar stock y precio de cada producto contra la BD
-  const productosValidados: { id: string; slug: string; nombre: string; invId: string; invCantidad: number; cantidadSolicitada: number; precio_unitario: number; descuento: number }[] = [];
+  const productosValidados: { id: string; slug: string; nombre: string; invId: string; invCantidad: number; cantidadSolicitada: number; precio_unitario: number; descuento: number; venta_por_ml: boolean; es_servicio: boolean }[] = [];
 
   for (const item of items) {
     const { data: producto } = await supabase
       .from("productos")
-      .select("id, nombre, precio_venta")
+      .select("id, nombre, precio_venta, venta_por_ml, categoria")
       .eq("slug", item.slug)
       .eq("activo", true)
       .single();
@@ -66,37 +75,82 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Validar que el precio no fue manipulado
-    if (Math.abs(producto.precio_venta - item.precio_unitario) > 0.01) {
-      return NextResponse.json(
-        { error: `El precio de "${item.nombre}" cambió. Recarga la página e intenta de nuevo.` },
-        { status: 400 }
-      );
+    const esVentaPorMl = producto.venta_por_ml ?? false;
+    const esServicio = producto.categoria === "Servicios";
+
+    // Validar cantidad: entero para productos normales, decimal para ml
+    if (esVentaPorMl) {
+      if (item.cantidad < 0.1) {
+        return NextResponse.json(
+          { error: `Cantidad mínima para "${item.nombre}" es 0.1 ml` },
+          { status: 400 }
+        );
+      }
+    } else {
+      if (!Number.isInteger(item.cantidad)) {
+        return NextResponse.json(
+          { error: `Cantidad inválida para "${item.nombre}" (debe ser un número entero)` },
+          { status: 400 }
+        );
+      }
     }
 
-    const { data: inv } = await supabase
-      .from("inventario")
-      .select("id, cantidad")
-      .eq("producto_id", producto.id)
-      .single();
+    // Servicios: precio libre (ingresado por el usuario), sin validación de stock
+    if (esServicio) {
+      if (!Number.isFinite(item.precio_unitario) || item.precio_unitario <= 0) {
+        return NextResponse.json(
+          { error: `Precio inválido para el servicio "${item.nombre}"` },
+          { status: 400 }
+        );
+      }
+      productosValidados.push({
+        id: producto.id,
+        slug: item.slug,
+        nombre: item.nombre,
+        invId: "",
+        invCantidad: 0,
+        cantidadSolicitada: item.cantidad,
+        precio_unitario: item.precio_unitario,
+        descuento: item.descuento ?? 0,
+        venta_por_ml: false,
+        es_servicio: true,
+      });
+    } else {
+      // Validar que el precio no fue manipulado
+      if (Math.abs(producto.precio_venta - item.precio_unitario) > 0.01) {
+        return NextResponse.json(
+          { error: `El precio de "${item.nombre}" cambió. Recarga la página e intenta de nuevo.` },
+          { status: 400 }
+        );
+      }
 
-    if (!inv || (inv.cantidad as number) < item.cantidad) {
-      return NextResponse.json(
-        { error: `Stock insuficiente para "${item.nombre}" (disponible: ${inv?.cantidad ?? 0})` },
-        { status: 400 }
-      );
+      const { data: inv } = await supabase
+        .from("inventario")
+        .select("id, cantidad")
+        .eq("producto_id", producto.id)
+        .single();
+
+      if (!inv || (inv.cantidad as number) < item.cantidad) {
+        const unidad = esVentaPorMl ? " ml" : "";
+        return NextResponse.json(
+          { error: `Stock insuficiente para "${item.nombre}" (disponible: ${inv?.cantidad ?? 0}${unidad})` },
+          { status: 400 }
+        );
+      }
+
+      productosValidados.push({
+        id: producto.id,
+        slug: item.slug,
+        nombre: item.nombre,
+        invId: inv.id,
+        invCantidad: inv.cantidad as number,
+        cantidadSolicitada: item.cantidad,
+        precio_unitario: producto.precio_venta,
+        descuento: item.descuento ?? 0,
+        venta_por_ml: esVentaPorMl,
+        es_servicio: false,
+      });
     }
-
-    productosValidados.push({
-      id: producto.id,
-      slug: item.slug,
-      nombre: item.nombre,
-      invId: inv.id,
-      invCantidad: inv.cantidad as number,
-      cantidadSolicitada: item.cantidad,
-      precio_unitario: producto.precio_venta, // Usar precio de la BD, no del frontend
-      descuento: item.descuento ?? 0,
-    });
   }
 
   // Calcular totales con precios validados de la BD (aplicando descuentos)
@@ -109,6 +163,7 @@ export async function POST(request: NextRequest) {
       precio_unitario: pv.precio_unitario,
       descuento: pv.descuento,
       subtotal: base - descuentoMonto,
+      venta_por_ml: pv.venta_por_ml,
     };
   });
 
@@ -130,6 +185,8 @@ export async function POST(request: NextRequest) {
       }, 0),
       total,
       nota: nota || null,
+      metodo_pago: metodoPago,
+      num_transaccion: metodoPago === "tarjeta" ? (num_transaccion || null) : null,
     })
     .select()
     .single();
@@ -151,20 +208,23 @@ export async function POST(request: NextRequest) {
       subtotal: base - descMonto,
     });
 
-    const nuevaCantidad = pv.invCantidad - pv.cantidadSolicitada;
-    await supabase
-      .from("inventario")
-      .update({ cantidad: nuevaCantidad })
-      .eq("id", pv.invId);
+    // Servicios no tienen inventario — no deducir stock ni registrar movimiento
+    if (!pv.es_servicio) {
+      const nuevaCantidad = pv.invCantidad - pv.cantidadSolicitada;
+      await supabase
+        .from("inventario")
+        .update({ cantidad: nuevaCantidad })
+        .eq("id", pv.invId);
 
-    await supabase.from("movimientos").insert({
-      producto_id: pv.id,
-      tipo: "salida",
-      cantidad: pv.cantidadSolicitada,
-      cantidad_antes: pv.invCantidad,
-      cantidad_despues: nuevaCantidad,
-      nota: `Venta — Orden #${orden.numero}`,
-    });
+      await supabase.from("movimientos").insert({
+        producto_id: pv.id,
+        tipo: "salida",
+        cantidad: pv.cantidadSolicitada,
+        cantidad_antes: pv.invCantidad,
+        cantidad_despues: nuevaCantidad,
+        nota: `Venta — Orden #${orden.numero}`,
+      });
+    }
   }
 
   // Generar nota de venta
@@ -192,6 +252,8 @@ export async function POST(request: NextRequest) {
     iva,
     total,
     nota,
+    metodo_pago: metodoPago,
+    num_transaccion: metodoPago === "tarjeta" ? (num_transaccion || null) : null,
   });
 
   // Guardar ticket en la orden

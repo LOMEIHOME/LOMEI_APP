@@ -19,6 +19,7 @@ export const CATEGORY_EMOJI: Record<string, string> = {
   "Plantas Artificiales": "🌿",
   Velas: "🕯️",
   Aromas: "🌿",
+  Servicios: "🔧",
 };
 
 export function getCategoryEmoji(cat: string): string {

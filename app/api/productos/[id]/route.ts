@@ -41,6 +41,7 @@ export async function PUT(request: NextRequest, { params }: Params) {
       materiales: body.materiales || [],
       acabados: body.acabados || [],
       imagen_url: body.imagen_url || null,
+      venta_por_ml: body.venta_por_ml ?? false,
     })
     .eq("id", id)
     .select()

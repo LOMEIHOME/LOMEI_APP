@@ -12,7 +12,7 @@ export async function GET(
 
   const { data: orden, error } = await supabase
     .from("ordenes")
-    .select("*, orden_items(*, productos(nombre, sku, categoria))")
+    .select("*, orden_items(*, productos(nombre, sku, categoria, venta_por_ml))")
     .eq("id", id)
     .single();
 
@@ -107,13 +107,14 @@ export async function PATCH(
 // Regenerar ticket HTML a partir de los datos de la orden
 function regenerarTicket(orden: Record<string, unknown>): string {
   const items = (orden.orden_items as Array<Record<string, unknown>>).map((item) => {
-    const prod = item.productos as { nombre: string } | null;
+    const prod = item.productos as { nombre: string; venta_por_ml?: boolean } | null;
     return {
       nombre: prod?.nombre || "Producto",
       cantidad: item.cantidad as number,
       precio_unitario: item.precio_unitario as number,
       descuento: (item.descuento as number) || 0,
       subtotal: item.subtotal as number,
+      venta_por_ml: prod?.venta_por_ml ?? false,
     };
   });
 
@@ -140,5 +141,7 @@ function regenerarTicket(orden: Record<string, unknown>): string {
     iva,
     total,
     nota: (orden.nota as string) || undefined,
+    metodo_pago: (orden.metodo_pago as string) || "efectivo",
+    num_transaccion: (orden.num_transaccion as string) || null,
   });
 }
