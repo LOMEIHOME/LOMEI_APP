@@ -33,6 +33,7 @@ CREATE TABLE productos (
   materiales      TEXT[],
   acabados        TEXT[],
   imagen_url      TEXT,
+  venta_por_ml    BOOLEAN NOT NULL DEFAULT FALSE,
   activo          BOOLEAN NOT NULL DEFAULT TRUE,
   creado_en       TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   editado_en      TIMESTAMPTZ NOT NULL DEFAULT NOW()
@@ -48,7 +49,7 @@ CREATE INDEX idx_productos_activo ON productos(activo);
 CREATE TABLE inventario (
   id              UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   producto_id     UUID NOT NULL REFERENCES productos(id) ON DELETE CASCADE,
-  cantidad        INTEGER NOT NULL DEFAULT 0 CHECK (cantidad >= 0),
+  cantidad        NUMERIC(12,2) NOT NULL DEFAULT 0 CHECK (cantidad >= 0),
   ubicacion       TEXT NOT NULL DEFAULT 'Showroom',
   stock_minimo    INTEGER NOT NULL DEFAULT 2,
   editado_en      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
@@ -71,9 +72,9 @@ CREATE TABLE movimientos (
   id               UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   producto_id      UUID NOT NULL REFERENCES productos(id) ON DELETE CASCADE,
   tipo             tipo_movimiento NOT NULL,
-  cantidad         INTEGER NOT NULL,
-  cantidad_antes   INTEGER NOT NULL,
-  cantidad_despues INTEGER NOT NULL,
+  cantidad         NUMERIC(12,2) NOT NULL,
+  cantidad_antes   NUMERIC(12,2) NOT NULL,
+  cantidad_despues NUMERIC(12,2) NOT NULL,
   nota             TEXT,
   usuario_id       UUID REFERENCES auth.users(id),
   creado_en        TIMESTAMPTZ NOT NULL DEFAULT NOW()
@@ -102,6 +103,8 @@ CREATE TABLE ordenes (
   total           NUMERIC(12,2) NOT NULL DEFAULT 0,
   nota            TEXT,
   ticket_html     TEXT,
+  metodo_pago     TEXT NOT NULL DEFAULT 'efectivo',
+  num_transaccion TEXT,
   cliente_id      UUID,
   usuario_id      UUID REFERENCES auth.users(id),
   creado_en       TIMESTAMPTZ NOT NULL DEFAULT NOW(),
@@ -115,7 +118,7 @@ CREATE TABLE orden_items (
   id              UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   orden_id        UUID NOT NULL REFERENCES ordenes(id) ON DELETE CASCADE,
   producto_id     UUID NOT NULL REFERENCES productos(id),
-  cantidad        INTEGER NOT NULL CHECK (cantidad > 0),
+  cantidad        NUMERIC(12,2) NOT NULL CHECK (cantidad > 0),
   precio_unitario NUMERIC(12,2) NOT NULL,
   descuento       NUMERIC(5,2) NOT NULL DEFAULT 0 CHECK (descuento >= 0 AND descuento <= 100),
   subtotal        NUMERIC(12,2) NOT NULL

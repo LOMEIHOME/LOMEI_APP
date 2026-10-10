@@ -9,6 +9,7 @@ interface TicketItem {
   precio_unitario: number;
   descuento?: number; // porcentaje 0-100
   subtotal: number;
+  venta_por_ml?: boolean;
 }
 
 interface TicketData {
@@ -23,6 +24,8 @@ interface TicketData {
   iva: number;
   total: number;
   nota?: string;
+  metodo_pago?: string;
+  num_transaccion?: string | null;
 }
 
 function escapeHtml(text: string): string {
@@ -59,8 +62,8 @@ export function generarNotaDeVenta(data: TicketData): string {
     <tr>
       <td style="padding: 10px 8px; border-bottom: 1px solid #EDE6D6; font-size: 13px; color: #2A2118;">${i + 1}</td>
       <td style="padding: 10px 8px; border-bottom: 1px solid #EDE6D6; font-size: 13px; color: #2A2118;">${escapeHtml(item.nombre)}</td>
-      <td style="padding: 10px 8px; border-bottom: 1px solid #EDE6D6; font-size: 13px; color: #2A2118; text-align: center;">${item.cantidad}</td>
-      <td style="padding: 10px 8px; border-bottom: 1px solid #EDE6D6; font-size: 13px; color: #2A2118; text-align: right;">${formatearPrecio(item.precio_unitario)}</td>
+      <td style="padding: 10px 8px; border-bottom: 1px solid #EDE6D6; font-size: 13px; color: #2A2118; text-align: center;">${item.venta_por_ml ? `${item.cantidad} ml` : item.cantidad}</td>
+      <td style="padding: 10px 8px; border-bottom: 1px solid #EDE6D6; font-size: 13px; color: #2A2118; text-align: right;">${formatearPrecio(item.precio_unitario)}${item.venta_por_ml ? '/ml' : ''}</td>
       ${hasAnyDiscount ? `<td style="padding: 10px 8px; border-bottom: 1px solid #EDE6D6; font-size: 13px; color: ${item.descuento && item.descuento > 0 ? '#16794a' : '#2A2118'}; text-align: center;">${item.descuento && item.descuento > 0 ? `${item.descuento}%` : '—'}</td>` : ''}
       <td style="padding: 10px 8px; border-bottom: 1px solid #EDE6D6; font-size: 13px; color: #2A2118; text-align: right; font-weight: 500;">${formatearPrecio(item.subtotal)}</td>
     </tr>`
@@ -191,6 +194,12 @@ export function generarNotaDeVenta(data: TicketData): string {
           </td>
         </tr>
       </table>
+    </div>
+
+    <!-- Método de pago -->
+    <div style="padding: 0 32px 20px;">
+      <p style="margin: 0 0 4px; font-size: 9px; letter-spacing: 0.2em; color: #B5A898; text-transform: uppercase;">Método de pago</p>
+      <p style="margin: 0; font-size: 12px; color: #2A2118;">${data.metodo_pago === 'tarjeta' ? 'Tarjeta' : 'Efectivo'}${data.num_transaccion ? ` — Ref: ${escapeHtml(data.num_transaccion)}` : ''}</p>
     </div>
 
     ${data.nota ? `

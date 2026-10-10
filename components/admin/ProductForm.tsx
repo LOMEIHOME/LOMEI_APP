@@ -18,6 +18,9 @@ const CATEGORIAS = [
   "Florero",
   "Macetas",
   "Plantas Artificiales",
+  "Velas",
+  "Aromas",
+  "Servicios",
 ];
 
 interface ProductFormProps {
@@ -34,6 +37,7 @@ interface ProductFormProps {
     materiales: string[];
     acabados: string[];
     imagen_url: string;
+    venta_por_ml?: boolean;
   };
   initialStock?: {
     cantidad: number;
@@ -85,6 +89,7 @@ export default function ProductForm({
     materiales: initialData?.materiales?.join(", ") || "",
     acabados: initialData?.acabados?.join(", ") || "",
     imagen_url: initialData?.imagen_url || "",
+    venta_por_ml: initialData?.venta_por_ml || false,
     cantidad_inicial: initialStock?.cantidad || 0,
     ubicacion: initialStock?.ubicacion || "Showroom",
     stock_minimo: initialStock?.stock_minimo || 2,
@@ -119,7 +124,8 @@ export default function ProductForm({
         ? form.acabados.split(",").map((a) => a.trim()).filter(Boolean)
         : [],
       imagen_url: form.imagen_url || null,
-      ...(mode === "create" && {
+      venta_por_ml: form.categoria === "Aromas" ? form.venta_por_ml : false,
+      ...(mode === "create" && form.categoria !== "Servicios" && {
         cantidad_inicial: Number(form.cantidad_inicial),
         ubicacion: form.ubicacion,
         stock_minimo: Number(form.stock_minimo),
@@ -209,6 +215,19 @@ export default function ProductForm({
                 ))}
               </select>
             </label>
+            {form.categoria === "Aromas" && (
+              <label style={{ gridColumn: "span 2", display: "flex", alignItems: "center", gap: 8, cursor: "pointer" }}>
+                <input
+                  type="checkbox"
+                  checked={form.venta_por_ml}
+                  onChange={(e) => setForm((f) => ({ ...f, venta_por_ml: e.target.checked }))}
+                  style={{ width: 16, height: 16, accentColor: "#37352f", cursor: "pointer" }}
+                />
+                <span style={{ fontSize: 13, color: "#6b6760" }}>
+                  Venta por mililitro (el stock se maneja en ml)
+                </span>
+              </label>
+            )}
             <label style={{ gridColumn: "span 2" }}>
               <div style={{ fontSize: 12, color: "#6b6760", marginBottom: 5 }}>Dimensiones</div>
               <input
@@ -272,8 +291,8 @@ export default function ProductForm({
           </div>
         </div>
 
-        {/* Stock inicial (solo create) */}
-        {mode === "create" && (
+        {/* Stock inicial (solo create, no aplica a servicios) */}
+        {mode === "create" && form.categoria !== "Servicios" && (
           <div style={{ border: "1px solid #eeece7", borderRadius: 12, padding: 22, marginBottom: 16 }}>
             <div style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: "0.12em", color: "#b3ada1", fontWeight: 600, marginBottom: 16 }}>
               Stock inicial

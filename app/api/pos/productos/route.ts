@@ -11,7 +11,7 @@ export async function GET(request: NextRequest) {
 
   let query = supabase
     .from("productos")
-    .select("id, nombre, slug, sku, categoria, precio_venta, imagen_url, inventario(cantidad)")
+    .select("id, nombre, slug, sku, categoria, precio_venta, imagen_url, venta_por_ml, inventario(cantidad)")
     .eq("activo", true)
     .order("nombre")
     .limit(limit);
@@ -35,6 +35,7 @@ export async function GET(request: NextRequest) {
     categoria: p.categoria,
     precio_venta: p.precio_venta,
     imagen_url: p.imagen_url,
+    venta_por_ml: p.venta_por_ml ?? false,
     stock: (p.inventario as { cantidad: number }[])?.[0]?.cantidad ?? 0,
   }));
 
