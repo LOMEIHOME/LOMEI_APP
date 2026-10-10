@@ -30,8 +30,19 @@ interface InventarioItem {
   };
 }
 
+interface ServicioItem {
+  id: string;
+  nombre: string;
+  slug: string;
+  categoria: string;
+  sku: string | null;
+  precio_venta: number;
+  activo: boolean;
+}
+
 export default function InventarioPage() {
   const [items, setItems] = useState<InventarioItem[]>([]);
+  const [servicios, setServicios] = useState<ServicioItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
@@ -51,9 +62,24 @@ export default function InventarioPage() {
     if (debouncedSearch) params.set("search", debouncedSearch);
     if (categoria) params.set("categoria", categoria);
 
+    // Fetch inventario (productos con stock)
     const res = await fetch(`/api/inventario?${params}`);
     const json = await res.json();
     setItems(json.data || []);
+
+    // Fetch servicios (productos sin inventario) — solo si no hay filtro de categoría o es "Servicios"
+    if (!categoria || categoria === "Servicios") {
+      const svcParams = new URLSearchParams();
+      svcParams.set("categoria", "Servicios");
+      svcParams.set("activo", "true");
+      if (debouncedSearch) svcParams.set("search", debouncedSearch);
+      const svcRes = await fetch(`/api/productos?${svcParams}&limit=100`);
+      const svcJson = await svcRes.json();
+      setServicios(svcJson.data || []);
+    } else {
+      setServicios([]);
+    }
+
     setLoading(false);
   }, [debouncedSearch, categoria]);
 
@@ -84,7 +110,7 @@ export default function InventarioPage() {
             📦 Inventario
           </h1>
           <p style={{ fontSize: 14, color: "#8b867c", marginTop: 4 }}>
-            {items.length} productos{agotadosCount > 0 ? ` · ${agotadosCount} agotados` : ""} · {formatPrice(totalInventoryValue)} en inventario
+            {items.length + servicios.length} productos{servicios.length > 0 ? ` · ${servicios.length} servicios` : ""}{agotadosCount > 0 ? ` · ${agotadosCount} agotados` : ""} · {formatPrice(totalInventoryValue)} en inventario
           </p>
         </div>
         <button
@@ -396,6 +422,75 @@ export default function InventarioPage() {
                     </tr>
                   );
                 })}
+                {/* Servicios — sin inventario */}
+                {servicios.map((svc) => (
+                  <tr
+                    key={`svc-${svc.id}`}
+                    style={{
+                      borderTop: "1px solid #f1efe9",
+                      cursor: "pointer",
+                      transition: "background-color 0.1s",
+                    }}
+                    onMouseEnter={(e) =>
+                      (e.currentTarget.style.backgroundColor = "#faf9f6")
+                    }
+                    onMouseLeave={(e) =>
+                      (e.currentTarget.style.backgroundColor = "transparent")
+                    }
+                    onClick={() =>
+                      (window.location.href = `/admin/inventario/${svc.id}`)
+                    }
+                  >
+                    <td style={{ padding: "10px 16px" }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                        <div
+                          style={{
+                            width: 32,
+                            height: 32,
+                            borderRadius: 8,
+                            backgroundColor: "#f3f1ec",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            fontSize: 15,
+                            flexShrink: 0,
+                          }}
+                        >
+                          {getCategoryEmoji(svc.categoria)}
+                        </div>
+                        <div>
+                          <div style={{ fontSize: 14, fontWeight: 500, color: "#37352f", lineHeight: 1.3 }}>
+                            {svc.nombre}
+                          </div>
+                          <div style={{ fontSize: 12, color: "#9b968c" }}>
+                            Servicios
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td style={{ padding: "10px 16px", fontFamily: "monospace", fontSize: 13, color: "#9b968c" }}>
+                      {svc.sku || "—"}
+                    </td>
+                    <td style={{ padding: "10px 16px" }}>
+                      <span style={{
+                        fontSize: 11,
+                        fontWeight: 500,
+                        padding: "3px 8px",
+                        borderRadius: 99,
+                        backgroundColor: "#f0eef9",
+                        color: "#6c5ce7",
+                      }}>
+                        Servicio
+                      </span>
+                    </td>
+                    <td style={{ padding: "10px 16px", fontSize: 13, color: "#9b968c", fontStyle: "italic" }}>
+                      Precio variable
+                    </td>
+                    <td style={{ padding: "10px 16px", fontSize: 14, color: "#9b968c", textAlign: "right" }}>
+                      —
+                    </td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>

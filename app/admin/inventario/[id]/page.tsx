@@ -20,6 +20,7 @@ interface Producto {
   materiales: string[] | null;
   acabados: string[] | null;
   imagen_url: string | null;
+  venta_por_ml: boolean;
   activo: boolean;
   inventario: {
     id: string;
@@ -94,6 +95,7 @@ export default function ProductoDetallePage() {
   const [nota, setNota] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [formError, setFormError] = useState("");
+  const [togglingMl, setTogglingMl] = useState(false);
 
   const fetchData = useCallback(async () => {
     const [prodRes, movRes] = await Promise.all([
@@ -140,6 +142,34 @@ export default function ProductoDetallePage() {
     fetchData();
   };
 
+  /* Toggle venta_por_ml */
+  const handleToggleMl = async () => {
+    if (!producto) return;
+    setTogglingMl(true);
+    const res = await fetch(`/api/productos/${producto.id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        nombre: producto.nombre,
+        slug: producto.slug,
+        categoria: producto.categoria,
+        sku: producto.sku,
+        precio_costo: producto.precio_costo,
+        precio_venta: producto.precio_venta,
+        descripcion: producto.descripcion,
+        dimensiones: producto.dimensiones,
+        materiales: producto.materiales,
+        acabados: producto.acabados,
+        imagen_url: producto.imagen_url,
+        venta_por_ml: !producto.venta_por_ml,
+      }),
+    });
+    if (res.ok) {
+      fetchData();
+    }
+    setTogglingMl(false);
+  };
+
   /* ── Loading / Not found ── */
   if (loading) {
     return (
@@ -159,9 +189,12 @@ export default function ProductoDetallePage() {
 
   /* ── Derived values ── */
   const inv = producto.inventario?.[0];
+  const isServicio = producto.categoria === "Servicios";
   const currentQty = inv?.cantidad ?? 0;
   const minQty = inv?.stock_minimo ?? 0;
-  const status = getNotionStatus(currentQty, minQty);
+  const status = isServicio
+    ? { label: "Servicio", bg: "#f0eef9", color: "#6c5ce7" }
+    : getNotionStatus(currentQty, minQty);
   const emoji = getCategoryEmoji(producto.categoria);
 
   let preview = currentQty;
@@ -251,7 +284,7 @@ export default function ProductoDetallePage() {
       >
         {/* ── Left column ── */}
         <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-          {/* Stock card */}
+          {/* Stock / Info card */}
           <div
             style={{
               backgroundColor: "#f8f7f4",
@@ -259,47 +292,128 @@ export default function ProductoDetallePage() {
               padding: 20,
             }}
           >
-            <p
-              style={{
-                fontSize: 11,
-                fontWeight: 700,
-                letterSpacing: "0.12em",
-                textTransform: "uppercase",
-                color: "#b3ada1",
-                margin: "0 0 12px 0",
-              }}
-            >
-              Stock actual
-            </p>
-            <p
-              style={{
-                fontSize: 46,
-                fontWeight: 700,
-                color: status.color,
-                margin: 0,
-                lineHeight: 1,
-              }}
-            >
-              {currentQty}
-            </p>
-            <p
-              style={{
-                fontSize: 12.5,
-                color: "#9b968c",
-                margin: "10px 0 0 0",
-              }}
-            >
-              Mínimo {minQty} · {inv?.ubicacion ?? "—"}
-            </p>
-            <p
-              style={{
-                fontSize: 12.5,
-                color: "#9b968c",
-                margin: "4px 0 0 0",
-              }}
-            >
-              Precio venta {formatPrice(producto.precio_venta)}
-            </p>
+            {isServicio ? (
+              <>
+                <p
+                  style={{
+                    fontSize: 11,
+                    fontWeight: 700,
+                    letterSpacing: "0.12em",
+                    textTransform: "uppercase",
+                    color: "#b3ada1",
+                    margin: "0 0 12px 0",
+                  }}
+                >
+                  Servicio
+                </p>
+                <p style={{ fontSize: 20, fontWeight: 600, color: "#6c5ce7", margin: 0 }}>
+                  Precio variable
+                </p>
+                <p style={{ fontSize: 12.5, color: "#9b968c", margin: "10px 0 0 0" }}>
+                  El precio se define al registrar la venta en el POS
+                </p>
+                <p style={{ fontSize: 12.5, color: "#9b968c", margin: "4px 0 0 0" }}>
+                  Sin manejo de inventario
+                </p>
+              </>
+            ) : (
+              <>
+                <p
+                  style={{
+                    fontSize: 11,
+                    fontWeight: 700,
+                    letterSpacing: "0.12em",
+                    textTransform: "uppercase",
+                    color: "#b3ada1",
+                    margin: "0 0 12px 0",
+                  }}
+                >
+                  Stock actual
+                </p>
+                <p
+                  style={{
+                    fontSize: 46,
+                    fontWeight: 700,
+                    color: status.color,
+                    margin: 0,
+                    lineHeight: 1,
+                  }}
+                >
+                  {currentQty}{producto.venta_por_ml && <span style={{ fontSize: 18, fontWeight: 500, color: "#9b968c", marginLeft: 4 }}>ml</span>}
+                </p>
+                <p
+                  style={{
+                    fontSize: 12.5,
+                    color: "#9b968c",
+                    margin: "10px 0 0 0",
+                  }}
+                >
+                  Mínimo {minQty} · {inv?.ubicacion ?? "—"}
+                </p>
+                <p
+                  style={{
+                    fontSize: 12.5,
+                    color: "#9b968c",
+                    margin: "4px 0 0 0",
+                  }}
+                >
+                  Precio venta {formatPrice(producto.precio_venta)}
+                </p>
+
+                {/* Venta por ml toggle — solo para Aromas */}
+                {producto.categoria === "Aromas" && (
+                  <div
+                    style={{
+                      marginTop: 14,
+                      paddingTop: 14,
+                      borderTop: "1px solid #eeece7",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                    }}
+                  >
+                    <div>
+                      <p style={{ fontSize: 12.5, fontWeight: 500, color: "#37352f", margin: 0 }}>
+                        Venta por mililitro
+                      </p>
+                      <p style={{ fontSize: 11, color: "#9b968c", margin: "2px 0 0 0" }}>
+                        Cantidad e inventario en ml
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      disabled={togglingMl}
+                      onClick={handleToggleMl}
+                      style={{
+                        width: 40,
+                        height: 22,
+                        borderRadius: 11,
+                        border: "none",
+                        backgroundColor: producto.venta_por_ml ? "#16794a" : "#d4d0c8",
+                        cursor: togglingMl ? "not-allowed" : "pointer",
+                        position: "relative",
+                        transition: "background-color 0.2s",
+                        flexShrink: 0,
+                      }}
+                    >
+                      <span
+                        style={{
+                          position: "absolute",
+                          top: 2,
+                          left: producto.venta_por_ml ? 20 : 2,
+                          width: 18,
+                          height: 18,
+                          borderRadius: 9,
+                          backgroundColor: "#fff",
+                          transition: "left 0.2s",
+                          boxShadow: "0 1px 2px rgba(0,0,0,0.15)",
+                        }}
+                      />
+                    </button>
+                  </div>
+                )}
+              </>
+            )}
           </div>
 
           {/* Adjustment form card */}
@@ -393,7 +507,8 @@ export default function ProductoDetallePage() {
                   </label>
                   <input
                     type="number"
-                    min={tipo === "ajuste" ? 0 : 1}
+                    min={tipo === "ajuste" ? 0 : (producto.venta_por_ml ? 0.1 : 1)}
+                    step={producto.venta_por_ml ? 0.1 : 1}
                     required
                     value={cantidad}
                     onChange={(e) => setCantidad(Number(e.target.value))}
@@ -431,7 +546,7 @@ export default function ProductoDetallePage() {
                   <span style={{ fontWeight: 500 }}>{currentQty}</span>
                   <span style={{ color: "#9b968c" }}>&rarr;</span>
                   <span style={{ fontWeight: 700 }}>{preview}</span>
-                  <span style={{ color: "#9b968c", fontSize: 12 }}>unidades</span>
+                  <span style={{ color: "#9b968c", fontSize: 12 }}>{producto.venta_por_ml ? "ml" : "unidades"}</span>
                 </div>
 
                 {/* Note input */}

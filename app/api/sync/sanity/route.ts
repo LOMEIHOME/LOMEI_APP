@@ -24,8 +24,11 @@ export async function POST() {
       return NextResponse.json({ error: fetchError.message }, { status: 500 });
     }
 
+    // Excluir servicios del mapa — no deben ser tocados por la sincronización
     const supabaseMap = new Map(
-      (supabaseProducts || []).filter((p: { sku: string | null }) => p.sku).map((p: { sku: string; [key: string]: unknown }) => [p.sku, p])
+      (supabaseProducts || [])
+        .filter((p: { sku: string | null; categoria: string }) => p.sku && p.categoria !== "Servicios")
+        .map((p: { sku: string; [key: string]: unknown }) => [p.sku, p])
     );
 
     let creados = 0;
