@@ -63,7 +63,7 @@ export async function POST(request: NextRequest) {
   for (const item of items) {
     const { data: producto } = await supabase
       .from("productos")
-      .select("id, nombre, precio_venta, venta_por_ml, categoria")
+      .select("id, nombre, precio_venta, venta_por_ml, contenido_ml, categoria")
       .eq("slug", item.slug)
       .eq("activo", true)
       .single();
@@ -76,6 +76,7 @@ export async function POST(request: NextRequest) {
     }
 
     const esVentaPorMl = producto.venta_por_ml ?? false;
+    const contenidoMl = (producto.contenido_ml as number | null) ?? null;
     const esServicio = producto.categoria === "Servicios";
 
     // Validar cantidad: entero para productos normales, decimal para ml
@@ -116,8 +117,14 @@ export async function POST(request: NextRequest) {
         es_servicio: true,
       });
     } else {
+      // Calcular precio unitario esperado (por ml si aplica)
+      let precioEsperado = producto.precio_venta;
+      if (esVentaPorMl && contenidoMl && contenidoMl > 0) {
+        precioEsperado = Math.round((producto.precio_venta / contenidoMl) * 100) / 100;
+      }
+
       // Validar que el precio no fue manipulado
-      if (Math.abs(producto.precio_venta - item.precio_unitario) > 0.01) {
+      if (Math.abs(precioEsperado - item.precio_unitario) > 0.01) {
         return NextResponse.json(
           { error: `El precio de "${item.nombre}" cambió. Recarga la página e intenta de nuevo.` },
           { status: 400 }
@@ -145,7 +152,7 @@ export async function POST(request: NextRequest) {
         invId: inv.id,
         invCantidad: inv.cantidad as number,
         cantidadSolicitada: item.cantidad,
-        precio_unitario: producto.precio_venta,
+        precio_unitario: precioEsperado,
         descuento: item.descuento ?? 0,
         venta_por_ml: esVentaPorMl,
         es_servicio: false,

@@ -11,7 +11,7 @@ export async function GET(request: NextRequest) {
 
   let query = supabase
     .from("productos")
-    .select("id, nombre, slug, sku, categoria, precio_venta, imagen_url, venta_por_ml, inventario(cantidad)")
+    .select("id, nombre, slug, sku, categoria, precio_venta, imagen_url, venta_por_ml, contenido_ml, inventario(cantidad)")
     .eq("activo", true)
     .order("nombre")
     .limit(limit);
@@ -27,17 +27,27 @@ export async function GET(request: NextRequest) {
   }
 
   // Aplanar inventario para devolver cantidad directamente
-  const results = (data || []).map((p) => ({
-    id: p.id,
-    nombre: p.nombre,
-    slug: p.slug,
-    sku: p.sku,
-    categoria: p.categoria,
-    precio_venta: p.precio_venta,
-    imagen_url: p.imagen_url,
-    venta_por_ml: p.venta_por_ml ?? false,
-    stock: (p.inventario as { cantidad: number }[])?.[0]?.cantidad ?? 0,
-  }));
+  const results = (data || []).map((p) => {
+    const ventaPorMl = p.venta_por_ml ?? false;
+    const contenidoMl = (p.contenido_ml as number | null) ?? null;
+    // Calcular precio por ml: precio del frasco / contenido en ml
+    const precioPorMl = ventaPorMl && contenidoMl && contenidoMl > 0
+      ? Math.round((p.precio_venta / contenidoMl) * 100) / 100
+      : null;
+    return {
+      id: p.id,
+      nombre: p.nombre,
+      slug: p.slug,
+      sku: p.sku,
+      categoria: p.categoria,
+      precio_venta: p.precio_venta,
+      precio_por_ml: precioPorMl,
+      contenido_ml: contenidoMl,
+      imagen_url: p.imagen_url,
+      venta_por_ml: ventaPorMl,
+      stock: (p.inventario as { cantidad: number }[])?.[0]?.cantidad ?? 0,
+    };
+  });
 
   return NextResponse.json({ data: results });
 }

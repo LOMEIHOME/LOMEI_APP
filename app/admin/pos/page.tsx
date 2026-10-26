@@ -12,6 +12,8 @@ interface ProductoResult {
   sku: string | null;
   categoria: string;
   precio_venta: number;
+  precio_por_ml: number | null;
+  contenido_ml: number | null;
   stock: number;
   venta_por_ml: boolean;
 }
@@ -235,6 +237,8 @@ export default function PuntoDeVentaPage() {
     if (!mlInputProduct) return;
     const ml = parseFloat(mlAmount);
     if (!ml || ml < 0.1 || ml > mlInputProduct.stock) return;
+    // Usar precio por ml calculado, o precio_venta como fallback
+    const precioUnitario = mlInputProduct.precio_por_ml ?? mlInputProduct.precio_venta;
     setCart((prev) => {
       const existing = prev.find((i) => i.producto_id === mlInputProduct.id);
       if (existing) {
@@ -250,7 +254,7 @@ export default function PuntoDeVentaPage() {
           producto_id: mlInputProduct.id,
           slug: mlInputProduct.slug,
           nombre: mlInputProduct.nombre,
-          precio_unitario: mlInputProduct.precio_venta,
+          precio_unitario: precioUnitario,
           cantidad: ml,
           stock_disponible: mlInputProduct.stock,
           descuento: 0,
@@ -775,7 +779,9 @@ export default function PuntoDeVentaPage() {
                           ) : (
                           <>
                           <div style={{ fontSize: 13.5, fontWeight: 600, color: "#37352f" }}>
-                            {formatPrice(p.precio_venta)}
+                            {p.venta_por_ml && p.precio_por_ml
+                              ? `${formatPrice(p.precio_por_ml)}/ml`
+                              : formatPrice(p.precio_venta)}
                           </div>
                           <div
                             style={{
@@ -902,13 +908,18 @@ export default function PuntoDeVentaPage() {
                       <div style={{ display: "flex", alignItems: "center", gap: 6, marginLeft: 12 }}>
                         <input
                           type="number"
-                          step="0.1"
+                          step="any"
                           min="0.1"
                           max={item.stock_disponible}
                           value={item.cantidad}
                           onChange={(e) => updateQtyDirect(item.producto_id, parseFloat(e.target.value) || 0)}
+                          onBlur={(e) => {
+                            const val = parseFloat(e.target.value);
+                            if (!val || val < 0.1) updateQtyDirect(item.producto_id, 0.1);
+                            else if (val > item.stock_disponible) updateQtyDirect(item.producto_id, item.stock_disponible);
+                          }}
                           style={{
-                            width: 70,
+                            width: 80,
                             fontSize: 13,
                             fontFamily: "inherit",
                             fontWeight: 600,
@@ -1610,8 +1621,13 @@ export default function PuntoDeVentaPage() {
             <p style={{ fontSize: 14, fontWeight: 500, color: "#37352f", margin: "0 0 4px" }}>
               {mlInputProduct.nombre}
             </p>
+            <p style={{ fontSize: 12, color: "#9b968c", margin: "0 0 4px" }}>
+              Disponibles: {mlInputProduct.stock} ml
+            </p>
             <p style={{ fontSize: 12, color: "#9b968c", margin: "0 0 16px" }}>
-              Disponibles: {mlInputProduct.stock} ml · {formatPrice(mlInputProduct.precio_venta)}/ml
+              {mlInputProduct.precio_por_ml
+                ? `${formatPrice(mlInputProduct.precio_por_ml)}/ml (frasco ${formatPrice(mlInputProduct.precio_venta)} / ${mlInputProduct.contenido_ml} ml)`
+                : `${formatPrice(mlInputProduct.precio_venta)}/ml`}
             </p>
             <input
               type="number"

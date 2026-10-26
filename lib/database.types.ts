@@ -43,6 +43,7 @@ export type Database = {
           acabados: string[] | null;
           imagen_url: string | null;
           venta_por_ml: boolean;
+          contenido_ml: number | null;
           activo: boolean;
           creado_en: string;
           editado_en: string;
@@ -61,6 +62,7 @@ export type Database = {
           acabados?: string[] | null;
           imagen_url?: string | null;
           venta_por_ml?: boolean;
+          contenido_ml?: number | null;
           activo?: boolean;
           creado_en?: string;
           editado_en?: string;
@@ -79,6 +81,7 @@ export type Database = {
           acabados?: string[] | null;
           imagen_url?: string | null;
           venta_por_ml?: boolean;
+          contenido_ml?: number | null;
           activo?: boolean;
           creado_en?: string;
           editado_en?: string;

@@ -218,6 +218,17 @@ export function generarNotaDeVenta(data: TicketData): string {
       </p>
     </div>
 
+    <!-- Política de cancelación -->
+    <div style="padding: 20px 32px; border-top: 1px solid #EDE6D6;">
+      <p style="margin: 0 0 8px; font-size: 9px; letter-spacing: 0.2em; color: #B5A898; text-transform: uppercase; text-align: center;">Política de cancelación</p>
+      <p style="margin: 0 0 8px; font-size: 9px; color: #B5A898; text-align: justify; line-height: 1.6;">
+        En caso de cancelación voluntaria por parte del cliente, el pago correspondiente al anticipo (50% del monto total de la cotización) en cualquiera de los servicios contratados en LOMEI HOME se considera <strong style="color: #A0845C;">no reembolsable</strong>, derivado de los servicios realizados, incluyendo: visitas, levantamientos o asesorías, y se aplicará en los servicios que se pacten con posterioridad. Se determinará una pena convencional por cancelación del <strong style="color: #A0845C;">10% del monto total</strong> de la cotización.
+      </p>
+      <p style="margin: 0; font-size: 9px; color: #B5A898; text-align: justify; line-height: 1.6;">
+        El cliente tendrá acceso a su expediente en LOMEI HOME y podrá retomar su proyecto en cuanto lo desee, cubriendo el 50% restante de la cotización conforme a los costos del año en curso de cuando se realice el proyecto.
+      </p>
+    </div>
+
     <!-- Footer -->
     <div class="ticket-footer" style="padding: 20px 32px; text-align: center;">
       <p style="margin: 0; font-size: 10px; letter-spacing: 0.15em; color: #B5A898;">

@@ -21,6 +21,7 @@ interface Producto {
   acabados: string[] | null;
   imagen_url: string | null;
   venta_por_ml: boolean;
+  contenido_ml: number | null;
   activo: boolean;
   inventario: {
     id: string;
@@ -96,6 +97,8 @@ export default function ProductoDetallePage() {
   const [submitting, setSubmitting] = useState(false);
   const [formError, setFormError] = useState("");
   const [togglingMl, setTogglingMl] = useState(false);
+  const [editingContenidoMl, setEditingContenidoMl] = useState(false);
+  const [contenidoMlInput, setContenidoMlInput] = useState("");
 
   const fetchData = useCallback(async () => {
     const [prodRes, movRes] = await Promise.all([
@@ -162,6 +165,7 @@ export default function ProductoDetallePage() {
         acabados: producto.acabados,
         imagen_url: producto.imagen_url,
         venta_por_ml: !producto.venta_por_ml,
+        contenido_ml: producto.contenido_ml,
       }),
     });
     if (res.ok) {
@@ -358,6 +362,9 @@ export default function ProductoDetallePage() {
                   }}
                 >
                   Precio venta {formatPrice(producto.precio_venta)}
+                  {producto.venta_por_ml && producto.contenido_ml && producto.contenido_ml > 0 && (
+                    <span> ({producto.contenido_ml} ml → {formatPrice(Math.round((producto.precio_venta / producto.contenido_ml) * 100) / 100)}/ml)</span>
+                  )}
                 </p>
 
                 {/* Venta por ml toggle — solo para Aromas */}
@@ -410,6 +417,128 @@ export default function ProductoDetallePage() {
                         }}
                       />
                     </button>
+                  </div>
+                )}
+
+                {/* Contenido ml — solo cuando venta_por_ml está activo */}
+                {producto.venta_por_ml && (
+                  <div
+                    style={{
+                      marginTop: 14,
+                      paddingTop: 14,
+                      borderTop: "1px solid #eeece7",
+                    }}
+                  >
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                      <div>
+                        <p style={{ fontSize: 12.5, fontWeight: 500, color: "#37352f", margin: 0 }}>
+                          Contenido del frasco
+                        </p>
+                        <p style={{ fontSize: 11, color: "#9b968c", margin: "2px 0 0 0" }}>
+                          {producto.contenido_ml ? `${producto.contenido_ml} ml` : "No configurado"}
+                        </p>
+                      </div>
+                      {!editingContenidoMl ? (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setContenidoMlInput(producto.contenido_ml ? String(producto.contenido_ml) : "");
+                            setEditingContenidoMl(true);
+                          }}
+                          style={{
+                            fontFamily: "inherit",
+                            fontSize: 12,
+                            color: "#6b6760",
+                            background: "#f8f7f4",
+                            border: "1px solid #e6e3db",
+                            borderRadius: 6,
+                            padding: "4px 10px",
+                            cursor: "pointer",
+                          }}
+                        >
+                          Editar
+                        </button>
+                      ) : (
+                        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                          <input
+                            type="number"
+                            min="1"
+                            step="1"
+                            value={contenidoMlInput}
+                            onChange={(e) => setContenidoMlInput(e.target.value)}
+                            placeholder="ml"
+                            autoFocus
+                            style={{
+                              width: 70,
+                              fontFamily: "inherit",
+                              fontSize: 12,
+                              color: "#37352f",
+                              border: "1px solid #e6e3db",
+                              borderRadius: 6,
+                              padding: "4px 8px",
+                              background: "#fff",
+                              outline: "none",
+                            }}
+                          />
+                          <button
+                            type="button"
+                            onClick={async () => {
+                              const val = contenidoMlInput ? Number(contenidoMlInput) : null;
+                              await fetch(`/api/productos/${producto.id}`, {
+                                method: "PUT",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({
+                                  nombre: producto.nombre,
+                                  slug: producto.slug,
+                                  categoria: producto.categoria,
+                                  sku: producto.sku,
+                                  precio_costo: producto.precio_costo,
+                                  precio_venta: producto.precio_venta,
+                                  descripcion: producto.descripcion,
+                                  dimensiones: producto.dimensiones,
+                                  materiales: producto.materiales,
+                                  acabados: producto.acabados,
+                                  imagen_url: producto.imagen_url,
+                                  venta_por_ml: producto.venta_por_ml,
+                                  contenido_ml: val,
+                                }),
+                              });
+                              setEditingContenidoMl(false);
+                              fetchData();
+                            }}
+                            style={{
+                              fontFamily: "inherit",
+                              fontSize: 11,
+                              fontWeight: 600,
+                              color: "#fff",
+                              background: "#37352f",
+                              border: "none",
+                              borderRadius: 6,
+                              padding: "5px 10px",
+                              cursor: "pointer",
+                            }}
+                          >
+                            ✓
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setEditingContenidoMl(false)}
+                            style={{
+                              fontFamily: "inherit",
+                              fontSize: 11,
+                              color: "#6b6760",
+                              background: "#fff",
+                              border: "1px solid #e6e3db",
+                              borderRadius: 6,
+                              padding: "5px 10px",
+                              cursor: "pointer",
+                            }}
+                          >
+                            ✕
+                          </button>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 )}
               </>
@@ -508,7 +637,7 @@ export default function ProductoDetallePage() {
                   <input
                     type="number"
                     min={tipo === "ajuste" ? 0 : (producto.venta_por_ml ? 0.1 : 1)}
-                    step={producto.venta_por_ml ? 0.1 : 1}
+                    step={producto.venta_por_ml ? "any" : 1}
                     required
                     value={cantidad}
                     onChange={(e) => setCantidad(Number(e.target.value))}
