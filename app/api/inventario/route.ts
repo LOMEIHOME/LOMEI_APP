@@ -12,7 +12,7 @@ export async function GET(request: NextRequest) {
   // Query: inventario con join a productos
   let query = supabase
     .from("inventario")
-    .select("*, productos!inner(id, nombre, slug, categoria, sku, precio_venta, imagen_url, activo)")
+    .select("*, productos!inner(id, nombre, slug, categoria, sku, precio_venta, venta_por_ml, contenido_ml, imagen_url, activo)")
     .eq("productos.activo", true)
     .order("editado_en", { ascending: false });
 
