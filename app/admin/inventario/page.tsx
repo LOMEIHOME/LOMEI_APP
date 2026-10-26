@@ -25,6 +25,8 @@ interface InventarioItem {
     categoria: string;
     sku: string | null;
     precio_venta: number;
+    venta_por_ml: boolean;
+    contenido_ml: number | null;
     imagen_url: string | null;
     activo: boolean;
   };
@@ -89,8 +91,17 @@ export default function InventarioPage() {
 
   const agotadosCount = items.filter((item) => item.cantidad === 0).length;
 
+  // Calcular valor: para productos por ml, usar precio_por_ml en vez de precio_venta
+  const calcValor = (item: InventarioItem) => {
+    const p = item.productos;
+    if (p.venta_por_ml && p.contenido_ml && p.contenido_ml > 0) {
+      return item.cantidad * (p.precio_venta / p.contenido_ml);
+    }
+    return item.cantidad * p.precio_venta;
+  };
+
   const totalInventoryValue = items.reduce(
-    (sum, item) => sum + item.cantidad * item.productos.precio_venta,
+    (sum, item) => sum + calcValor(item),
     0
   );
 
@@ -417,7 +428,7 @@ export default function InventarioPage() {
 
                       {/* Valor (precio × stock) */}
                       <td style={{ padding: "10px 16px", fontSize: 14, fontWeight: 500, color: "#37352f", textAlign: "right", fontVariantNumeric: "tabular-nums" }}>
-                        {item.cantidad > 0 ? formatPrice(item.cantidad * item.productos.precio_venta) : <span style={{ color: "#9b968c" }}>—</span>}
+                        {item.cantidad > 0 ? formatPrice(calcValor(item)) : <span style={{ color: "#9b968c" }}>—</span>}
                       </td>
                     </tr>
                   );
