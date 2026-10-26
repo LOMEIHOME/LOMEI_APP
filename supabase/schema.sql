@@ -34,6 +34,7 @@ CREATE TABLE productos (
   acabados        TEXT[],
   imagen_url      TEXT,
   venta_por_ml    BOOLEAN NOT NULL DEFAULT FALSE,
+  contenido_ml    NUMERIC(12,2) DEFAULT NULL,
   activo          BOOLEAN NOT NULL DEFAULT TRUE,
   creado_en       TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   editado_en      TIMESTAMPTZ NOT NULL DEFAULT NOW()

@@ -38,6 +38,7 @@ interface ProductFormProps {
     acabados: string[];
     imagen_url: string;
     venta_por_ml?: boolean;
+    contenido_ml?: number | null;
   };
   initialStock?: {
     cantidad: number;
@@ -90,6 +91,7 @@ export default function ProductForm({
     acabados: initialData?.acabados?.join(", ") || "",
     imagen_url: initialData?.imagen_url || "",
     venta_por_ml: initialData?.venta_por_ml || false,
+    contenido_ml: initialData?.contenido_ml || "",
     cantidad_inicial: initialStock?.cantidad || 0,
     ubicacion: initialStock?.ubicacion || "Showroom",
     stock_minimo: initialStock?.stock_minimo || 2,
@@ -125,6 +127,7 @@ export default function ProductForm({
         : [],
       imagen_url: form.imagen_url || null,
       venta_por_ml: form.categoria === "Aromas" ? form.venta_por_ml : false,
+      contenido_ml: form.categoria === "Aromas" && form.venta_por_ml && form.contenido_ml ? Number(form.contenido_ml) : null,
       ...(mode === "create" && form.categoria !== "Servicios" && {
         cantidad_inicial: Number(form.cantidad_inicial),
         ubicacion: form.ubicacion,
@@ -216,17 +219,38 @@ export default function ProductForm({
               </select>
             </label>
             {form.categoria === "Aromas" && (
-              <label style={{ gridColumn: "span 2", display: "flex", alignItems: "center", gap: 8, cursor: "pointer" }}>
-                <input
-                  type="checkbox"
-                  checked={form.venta_por_ml}
-                  onChange={(e) => setForm((f) => ({ ...f, venta_por_ml: e.target.checked }))}
-                  style={{ width: 16, height: 16, accentColor: "#37352f", cursor: "pointer" }}
-                />
-                <span style={{ fontSize: 13, color: "#6b6760" }}>
-                  Venta por mililitro (el stock se maneja en ml)
-                </span>
-              </label>
+              <>
+                <label style={{ gridColumn: "span 2", display: "flex", alignItems: "center", gap: 8, cursor: "pointer" }}>
+                  <input
+                    type="checkbox"
+                    checked={form.venta_por_ml}
+                    onChange={(e) => setForm((f) => ({ ...f, venta_por_ml: e.target.checked }))}
+                    style={{ width: 16, height: 16, accentColor: "#37352f", cursor: "pointer" }}
+                  />
+                  <span style={{ fontSize: 13, color: "#6b6760" }}>
+                    Venta por mililitro (el stock se maneja en ml)
+                  </span>
+                </label>
+                {form.venta_por_ml && (
+                  <label>
+                    <div style={{ fontSize: 12, color: "#6b6760", marginBottom: 5 }}>Contenido del frasco (ml)</div>
+                    <input
+                      type="number"
+                      min="1"
+                      step="1"
+                      value={form.contenido_ml}
+                      onChange={(e) => setForm((f) => ({ ...f, contenido_ml: e.target.value }))}
+                      placeholder="Ej: 500"
+                      style={inputStyle}
+                    />
+                    {form.contenido_ml && Number(form.contenido_ml) > 0 && form.precio_venta > 0 && (
+                      <div style={{ fontSize: 11, color: "#9b968c", marginTop: 4 }}>
+                        Precio por ml: ${(Number(form.precio_venta) / Number(form.contenido_ml)).toFixed(2)} MXN
+                      </div>
+                    )}
+                  </label>
+                )}
+              </>
             )}
             <label style={{ gridColumn: "span 2" }}>
               <div style={{ fontSize: 12, color: "#6b6760", marginBottom: 5 }}>Dimensiones</div>
