@@ -10,6 +10,7 @@ interface TicketItem {
   descuento?: number; // porcentaje 0-100
   subtotal: number;
   venta_por_ml?: boolean;
+  es_servicio?: boolean;
 }
 
 interface TicketData {
@@ -55,6 +56,7 @@ export function formatearPrecio(precio: number): string {
 
 export function generarNotaDeVenta(data: TicketData): string {
   const hasAnyDiscount = data.items.some((item) => item.descuento && item.descuento > 0);
+  const tieneServicios = data.items.some((item) => item.es_servicio);
 
   const itemsHtml = data.items
     .map(
@@ -218,8 +220,9 @@ export function generarNotaDeVenta(data: TicketData): string {
       </p>
     </div>
 
-    <!-- Política de cancelación -->
+    <!-- Política de venta / cancelación -->
     <div style="padding: 20px 32px; border-top: 1px solid #EDE6D6;">
+      ${tieneServicios ? `
       <p style="margin: 0 0 8px; font-size: 9px; letter-spacing: 0.2em; color: #B5A898; text-transform: uppercase; text-align: center;">Política de cancelación</p>
       <p style="margin: 0 0 8px; font-size: 9px; color: #B5A898; text-align: justify; line-height: 1.6;">
         En caso de cancelación voluntaria por parte del cliente, el pago correspondiente al anticipo (50% del monto total de la cotización) en cualquiera de los servicios contratados en LOMEI HOME se considera <strong style="color: #A0845C;">no reembolsable</strong>, derivado de los servicios realizados, incluyendo: visitas, levantamientos o asesorías, y se aplicará en los servicios que se pacten con posterioridad. Se determinará una pena convencional por cancelación del <strong style="color: #A0845C;">10% del monto total</strong> de la cotización.
@@ -227,6 +230,12 @@ export function generarNotaDeVenta(data: TicketData): string {
       <p style="margin: 0; font-size: 9px; color: #B5A898; text-align: justify; line-height: 1.6;">
         El cliente tendrá acceso a su expediente en LOMEI HOME y podrá retomar su proyecto en cuanto lo desee, cubriendo el 50% restante de la cotización conforme a los costos del año en curso de cuando se realice el proyecto.
       </p>
+      ` : `
+      <p style="margin: 0 0 8px; font-size: 9px; letter-spacing: 0.2em; color: #B5A898; text-transform: uppercase; text-align: center;">Política de venta</p>
+      <p style="margin: 0; font-size: 9px; color: #B5A898; text-align: justify; line-height: 1.6;">
+        No se aceptan cambios ni devoluciones. No se cubren daños por golpes, caídas o mal uso. Los productos cuentan con <strong style="color: #A0845C;">garantía de fabricación</strong>, siempre que estos cuenten con un defecto de origen.
+      </p>
+      `}
     </div>
 
     <!-- Footer -->

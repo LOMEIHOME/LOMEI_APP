@@ -171,6 +171,7 @@ export async function POST(request: NextRequest) {
       descuento: pv.descuento,
       subtotal: base - descuentoMonto,
       venta_por_ml: pv.venta_por_ml,
+      es_servicio: pv.es_servicio,
     };
   });
 

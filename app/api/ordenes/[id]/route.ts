@@ -107,7 +107,7 @@ export async function PATCH(
 // Regenerar ticket HTML a partir de los datos de la orden
 function regenerarTicket(orden: Record<string, unknown>): string {
   const items = (orden.orden_items as Array<Record<string, unknown>>).map((item) => {
-    const prod = item.productos as { nombre: string; venta_por_ml?: boolean } | null;
+    const prod = item.productos as { nombre: string; venta_por_ml?: boolean; categoria?: string } | null;
     return {
       nombre: prod?.nombre || "Producto",
       cantidad: item.cantidad as number,
@@ -115,6 +115,7 @@ function regenerarTicket(orden: Record<string, unknown>): string {
       descuento: (item.descuento as number) || 0,
       subtotal: item.subtotal as number,
       venta_por_ml: prod?.venta_por_ml ?? false,
+      es_servicio: prod?.categoria === "Servicios",
     };
   });
 
