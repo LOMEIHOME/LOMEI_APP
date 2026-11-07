@@ -39,6 +39,8 @@ export const producto = defineType({
           { title: "Plantas Artificiales", value: "Plantas Artificiales" },
           { title: "Velas", value: "Velas" },
           { title: "Aromas", value: "Aromas" },
+          { title: "Velas de Navidad", value: "Velas de Navidad" },
+          { title: "Adornos Navideños", value: "Adornos Navideños" },
         ],
       },
       validation: (rule) => rule.required(),
