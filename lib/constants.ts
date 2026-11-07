@@ -19,6 +19,8 @@ export const CATEGORY_EMOJI: Record<string, string> = {
   "Plantas Artificiales": "🌿",
   Velas: "🕯️",
   Aromas: "🌿",
+  "Velas de Navidad": "🎄",
+  "Adornos Navideños": "🎄",
   Servicios: "🔧",
 };
 

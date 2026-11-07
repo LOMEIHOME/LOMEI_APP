@@ -1,7 +1,7 @@
 export interface Producto {
   slug: string;
   name: string;
-  category: "Muebles" | "Cojines" | "Textiles" | "Adornos" | "Jarrones" | "Iluminación" | "Alfombras" | "Acabados" | "Capelos" | "Relojes" | "Florero" | "Macetas" | "Plantas Artificiales";
+  category: "Muebles" | "Cojines" | "Textiles" | "Adornos" | "Jarrones" | "Iluminación" | "Alfombras" | "Acabados" | "Capelos" | "Relojes" | "Florero" | "Macetas" | "Plantas Artificiales" | "Velas" | "Aromas" | "Velas de Navidad" | "Adornos Navideños";
   price: number;
   description: string;
   dimensions: string;
